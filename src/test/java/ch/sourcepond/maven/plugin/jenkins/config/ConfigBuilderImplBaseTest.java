@@ -10,6 +10,7 @@ import java.nio.file.spi.FileSystemProvider;
 import org.junit.Before;
 
 import ch.sourcepond.maven.plugin.jenkins.config.download.Downloader;
+import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 
 /**
  * @author rolandhauser
@@ -19,8 +20,10 @@ public class ConfigBuilderImplBaseTest {
 	protected final FileSystem fs = mock(FileSystem.class);
 	protected final FileSystemProvider provider = mock(FileSystemProvider.class);
 	protected final Path workDirectory = mock(Path.class);
+	protected final Messages messages = mock(Messages.class);
 	protected final Downloader downloader = mock(Downloader.class);
-	protected final ConfigBuilderImpl impl = new ConfigBuilderImpl(downloader);
+	protected final ConfigBuilderImpl impl = new ConfigBuilderImpl(messages,
+			downloader);
 
 	/**
 	 * 

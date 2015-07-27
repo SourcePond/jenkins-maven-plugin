@@ -18,6 +18,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import ch.sourcepond.maven.plugin.jenkins.config.download.Downloader;
+import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 
 /**
  * @author rolandhauser
@@ -26,13 +27,16 @@ import ch.sourcepond.maven.plugin.jenkins.config.download.Downloader;
 @Named
 @Singleton
 final class ConfigBuilderFactoryImpl implements ConfigBuilderFactory {
+	private final Messages messages;
 	private final Downloader dowloader;
 
 	/**
 	 * @param pDownloader
 	 */
 	@Inject
-	ConfigBuilderFactoryImpl(final Downloader pDownloader) {
+	ConfigBuilderFactoryImpl(final Messages pMessages,
+			final Downloader pDownloader) {
+		messages = pMessages;
 		dowloader = pDownloader;
 	}
 
@@ -45,6 +49,6 @@ final class ConfigBuilderFactoryImpl implements ConfigBuilderFactory {
 	 */
 	@Override
 	public ConfigBuilder newBuilder() {
-		return new ConfigBuilderImpl(dowloader);
+		return new ConfigBuilderImpl(messages, dowloader);
 	}
 }

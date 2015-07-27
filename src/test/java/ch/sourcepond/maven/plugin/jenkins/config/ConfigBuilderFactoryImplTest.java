@@ -20,15 +20,17 @@ import static org.mockito.Mockito.mock;
 import org.junit.Test;
 
 import ch.sourcepond.maven.plugin.jenkins.config.download.Downloader;
+import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 
 /**
  * @author rolandhauser
  *
  */
 public class ConfigBuilderFactoryImplTest {
+	private final Messages messages = mock(Messages.class);
 	private final Downloader downloader = mock(Downloader.class);
 	private final ConfigBuilderFactoryImpl impl = new ConfigBuilderFactoryImpl(
-			downloader);
+			messages, downloader);
 
 	/**
 	 * 

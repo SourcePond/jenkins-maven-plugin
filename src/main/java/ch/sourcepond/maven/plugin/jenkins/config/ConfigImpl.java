@@ -4,15 +4,20 @@ import java.io.File;
 import java.net.URI;
 import java.nio.file.Path;
 
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
+
+import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 
 /**
  * @author rolandhauser
  *
  */
 final class ConfigImpl implements Config, Cloneable {
+	static final String CONFIG_VALIDATION_NO_KEY_AUTH_AND_PRIVATE_KEY_SET = "config.validation.noKeyAuthAndPrivateKeySet";
 	static final String HTTPS = "https";
+	private final Messages messages;
 	private Path workDirectory;
 	private URI baseUri;
 	private URI cliJarUri;
@@ -27,6 +32,13 @@ final class ConfigImpl implements Config, Cloneable {
 	private File trustStore;
 	private String trustStorePassword;
 
+	/**
+	 * @param pMessages
+	 */
+	ConfigImpl(final Messages pMessages) {
+		messages = pMessages;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -34,7 +46,7 @@ final class ConfigImpl implements Config, Cloneable {
 	 */
 	@Override
 	public Object clone() {
-		final ConfigImpl clone = new ConfigImpl();
+		final ConfigImpl clone = new ConfigImpl(messages);
 		clone.setBaseUri(getBaseUri());
 		clone.setCliJarUri(getCliJarUri());
 		clone.setCommand(getCommand());
@@ -235,5 +247,16 @@ final class ConfigImpl implements Config, Cloneable {
 	@Override
 	public boolean isSecure() {
 		return HTTPS.equals(getBaseUri().getScheme());
+	}
+
+	/**
+	 * @throws MojoExecutionException
+	 */
+	public void validate() throws MojoExecutionException {
+		if (isNoKeyAuth() && getPrivateKeyOrNull() != null) {
+			throw new MojoExecutionException(messages.getMessage(
+					CONFIG_VALIDATION_NO_KEY_AUTH_AND_PRIVATE_KEY_SET,
+					getPrivateKeyOrNull()));
+		}
 	}
 }

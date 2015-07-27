@@ -19,7 +19,6 @@ public class ConfigBuilderImplBuildTest extends ConfigBuilderImplBaseTest {
 	private static final String CLI_JAR = "cliJar";
 	private static final String COMMAND = "command";
 	private final Settings settings = mock(Settings.class);
-	private final ConfigBuilderImpl impl = new ConfigBuilderImpl(downloader);
 	private URL baseUrl;
 
 	/**

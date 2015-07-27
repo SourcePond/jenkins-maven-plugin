@@ -28,6 +28,7 @@ import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 
 import ch.sourcepond.maven.plugin.jenkins.config.download.Downloader;
+import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 
 /**
  * @author rolandhauser
@@ -35,13 +36,14 @@ import ch.sourcepond.maven.plugin.jenkins.config.download.Downloader;
  */
 final class ConfigBuilderImpl implements ConfigBuilder {
 	static final String HTTPS = "https";
-	private final ConfigImpl config = new ConfigImpl();
+	private final ConfigImpl config;
 	private final Downloader downloader;
 
 	/**
 	 * @param pDownloader
 	 */
-	ConfigBuilderImpl(final Downloader pDownloader) {
+	ConfigBuilderImpl(final Messages pMessages, final Downloader pDownloader) {
+		config = new ConfigImpl(pMessages);
 		downloader = pDownloader;
 	}
 
@@ -153,7 +155,11 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 		return this;
 	}
 
-	// TODO: Add validations here
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#build()
+	 */
 	@Override
 	public Config build() throws MojoExecutionException {
 		assert getBaseConfig().getBaseUri() != null : "baseUri is null";
@@ -163,6 +169,8 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 		assert getBaseConfig().getWorkDirectory() != null : "workDirectory is null";
 
 		setDownloadedCliJar(downloader.downloadCliJar(config));
+		getBaseConfig().validate();
+
 		return (Config) config.clone();
 	}
 
