@@ -32,36 +32,41 @@
 		-Djenkins.baseurl -Ddeployment.baseurl and -Dgit.baseurl -->
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
+		<!-- Plugin versions -->
 		<maven.version>3.3.3</maven.version>
 		<maven-plugin-annotations.version>3.4</maven-plugin-annotations.version>
 		<maven-plugin-plugin.version>3.4</maven-plugin-plugin.version>
 		<maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
 		<maven-failsafe-plugin.version>2.18.1</maven-failsafe-plugin.version>
 		<sisu-maven-plugin.version>0.3.1</sisu-maven-plugin.version>
-		<version.jacoco-maven-plugin>0.7.5.201505241946</version.jacoco-maven-plugin>
+		<jacoco-maven-plugin.version>0.7.5.201505241946</jacoco-maven-plugin.version>
 		<download-maven-plugin.version>1.2.1</download-maven-plugin.version>
 		<maven-source-plugin.version>2.4</maven-source-plugin.version>
 		<maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
 
+		<!-- Additional dependencies for integration testing -->
 		<jetty-server.version>8.1.17.v20150415</jetty-server.version>
 		<littleproxy.version>1.0.0-beta8</littleproxy.version>
 
-		<jenkins.war.name>jenkins.war</jenkins.war.name>
-		<jenkins.war.url>http://mirrors.jenkins-ci.org/war-stable/latest</jenkins.war.url>
-
 		<!-- Dependency versions -->
-		<version.javax.inject>1</version.javax.inject>
-		<version.zt-exec>1.8</version.zt-exec>
-		<version.httpclient>4.5</version.httpclient>
-		<version.junit>4.12</version.junit>
-		<version.mockito-all>2.0.2-beta</version.mockito-all>
-		<version.org.eclipse.sisu.inject>0.3.1</version.org.eclipse.sisu.inject>
+		<javax.inject.version>1</javax.inject.version>
+		<zt-exec.version>1.8</zt-exec.version>
+		<httpclient.version>4.5</httpclient.version>
+		<junit.version>4.12</junit.version>
+		<mockito-all.version>2.0.2-beta</mockito-all.version>
+		<org.eclipse.sisu.inject.version>0.3.1</org.eclipse.sisu.inject.version>
+
+		<!-- Project encoding -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
 
 		<!-- Compiler configuration -->
 		<common.encoding>UTF-8</common.encoding>
 		<javaVersion>1.7</javaVersion>
+
+		<!-- Additional configuration for integration testing -->
+		<jenkins.war.name>jenkins.war</jenkins.war.name>
+		<jenkins.war.url>http://mirrors.jenkins-ci.org/war-stable/latest</jenkins.war.url>
 	</properties>
 
 	<dependencyManagement>
@@ -91,12 +96,12 @@
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>${version.junit}</version>
+				<version>${junit.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-all</artifactId>
-				<version>${version.mockito-all}</version>
+				<version>${mockito-all.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.littleshoot</groupId>
@@ -128,17 +133,17 @@
 		<dependency>
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>
-			<version>${version.javax.inject}</version>
+			<version>${javax.inject.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.zeroturnaround</groupId>
 			<artifactId>zt-exec</artifactId>
-			<version>${version.zt-exec}</version>
+			<version>${zt-exec.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>${version.httpclient}</version>
+			<version>${httpclient.version}</version>
 		</dependency>
 		<dependency>
 			<scope>provided</scope>
@@ -206,7 +211,7 @@
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>${version.jacoco-maven-plugin}</version>
+					<version>${jacoco-maven-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
