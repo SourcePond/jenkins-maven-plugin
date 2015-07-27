@@ -70,6 +70,15 @@ public interface Config {
 	boolean isNoKeyAuth();
 
 	/**
+	 * Returns whether SSL certificate check is skipped entirely. Specified
+	 * through mojo parameter <em>noCertificateCheck</em>
+	 * 
+	 * @return {@code true} if certificate check is skipped, {@code false}
+	 *         otherwise.
+	 */
+	boolean isNoCertificateCheck();
+
+	/**
 	 * Returns the SSH authentication private key specified through mojo
 	 * parameter <em>privateKey</em>.
 	 * 
@@ -127,9 +136,12 @@ public interface Config {
 	String getTrustStorePasswordOrNull();
 
 	/**
-	 * @return
+	 * Returns the absolute path to the local copy of the jenkins-cli.jar. The
+	 * file is downloaded from the URI returned by {@link #getCliJarUri()}. The
+	 * download is be performed during building this config (see
+	 * {@link ConfigBuilder#build()}).
+	 * 
+	 * @return Absolute path, never {@code null}
 	 */
 	String getDownloadedCliJar();
-
-	boolean isNoCertificateCheck();
 }
