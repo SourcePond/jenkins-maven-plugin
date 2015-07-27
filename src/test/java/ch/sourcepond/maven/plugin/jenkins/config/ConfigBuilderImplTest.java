@@ -16,6 +16,7 @@ package ch.sourcepond.maven.plugin.jenkins.config;
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -68,7 +69,7 @@ public class ConfigBuilderImplTest {
 	@Test
 	public void verifySetGetWorkDirectory() throws Exception {
 		assertSame(impl, impl.setWorkDirectory(workDirectory));
-		assertSame(workDirectory, impl.getWorkDirectory());
+		assertSame(workDirectory, impl.getBaseConfig().getWorkDirectory());
 	}
 
 	/**
@@ -100,9 +101,10 @@ public class ConfigBuilderImplTest {
 	public void verifySetGetBaseUrl() throws Exception {
 		final URL baseUrl = new URL("http://valid.org");
 		assertSame(impl, impl.setBaseUrl(baseUrl, "/any/path/to/cli.jar"));
-		assertEquals("http://valid.org", impl.getBaseUri().toString());
+		assertEquals("http://valid.org", impl.getBaseConfig().getBaseUri()
+				.toString());
 		assertEquals("http://valid.org/any/path/to/cli.jar", impl
-				.getCliJarUri().toString());
+				.getBaseConfig().getCliJarUri().toString());
 	}
 
 	/**
@@ -112,9 +114,10 @@ public class ConfigBuilderImplTest {
 	public void verifySetGetBaseUrlNoLeadingSlash() throws Exception {
 		final URL baseUrl = new URL("http://valid.org");
 		assertSame(impl, impl.setBaseUrl(baseUrl, "any/path/to/cli.jar"));
-		assertEquals("http://valid.org", impl.getBaseUri().toString());
+		assertEquals("http://valid.org", impl.getBaseConfig().getBaseUri()
+				.toString());
 		assertEquals("http://valid.org/any/path/to/cli.jar", impl
-				.getCliJarUri().toString());
+				.getBaseConfig().getCliJarUri().toString());
 	}
 
 	/**
@@ -137,7 +140,7 @@ public class ConfigBuilderImplTest {
 	@Test
 	public void verifySetGetCommand() {
 		assertSame(impl, impl.setCommand(ANY_STRING));
-		assertEquals(ANY_STRING, impl.getCommand());
+		assertEquals(ANY_STRING, impl.getBaseConfig().getCommand());
 	}
 
 	/**
@@ -147,7 +150,8 @@ public class ConfigBuilderImplTest {
 	public void verifySetGetPrivateKey() {
 		final File privateKey = new File(ANY_STRING);
 		assertSame(impl, impl.setPrivateKey(privateKey));
-		assertEquals(privateKey.getAbsolutePath(), impl.getPrivateKeyOrNull());
+		assertEquals(privateKey.getAbsolutePath(), impl.getBaseConfig()
+				.getPrivateKeyOrNull());
 	}
 
 	/**
@@ -156,7 +160,7 @@ public class ConfigBuilderImplTest {
 	@Test
 	public void verifySetGetNullPrivateKey() {
 		assertSame(impl, impl.setPrivateKey(null));
-		assertNull(impl.getPrivateKeyOrNull());
+		assertNull(impl.getBaseConfig().getPrivateKeyOrNull());
 	}
 
 	/**
@@ -166,7 +170,7 @@ public class ConfigBuilderImplTest {
 	public void verifySetGetStdin() {
 		final File privateKey = new File(ANY_STRING);
 		assertSame(impl, impl.setStdin(privateKey));
-		assertEquals(privateKey, impl.getStdinOrNull().toFile());
+		assertEquals(privateKey, impl.getBaseConfig().getStdinOrNull().toFile());
 	}
 
 	/**
@@ -174,9 +178,10 @@ public class ConfigBuilderImplTest {
 	 */
 	@Test
 	public void verifyBuild() throws MojoExecutionException {
-		when(downloader.downloadCliJar(impl)).thenReturn(ANY_STRING);
-		assertSame(impl, impl.build());
-		assertEquals(ANY_STRING, impl.getDownloadedCliJar());
+		when(downloader.downloadCliJar(impl.getBaseConfig())).thenReturn(
+				ANY_STRING);
+		assertNotSame(impl.getBaseConfig(), impl.build());
+		assertEquals(ANY_STRING, impl.getBaseConfig().getDownloadedCliJar());
 	}
 
 	/**
@@ -185,7 +190,7 @@ public class ConfigBuilderImplTest {
 	@Test
 	public void verifySetGetNullStdin() {
 		assertSame(impl, impl.setStdin(null));
-		assertNull(impl.getStdinOrNull());
+		assertNull(impl.getBaseConfig().getStdinOrNull());
 	}
 
 	/**
@@ -193,9 +198,9 @@ public class ConfigBuilderImplTest {
 	 */
 	@Test
 	public void verifySetNoKeyAuth() {
-		assertFalse(impl.isNoKeyAuth());
+		assertFalse(impl.getBaseConfig().isNoKeyAuth());
 		assertSame(impl, impl.setNoKeyAuth(true));
-		assertTrue(impl.isNoKeyAuth());
+		assertTrue(impl.getBaseConfig().isNoKeyAuth());
 	}
 
 	/**
@@ -203,9 +208,9 @@ public class ConfigBuilderImplTest {
 	 */
 	@Test
 	public void verifySetNoCertificateCheck() {
-		assertFalse(impl.isNoCertificateCheck());
+		assertFalse(impl.getBaseConfig().isNoCertificateCheck());
 		assertSame(impl, impl.setNoCertificateCheck(true));
-		assertTrue(impl.isNoCertificateCheck());
+		assertTrue(impl.getBaseConfig().isNoCertificateCheck());
 	}
 
 	/**
@@ -215,7 +220,7 @@ public class ConfigBuilderImplTest {
 	public void verifySetGetProxy() {
 		final Proxy proxy = mock(Proxy.class);
 		assertSame(impl, impl.setProxy(proxy));
-		assertSame(proxy, impl.getProxyOrNull());
+		assertSame(proxy, impl.getBaseConfig().getProxyOrNull());
 	}
 
 	/**
@@ -225,7 +230,7 @@ public class ConfigBuilderImplTest {
 	public void verifySetGetSettings() {
 		final Settings settings = mock(Settings.class);
 		assertSame(impl, impl.setSettings(settings));
-		assertSame(settings, impl.getSettings());
+		assertSame(settings, impl.getBaseConfig().getSettings());
 	}
 
 	/**
@@ -235,7 +240,7 @@ public class ConfigBuilderImplTest {
 	public void verifySetGetTrustStore() {
 		final File trustStore = new File(ANY_STRING);
 		assertSame(impl, impl.setTrustStore(trustStore));
-		assertEquals(trustStore, impl.getTrustStoreOrNull());
+		assertEquals(trustStore, impl.getBaseConfig().getTrustStoreOrNull());
 	}
 
 	/**
@@ -244,7 +249,8 @@ public class ConfigBuilderImplTest {
 	@Test
 	public void verifySetGetTrustStorePassword() {
 		assertSame(impl, impl.setTrustStorePassword(ANY_STRING));
-		assertEquals(ANY_STRING, impl.getTrustStorePasswordOrNull());
+		assertEquals(ANY_STRING, impl.getBaseConfig()
+				.getTrustStorePasswordOrNull());
 	}
 
 	/**
@@ -253,8 +259,8 @@ public class ConfigBuilderImplTest {
 	@Test
 	public void verifyIsSecure() throws Exception {
 		impl.setBaseUrl(new URL("http://valid.ord"), "any");
-		assertFalse(impl.isSecure());
+		assertFalse(impl.getBaseConfig().isSecure());
 		impl.setBaseUrl(new URL("https:/valid.ord"), "any");
-		assertTrue(impl.isSecure());
+		assertTrue(impl.getBaseConfig().isSecure());
 	}
 }

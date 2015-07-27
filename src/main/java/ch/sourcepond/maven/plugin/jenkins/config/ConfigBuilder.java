@@ -23,8 +23,8 @@ import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 
 /**
- * @author rolandhauser
- *
+ * Builder to create new {@link Config} instances. An instance of this interface
+ * can be obtained through {@link ConfigBuilderFactory#newBuilder()}.
  */
 public interface ConfigBuilder {
 
