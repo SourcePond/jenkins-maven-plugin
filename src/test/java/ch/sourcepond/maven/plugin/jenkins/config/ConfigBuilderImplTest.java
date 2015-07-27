@@ -172,7 +172,7 @@ public class ConfigBuilderImplTest {
 	public void verifySetGetStdin() {
 		final File privateKey = new File(ANY_STRING);
 		assertSame(impl, impl.setStdin(privateKey));
-		assertEquals(privateKey, impl.getStdin().toFile());
+		assertEquals(privateKey, impl.getStdinOrNull().toFile());
 	}
 
 	/**
@@ -189,7 +189,7 @@ public class ConfigBuilderImplTest {
 	@Test
 	public void verifySetGetNullStdin() {
 		assertSame(impl, impl.setStdin(null));
-		assertNull(impl.getStdin());
+		assertNull(impl.getStdinOrNull());
 	}
 
 	/**

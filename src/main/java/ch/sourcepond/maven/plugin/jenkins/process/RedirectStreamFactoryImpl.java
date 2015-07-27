@@ -71,7 +71,7 @@ final class RedirectStreamFactoryImpl implements RedirectStreamFactory {
 	@Override
 	public InputStream openStdin(final Config pConfig)
 			throws MojoExecutionException {
-		final Path stdinPath = pConfig.getStdin();
+		final Path stdinPath = pConfig.getStdinOrNull();
 		final InputStream stdin;
 		if (stdinPath != null) {
 			try {

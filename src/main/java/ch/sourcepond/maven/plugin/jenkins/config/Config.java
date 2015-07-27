@@ -93,7 +93,13 @@ public interface Config {
 	 */
 	String getCommand();
 
-	Path getStdin();
+	/**
+	 * Returns the file to be used as stdin by the CLI; specified through mojo
+	 * parameter <em>stdin</em>.
+	 * 
+	 * @return Path to stdin or {@code null}
+	 */
+	Path getStdinOrNull();
 
 	URI getCliJarUri();
 

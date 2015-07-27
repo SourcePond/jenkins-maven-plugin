@@ -217,7 +217,7 @@ final class ConfigBuilderImpl implements ConfigBuilder, Config {
 	}
 
 	@Override
-	public Path getStdin() {
+	public Path getStdinOrNull() {
 		return stdin;
 	}
 

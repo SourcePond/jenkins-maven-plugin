@@ -58,7 +58,7 @@ public class RedirectStreamFactoryImplTest {
 		when(stdinPath.getFileSystem()).thenReturn(fs);
 		when(fs.provider()).thenReturn(provider);
 		when(provider.newInputStream(stdinPath)).thenReturn(stdin);
-		when(config.getStdin()).thenReturn(stdinPath);
+		when(config.getStdinOrNull()).thenReturn(stdinPath);
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class RedirectStreamFactoryImplTest {
 	 */
 	@Test
 	public void verifyOpenStdinNoInput() throws Exception {
-		when(config.getStdin()).thenReturn(null);
+		when(config.getStdinOrNull()).thenReturn(null);
 		final InputStream stdin = impl.openStdin(config);
 		assertEquals(-1, stdin.read());
 	}
