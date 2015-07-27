@@ -30,10 +30,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.sourcepond.maven.plugin.jenkins.config.Config;
-import ch.sourcepond.maven.plugin.jenkins.config.download.HttpClientFacadeImpl;
-import ch.sourcepond.maven.plugin.jenkins.config.download.SSLFactory;
-
 /**
  * @author rolandhauser
  *
@@ -46,11 +42,9 @@ public class HttpClientFacadeImplTest {
 	private final SSLContext context = mock(SSLContext.class);
 	private final SSLConnectionSocketFactory socketFactory = mock(SSLConnectionSocketFactory.class);
 	private final CloseableHttpClient client = mock(CloseableHttpClient.class);
-	private final Config config = mock(Config.class);
 	private final HttpClientFacadeImpl impl = new HttpClientFacadeImpl(
 			sslFactory, trustAllVerifier);
 	private URI httpUri;
-	private URI httpsUri;
 
 	/**
 	 * 
@@ -58,8 +52,6 @@ public class HttpClientFacadeImplTest {
 	@Before
 	public void setup() throws Exception {
 		httpUri = new URI("http://someUri");
-		httpsUri = new URI("https://someUri");
-		when(config.isSecure()).thenReturn(true);
 	}
 
 	/**
@@ -76,13 +68,11 @@ public class HttpClientFacadeImplTest {
 	 */
 	@Test
 	public void verifyNoCertificateCheckClient() throws Exception {
-		when(config.getBaseUri()).thenReturn(httpsUri);
-		when(config.isNoCertificateCheck()).thenReturn(true);
 		when(sslFactory.newTrustAllContext()).thenReturn(context);
 		when(sslFactory.newFactory(context, trustAllVerifier)).thenReturn(
 				socketFactory);
 		when(sslFactory.newClient(socketFactory)).thenReturn(client);
-		assertSame(client, impl.newClient(config));
+		assertSame(client, impl.newClient(true, true, null, null));
 	}
 
 	/**
@@ -90,10 +80,6 @@ public class HttpClientFacadeImplTest {
 	 */
 	@Test
 	public void verifySelfSignedCertifacteClient() throws Exception {
-		when(config.getBaseUri()).thenReturn(httpsUri);
-		when(config.getTrustStoreOrNull()).thenReturn(TRUST_STORE);
-		when(config.getTrustStorePasswordOrNull()).thenReturn(
-				TRUST_STORE_PASSWORD);
 		when(sslFactory.newContext(TRUST_STORE, TRUST_STORE_PASSWORD))
 				.thenReturn(context);
 		final HostnameVerifier verifier = mock(HostnameVerifier.class);
@@ -101,15 +87,14 @@ public class HttpClientFacadeImplTest {
 		when(sslFactory.newFactory(context, verifier))
 				.thenReturn(socketFactory);
 		when(sslFactory.newClient(socketFactory)).thenReturn(client);
-		assertSame(client, impl.newClient(config));
+		assertSame(client,
+				impl.newClient(true, false, TRUST_STORE, TRUST_STORE_PASSWORD));
 	}
 
 	@Test
 	public void verifyUnsecureClient() throws Exception {
-		when(config.isSecure()).thenReturn(false);
-		when(config.getBaseUri()).thenReturn(httpUri);
 		when(sslFactory.newClient(null)).thenReturn(client);
-		assertSame(client, impl.newClient(config));
+		assertSame(client, impl.newClient(false, false, null, null));
 	}
 
 	/**
@@ -117,10 +102,7 @@ public class HttpClientFacadeImplTest {
 	 */
 	@Test(expected = MojoExecutionException.class)
 	public void verifyTrustStoreNotSpecified() throws Exception {
-		when(config.getTrustStorePasswordOrNull()).thenReturn(
-				TRUST_STORE_PASSWORD);
-		when(config.getBaseUri()).thenReturn(httpsUri);
-		impl.newClient(config);
+		impl.newClient(true, false, null, TRUST_STORE_PASSWORD);
 	}
 
 	/**
@@ -128,8 +110,6 @@ public class HttpClientFacadeImplTest {
 	 */
 	@Test(expected = MojoExecutionException.class)
 	public void verifyTrustStorePasswordNotSpecified() throws Exception {
-		when(config.getTrustStoreOrNull()).thenReturn(TRUST_STORE);
-		when(config.getBaseUri()).thenReturn(httpsUri);
-		impl.newClient(config);
+		impl.newClient(true, false, TRUST_STORE, null);
 	}
 }

@@ -70,7 +70,10 @@ final class DowloaderImpl implements Downloader {
 		final HttpUriRequest request = clientFacade.newGet(pConfig
 				.getCliJarUri());
 
-		try (final CloseableHttpClient client = clientFacade.newClient(pConfig)) {
+		try (final CloseableHttpClient client = clientFacade.newClient(
+				pConfig.isSecure(), pConfig.isNoCertificateCheck(),
+				pConfig.getTrustStoreOrNull(),
+				pConfig.getTrustStorePasswordOrNull())) {
 			try (final CloseableHttpResponse response = client.execute(request)) {
 				final StatusLine statusLine = response.getStatusLine();
 
