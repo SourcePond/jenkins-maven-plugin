@@ -11,22 +11,30 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
-package ch.sourcepond.maven.plugin.jenkins.download;
+package ch.sourcepond.maven.plugin.jenkins.config.download;
 
-import org.apache.maven.plugin.MojoExecutionException;
-
-import ch.sourcepond.maven.plugin.jenkins.config.Config;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
 
 /**
  * @author rolandhauser
  *
  */
-public interface Downloader {
+@Named
+@Singleton
+final class TrustAllHostnameVerifier implements HostnameVerifier {
 
-	/**
-	 * @param pConfig
-	 * @return
-	 * @throws MojoExecutionException
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.net.ssl.HostnameVerifier#verify(java.lang.String,
+	 * javax.net.ssl.SSLSession)
 	 */
-	void downloadCliJar(Config pConfig) throws MojoExecutionException;
+	@Override
+	public boolean verify(final String hostname, final SSLSession session) {
+		// Do not check anything; always trust
+		return true;
+	}
 }

@@ -11,7 +11,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
-package ch.sourcepond.maven.plugin.jenkins.download;
+package ch.sourcepond.maven.plugin.jenkins.config.download;
 
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
@@ -31,6 +31,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
+import ch.sourcepond.maven.plugin.jenkins.config.download.HttpClientFacadeImpl;
+import ch.sourcepond.maven.plugin.jenkins.config.download.SSLFactory;
 
 /**
  * @author rolandhauser

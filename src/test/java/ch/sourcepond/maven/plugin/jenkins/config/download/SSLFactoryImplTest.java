@@ -11,7 +11,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
-package ch.sourcepond.maven.plugin.jenkins.download;
+package ch.sourcepond.maven.plugin.jenkins.config.download;
 
 import static ch.sourcepond.maven.plugin.jenkins.it.HttpsSelfSignedCertifacteITCase.TRUST_STORE;
 import static ch.sourcepond.maven.plugin.jenkins.it.utils.HttpsJenkinsSimulator.TEST_PASSWORD;
@@ -24,6 +24,8 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.http.ssl.TrustStrategy;
 import org.junit.Test;
+
+import ch.sourcepond.maven.plugin.jenkins.config.download.SSLFactoryImpl;
 
 /**
  * @author rolandhauser

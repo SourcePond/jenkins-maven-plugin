@@ -11,30 +11,28 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
-package ch.sourcepond.maven.plugin.jenkins.download;
+package ch.sourcepond.maven.plugin.jenkins.config.download;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
+import static org.junit.Assert.assertTrue;
+
+import java.security.cert.CertificateException;
+
+import org.junit.Test;
+
+import ch.sourcepond.maven.plugin.jenkins.config.download.TrustAllStrategy;
 
 /**
  * @author rolandhauser
  *
  */
-@Named
-@Singleton
-final class TrustAllHostnameVerifier implements HostnameVerifier {
+public class TrustAllStrategyTest {
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * @throws CertificateException
 	 * 
-	 * @see javax.net.ssl.HostnameVerifier#verify(java.lang.String,
-	 * javax.net.ssl.SSLSession)
 	 */
-	@Override
-	public boolean verify(final String hostname, final SSLSession session) {
-		// Do not check anything; always trust
-		return true;
+	@Test
+	public void verifyTrusted() throws CertificateException {
+		assertTrue(new TrustAllStrategy().isTrusted(null, null));
 	}
 }

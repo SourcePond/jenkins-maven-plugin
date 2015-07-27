@@ -101,12 +101,34 @@ public interface Config {
 	 */
 	Path getStdinOrNull();
 
+	/**
+	 * Returns the download link of the jenkins-cli.jar to be used by the
+	 * plugin. The cli-uri is the concatenation of the required mojo parameters
+	 * <em>baseUrl</em> and <em>cliJar</em>.
+	 * 
+	 * @return Cli-jar URI, never {@code null}.
+	 */
 	URI getCliJarUri();
 
+	/**
+	 * Returns the trust-store to be used by the CLI specified through mojo
+	 * parameter <em>trustStore</em>.
+	 * 
+	 * @return Trust-store or {@code null}
+	 */
 	File getTrustStoreOrNull();
 
+	/**
+	 * Returns the password of the trust-store to be used by the CLI. Specified
+	 * through mojo parameter <em>trustStorePassword</em>.
+	 * 
+	 * @return Password or {@code null}
+	 */
 	String getTrustStorePasswordOrNull();
 
+	/**
+	 * @return
+	 */
 	String getDownloadedCliJar();
 
 	void setDownloadedCliJar(String pDownloadedCliJarPath);
