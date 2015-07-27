@@ -48,8 +48,8 @@ public class CliMojo extends AbstractMojo {
 	private File workDirectory;
 
 	/**
-	 * Specifies the URL where the Jenkins instance used by this plugin is
-	 * available.
+	 * Specifies the URL where the Jenkins instance (which shall be used by this
+	 * plugin) is available.
 	 */
 	@Parameter(defaultValue = "${project.ciManagement.url}", required = true)
 	private URL baseUrl;
@@ -188,56 +188,125 @@ public class CliMojo extends AbstractMojo {
 	}
 
 	/**
-	 * Mojo parameter <em>workDirectory</em>. Sets the working-directory where
-	 * to store downloaded artifacts. Default is
-	 * <em>${project.build.directory}/jenkins</em>.
+	 * Sets the work directory, see {@link #workDirectory}.
 	 * 
 	 * @param pWorkDirectory
+	 *            Work directory, must not be {@code null}.
 	 */
 	public void setWorkDirectory(final File pWorkDirectory) {
 		workDirectory = pWorkDirectory;
 	}
 
+	/**
+	 * Sets the base URL specified, see {@link #baseUrl}.
+	 * 
+	 * @param pBaseUrl
+	 *            Base URL, must no be {@code null}
+	 */
 	public void setBaseUrl(final URL pBaseUrl) {
 		baseUrl = pBaseUrl;
 	}
 
+	/**
+	 * Sets the relative CLI-jar path, see {@link #cliJar}.
+	 * 
+	 * @param pCliJar
+	 *            Relative path, must not be {@code null}
+	 */
 	public void setCliJar(final String pCliJar) {
 		cliJar = pCliJar;
 	}
 
+	/**
+	 * See {@link #noKeyAuth}
+	 * 
+	 * @param pNoKeyAuth
+	 *            {@code true} if loading of SSH authentication private key
+	 *            skipped, {@code false} otherwise.
+	 */
 	public void setNoKeyAuth(final boolean pNoKeyAuth) {
 		noKeyAuth = pNoKeyAuth;
 	}
 
+	/**
+	 * See {@link #noCertificateCheck}
+	 * 
+	 * @param pNoCertificateCheck
+	 *            {@code true} if certificate check should be skipped,
+	 *            {@code false} otherwise.
+	 */
 	public void setNoCertificateCheck(final boolean pNoCertificateCheck) {
 		noCertificateCheck = pNoCertificateCheck;
 	}
 
-	public void setPrivateKey(final File pPrivateKey) {
-		privateKey = pPrivateKey;
+	/**
+	 * Sets the SSH authentication private key, see {@link #privateKey}.
+	 * 
+	 * @param pPrivateKeyOrNull
+	 *            Private key or {@code null}.
+	 */
+	public void setPrivateKey(final File pPrivateKeyOrNull) {
+		privateKey = pPrivateKeyOrNull;
 	}
 
+	/**
+	 * Sets the command to be executed through the CLI, see {@link #command}.
+	 * 
+	 * @param pCommand
+	 *            Command, must not be {@code null}
+	 */
 	public void setCommand(final String pCommand) {
 		command = pCommand;
 	}
 
-	public void setStdin(final File pStdin) {
-		stdin = pStdin;
+	/**
+	 * Sets the standard input where the CLI command should read from, see
+	 * {@link #stdin}.
+	 * 
+	 * @param pStdinOrNull
+	 *            Standard input or {@code null}
+	 */
+	public void setStdin(final File pStdinOrNull) {
+		stdin = pStdinOrNull;
 	}
 
+	/**
+	 * @param pSettings
+	 */
+	// TODO: This method is only used by tests; find a better solution and
+	// remove this method.
 	public void setSettings(final Settings pSettings) {
 		settings = pSettings;
 	}
 
-	public void setProxyId(final String pProxyId) {
-		proxyId = pProxyId;
+	/**
+	 * Sets the id of the proxy server to be used by the CLI, see
+	 * {@link #proxyId}.
+	 * 
+	 * @param pProxyIdOrNull
+	 *            Proxy-id or {@code null}
+	 */
+	public void setProxyId(final String pProxyIdOrNull) {
+		proxyId = pProxyIdOrNull;
 	}
 
-	public void setTrustStore(final File pTrustStore) {
-		trustStore = pTrustStore;
+	/**
+	 * Sets the trust-store to be used by the CLI, see {@link #trustStore}.
+	 * 
+	 * @param pTrustStoreOrNull
+	 *            Trust-store or {@code null}
+	 */
+	public void setTrustStore(final File pTrustStoreOrNull) {
+		trustStore = pTrustStoreOrNull;
 	}
 
+	/**
+	 * Sets the password of the trust-store used by the CLI, see
+	 * {@link #trustStorePassword}.
+	 * 
+	 * @param pPassword
+	 *            Password
+	 */
 	public void setTrustStorePassword(final String pPassword) {
 		trustStorePassword = pPassword;
 	}
