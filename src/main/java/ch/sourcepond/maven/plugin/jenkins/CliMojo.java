@@ -27,66 +27,145 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Settings;
 
+import ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder;
 import ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilderFactory;
 import ch.sourcepond.maven.plugin.jenkins.process.ProcessFacade;
 import ch.sourcepond.maven.plugin.jenkins.proxy.ProxyFinder;
 
 /**
- * @author Roland Hauser, SourcePond
- *
+ * The only implementation of {@link AbstractMojo} of this plugin. The name of
+ * the mojo is <em>cli</em> and its <a href=
+ * "https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference"
+ * >default-phase</a> is <em>verify</em>.
  */
 @Mojo(name = "cli", defaultPhase = VERIFY)
 public class CliMojo extends AbstractMojo {
 
+	/**
+	 * Specifies where downloaded artifacts should be stored.
+	 */
 	@Parameter(defaultValue = "${project.build.directory}/jenkins", required = true)
 	private File workDirectory;
 
+	/**
+	 * Specifies the URL where the Jenkins instance used by this plugin is
+	 * available.
+	 */
 	@Parameter(defaultValue = "${project.ciManagement.url}", required = true)
 	private URL baseUrl;
 
+	/**
+	 * Specifies the path relative to {@link #baseUrl} where the CLI-jar
+	 * (necessary to run this plugin) can be downloaded.
+	 */
 	@Parameter(defaultValue = "jnlpJars/jenkins-cli.jar", required = true)
 	private String cliJar;
 
+	/**
+	 * Specifies, whether the CLI should skip loading the SSH authentication
+	 * private key ({@code true}). This parameter will be passed as "-noKeyAuth"
+	 * option to the CLI. Default is {@code false} (load private key). Note: if
+	 * set to {@code true} this setting conflicts with {@link #privateKey} if
+	 * {@link #privateKey} is specified.
+	 */
 	@Parameter
 	private boolean noKeyAuth;
 
-	@Parameter
-	private boolean noCertificateCheck;
-
+	/**
+	 * Specifies the SSH authentication private key to be used when connecting
+	 * to Jenkins. This parameter will be passed as "-i" option to the CLI. If
+	 * not specified, the CLI will look for ~/.ssh/identity, ~/.ssh/id_dsa,
+	 * ~/.ssh/id_rsa and those to authenticate itself against the server. Note:
+	 * this setting conflicts with {@link #noKeyAuth} if {@link #noKeyAuth} is
+	 * set {@code true}.
+	 */
 	@Parameter
 	private File privateKey;
 
+	/**
+	 * Specifies, whether certificate check should completely be disabled when
+	 * the CLI connects to an SSL secured Jenkins instance. This parameter will
+	 * be passed as "-noCertificateCheck" option to the CLI. Default is
+	 * {@code false}. This setting will bypass {@link #trustStore} and
+	 * {@link #trustStorePassword}. Note: avoid enabling this switch because
+	 * it's not secure (the CLI will trust everyone)!
+	 */
+	@Parameter
+	private boolean noCertificateCheck;
+
+	/**
+	 * Specifies the Jenkins command including all its options and arguments to
+	 * be executed through the CLI.
+	 */
 	@Parameter(required = true)
 	private String command;
 
+	/**
+	 * Specifies the file from where the standard input should read from. If
+	 * set, the command receives the file data through stdin (for instance
+	 * useful for "create job"). If not set, stdin does not provide any data.
+	 */
 	@Parameter
 	private File stdin;
 
+	/**
+	 * Specifies the settings-id of the <a
+	 * href="https://maven.apache.org/guides/mini/guide-proxies.html"
+	 * >proxy-server</a> which the CLI should use to connect to the Jenkins
+	 * instance. This parameter will be passed as "-p" option to the CLI. If
+	 * set, the plugin will search for the appropriate proxy-server in the Maven
+	 * settings (usually {@code ~/.m2/settings.xml}).
+	 */
 	@Parameter
 	private String proxyId;
 
+	/**
+	 * Specifies the trust-store to be used by the CLI if connecting to an SSL
+	 * secured Jenkins instance. This parameter will be passed as
+	 * "-Djavax.net.ssl.trustStore" option to the Java interpreter which starts
+	 * the CLI.
+	 */
 	@Parameter
 	private File trustStore;
 
+	/**
+	 * Specifies the password for the trust-store to be used by the CLI (see
+	 * {@link #trustStore}). This parameter will be passed as
+	 * "-Djavax.net.ssl.trustStorePassword" option to the Java interpreter which
+	 * starts the CLI.
+	 */
 	@Parameter
 	private String trustStorePassword;
 
+	/**
+	 * Settings injected by Maven.
+	 */
 	@Parameter(defaultValue = "${settings}", readonly = true, required = true)
 	private Settings settings;
 
-	private final ConfigBuilderFactory configBuilderFactory;
-	private final ProcessFacade process;
-	private final ProxyFinder proxyFinder;
+	private final ConfigBuilderFactory cbf;
+	private final ProcessFacade proc;
+	private final ProxyFinder pf;
 
 	/**
-	 * @param pConfigBuilderFactory
+	 * Creates a new instance of this class.
+	 * 
+	 * @param pCbf
+	 *            Factory for creating a {@link ConfigBuilder} instance, must
+	 *            not be {@code null}
+	 * @param pProc
+	 *            Facade for starting an external process, must not be
+	 *            {@code null}
+	 * @param pPf
+	 *            Utility for determining the proxy-server to use (if any), must
+	 *            not be {@code null}
 	 */
 	@Inject
-	public CliMojo(final ConfigBuilderFactory pConfigBuilderFactory,
-			final ProcessFacade pProcess, final ProxyFinder pProxyFinder) {
-		configBuilderFactory = pConfigBuilderFactory;
-		process = pProcess;
-		proxyFinder = pProxyFinder;
+	public CliMojo(final ConfigBuilderFactory pCbf, final ProcessFacade pProc,
+			final ProxyFinder pPf) {
+		cbf = pCbf;
+		proc = pProc;
+		pf = pPf;
 	}
 
 	/*
@@ -96,10 +175,10 @@ public class CliMojo extends AbstractMojo {
 	 */
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		process.execute(
+		proc.execute(
 				getLog(),
-				configBuilderFactory.newBuilder().setSettings(settings)
-						.setProxy(proxyFinder.findProxy(proxyId, settings))
+				cbf.newBuilder().setSettings(settings)
+						.setProxy(pf.findProxy(proxyId, settings))
 						.setWorkDirectory(workDirectory.toPath())
 						.setBaseUrl(baseUrl, cliJar).setCommand(command)
 						.setStdin(stdin).setNoKeyAuth(noKeyAuth)
@@ -108,6 +187,13 @@ public class CliMojo extends AbstractMojo {
 						.setTrustStorePassword(trustStorePassword).build());
 	}
 
+	/**
+	 * Mojo parameter <em>workDirectory</em>. Sets the working-directory where
+	 * to store downloaded artifacts. Default is
+	 * <em>${project.build.directory}/jenkins</em>.
+	 * 
+	 * @param pWorkDirectory
+	 */
 	public void setWorkDirectory(final File pWorkDirectory) {
 		workDirectory = pWorkDirectory;
 	}
