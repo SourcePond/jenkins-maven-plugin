@@ -20,8 +20,11 @@ import java.nio.file.Path;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 
+import ch.sourcepond.maven.plugin.jenkins.CliMojo;
+
 /**
- * @author Roland Hauser, SourcePond
+ * Provides access to all parameters passed to {@link CliMojo}. A {@link Config}
+ * instance should only be created by {@link CliMojo#execute()}.
  *
  */
 public interface Config {
@@ -36,34 +39,58 @@ public interface Config {
 	 */
 	boolean isSecure();
 
+	/**
+	 * Returns the {@link Settings} instance passed by Maven to {@link CliMojo}.
+	 * 
+	 * @return Settings, never {@code null}
+	 */
 	Settings getSettings();
 
+	/**
+	 * Returns the work-directory specified through mojo parameter
+	 * <em>workDirectory</em>.
+	 * 
+	 * @return Work-directory, never {@code null}
+	 */
 	Path getWorkDirectory();
 
+	/**
+	 * Returns the base URL specified through mojo parameter <em>baseUrl</em>.
+	 * 
+	 * @return Base URL, never {@code null}
+	 */
 	URI getBaseUri();
 
 	/**
-	 * From <a
-	 * href="https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+CLI">Jenkins
-	 * cli Wiki</a>:
+	 * Returns whether private key loading is skipped. Specified through mojo
+	 * parameter <em>noKeyAuth</em>
 	 * 
-	 * <pre>
-	 * Whenever the CLI tries to to connect to the Jenkins server, it offers the
-	 * before mentioned SSH keys. When the user has those keys but don't want
-	 * use them to authenticate, preventing being prompted by the key's
-	 * password, it's possible to use the -noKeyAuth argument. This way the CLI
-	 * will never try to use the SSH keys available.
-	 * </pre>
-	 * 
-	 * @return {@code true} if the {@code noKeyAuth} parameter has been
-	 *         specified in the POM, {@code false} otherwise.
+	 * @return {@code true} if loading is skipped, {@code false} otherwise.
 	 */
 	boolean isNoKeyAuth();
 
+	/**
+	 * Returns the SSH authentication private key specified through mojo
+	 * parameter <em>privateKey</em>.
+	 * 
+	 * @return Private key or {@code null}
+	 */
 	String getPrivateKeyOrNull();
 
+	/**
+	 * Returns the proxy from the Maven settings which has been specified
+	 * through mojo parameter <em>proxyId</em>.
+	 * 
+	 * @return Proxy definition or {@code null}
+	 */
 	Proxy getProxyOrNull();
 
+	/**
+	 * Returns the command to be executed by the CLI specified through mojo
+	 * parameter <em>command</em>.
+	 * 
+	 * @return Command, never {@code null}
+	 */
 	String getCommand();
 
 	Path getStdin();
