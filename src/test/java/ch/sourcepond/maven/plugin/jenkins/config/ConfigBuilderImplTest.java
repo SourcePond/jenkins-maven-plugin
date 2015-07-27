@@ -16,7 +16,6 @@ package ch.sourcepond.maven.plugin.jenkins.config;
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -29,39 +28,19 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.FileSystem;
-import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.spi.FileSystemProvider;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
-import org.junit.Before;
 import org.junit.Test;
-
-import ch.sourcepond.maven.plugin.jenkins.config.download.Downloader;
 
 /**
  * @author rolandhauser
  *
  */
-public class ConfigBuilderImplTest {
+public class ConfigBuilderImplTest extends ConfigBuilderImplBaseTest {
 	private static final String ANY_STRING = "anyString";
-	private final FileSystem fs = mock(FileSystem.class);
-	private final FileSystemProvider provider = mock(FileSystemProvider.class);
-	private final Path workDirectory = mock(Path.class);
-	private final Downloader downloader = mock(Downloader.class);
-	private final ConfigBuilderImpl impl = new ConfigBuilderImpl(downloader);
-
-	/**
-	 * 
-	 */
-	@Before
-	public void setup() {
-		when(fs.provider()).thenReturn(provider);
-		when(workDirectory.getFileSystem()).thenReturn(fs);
-	}
 
 	/**
 	 * 
@@ -171,17 +150,6 @@ public class ConfigBuilderImplTest {
 		final File privateKey = new File(ANY_STRING);
 		assertSame(impl, impl.setStdin(privateKey));
 		assertEquals(privateKey, impl.getBaseConfig().getStdinOrNull().toFile());
-	}
-
-	/**
-	 * 
-	 */
-	@Test
-	public void verifyBuild() throws MojoExecutionException {
-		when(downloader.downloadCliJar(impl.getBaseConfig())).thenReturn(
-				ANY_STRING);
-		assertNotSame(impl.getBaseConfig(), impl.build());
-		assertEquals(ANY_STRING, impl.getBaseConfig().getDownloadedCliJar());
 	}
 
 	/**

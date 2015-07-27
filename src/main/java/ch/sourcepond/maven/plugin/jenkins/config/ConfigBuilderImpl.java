@@ -14,6 +14,7 @@ limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.config;
 
 import static java.nio.file.Files.createDirectories;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +48,7 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 	/**
 	 * @return
 	 */
-	Config getBaseConfig() {
+	ConfigImpl getBaseConfig() {
 		return config;
 	}
 
@@ -155,6 +156,12 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 	// TODO: Add validations here
 	@Override
 	public Config build() throws MojoExecutionException {
+		assert getBaseConfig().getBaseUri() != null : "baseUri is null";
+		assert getBaseConfig().getCliJarUri() != null : "cliJarUri is null";
+		assert !isBlank(getBaseConfig().getCommand()) : "command is null";
+		assert getBaseConfig().getSettings() != null : "settings is null";
+		assert getBaseConfig().getWorkDirectory() != null : "workDirectory is null";
+
 		setDownloadedCliJar(downloader.downloadCliJar(config));
 		return (Config) config.clone();
 	}
