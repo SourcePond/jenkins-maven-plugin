@@ -46,6 +46,8 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
+import ch.sourcepond.maven.plugin.jenkins.config.download.DowloaderImpl;
+import ch.sourcepond.maven.plugin.jenkins.config.download.HttpClientFacade;
 
 /**
  * @author rolandhauser
@@ -97,7 +99,7 @@ public class DowloaderImplTest {
 
 		when(config.getCliJarUri()).thenReturn(cliJarUri);
 		when(facade.newGet(cliJarUri)).thenReturn(request);
-		when(facade.newClient(false, false, null, null)).thenReturn(client);
+		when(facade.newClient(config)).thenReturn(client);
 		when(client.execute(request)).thenReturn(response);
 		when(response.getStatusLine()).thenReturn(statusLine);
 		when(response.getEntity()).thenReturn(entity);

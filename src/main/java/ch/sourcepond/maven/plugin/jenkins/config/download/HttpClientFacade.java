@@ -13,7 +13,6 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.config.download;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.security.KeyManagementException;
@@ -24,6 +23,8 @@ import java.security.cert.CertificateException;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.maven.plugin.MojoExecutionException;
+
+import ch.sourcepond.maven.plugin.jenkins.config.Config;
 
 /**
  * @author rolandhauser
@@ -38,20 +39,15 @@ interface HttpClientFacade {
 	HttpUriRequest newGet(URI pUri);
 
 	/**
-	 * @param pSecure
-	 * @param pNoCertificateCheck
-	 * @param pTrustStoreOrNull
-	 * @param pTrustStorePasswordOrNull
 	 * @return
 	 * @throws MojoExecutionException
-	 * @throws KeyManagementException
-	 * @throws NoSuchAlgorithmException
-	 * @throws KeyStoreException
-	 * @throws CertificateException
 	 * @throws IOException
+	 * @throws CertificateException
+	 * @throws KeyStoreException
+	 * @throws NoSuchAlgorithmException
+	 * @throws KeyManagementException
 	 */
-	CloseableHttpClient newClient(boolean pSecure, boolean pNoCertificateCheck,
-			File pTrustStoreOrNull, String pTrustStorePasswordOrNull)
+	CloseableHttpClient newClient(Config pConfig)
 			throws MojoExecutionException, KeyManagementException,
 			NoSuchAlgorithmException, KeyStoreException, CertificateException,
 			IOException;

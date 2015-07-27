@@ -33,6 +33,8 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.maven.plugin.MojoExecutionException;
 
+import ch.sourcepond.maven.plugin.jenkins.config.Config;
+
 @Named
 @Singleton
 final class HttpClientFacadeImpl implements HttpClientFacade {
@@ -77,32 +79,34 @@ final class HttpClientFacadeImpl implements HttpClientFacade {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * ch.sourcepond.maven.plugin.jenkins.config.download.HttpClientFacade#newClient
-	 * (boolean, boolean, java.io.File, java.lang.String)
+	 * ch.sourcepond.maven.plugin.jenkins.download.HttpClientFacade#newClient
+	 * (java.net.URI)
 	 */
 	@Override
-	public CloseableHttpClient newClient(final boolean pSecure,
-			final boolean pNoCertificateCheck, final File pTrustStoreOrNull,
-			final String pTrustStorePasswordOrNull)
+	public CloseableHttpClient newClient(final Config pConfig)
 			throws MojoExecutionException, KeyManagementException,
 			NoSuchAlgorithmException, KeyStoreException, CertificateException,
 			IOException {
 		final CloseableHttpClient client;
-		if (pSecure) {
+		if (pConfig.isSecure()) {
 			final SSLConnectionSocketFactory sslsf;
 
-			if (pNoCertificateCheck) {
+			if (pConfig.isNoCertificateCheck()) {
 				// Trust own CA and all self-signed certs
 				final SSLContext context = sslFactory.newTrustAllContext();
 				sslsf = sslFactory.newFactory(context, trustAllVerifier);
 			} else {
-				validateNotNull(pTrustStoreOrNull, "No trust-store specified!");
-				validateNotNull(pTrustStorePasswordOrNull,
+				final File trustStore = pConfig.getTrustStoreOrNull();
+				validateNotNull(trustStore, "No trust-store specified!");
+
+				final String trustStorePassword = pConfig
+						.getTrustStorePasswordOrNull();
+				validateNotNull(trustStorePassword,
 						"No trust-store password specified!");
 
 				// Trust own CA and all self-signed certs
-				final SSLContext sslcontext = sslFactory.newContext(
-						pTrustStoreOrNull, pTrustStorePasswordOrNull);
+				final SSLContext sslcontext = sslFactory.newContext(trustStore,
+						trustStorePassword);
 
 				sslsf = sslFactory.newFactory(sslcontext,
 						sslFactory.newDefaultHostnameVerifier());
