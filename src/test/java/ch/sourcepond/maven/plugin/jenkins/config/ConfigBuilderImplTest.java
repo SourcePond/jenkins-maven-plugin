@@ -39,6 +39,8 @@ import org.apache.maven.settings.Settings;
 import org.junit.Before;
 import org.junit.Test;
 
+import ch.sourcepond.maven.plugin.jenkins.config.download.Downloader;
+
 /**
  * @author rolandhauser
  *
@@ -48,7 +50,8 @@ public class ConfigBuilderImplTest {
 	private final FileSystem fs = mock(FileSystem.class);
 	private final FileSystemProvider provider = mock(FileSystemProvider.class);
 	private final Path workDirectory = mock(Path.class);
-	private final ConfigBuilderImpl impl = new ConfigBuilderImpl();
+	private final Downloader downloader = mock(Downloader.class);
+	private final ConfigBuilderImpl impl = new ConfigBuilderImpl(downloader);
 
 	/**
 	 * 
@@ -132,15 +135,6 @@ public class ConfigBuilderImplTest {
 	 * 
 	 */
 	@Test
-	public void verifySetGetDownloadedCliJar() {
-		impl.setDownloadedCliJar(ANY_STRING);
-		assertEquals(ANY_STRING, impl.getDownloadedCliJar());
-	}
-
-	/**
-	 * 
-	 */
-	@Test
 	public void verifySetGetCommand() {
 		assertSame(impl, impl.setCommand(ANY_STRING));
 		assertEquals(ANY_STRING, impl.getCommand());
@@ -179,8 +173,10 @@ public class ConfigBuilderImplTest {
 	 * 
 	 */
 	@Test
-	public void verifyBuild() {
+	public void verifyBuild() throws MojoExecutionException {
+		when(downloader.downloadCliJar(impl)).thenReturn(ANY_STRING);
 		assertSame(impl, impl.build());
+		assertEquals(ANY_STRING, impl.getDownloadedCliJar());
 	}
 
 	/**

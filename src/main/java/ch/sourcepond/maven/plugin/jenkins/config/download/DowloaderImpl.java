@@ -65,7 +65,7 @@ final class DowloaderImpl implements Downloader {
 	 * (ch.sourcepond.maven.plugin.jenkins.config.Config)
 	 */
 	@Override
-	public void downloadCliJar(final Config pConfig)
+	public String downloadCliJar(final Config pConfig)
 			throws MojoExecutionException {
 		final HttpUriRequest request = clientFacade.newGet(pConfig
 				.getCliJarUri());
@@ -89,7 +89,7 @@ final class DowloaderImpl implements Downloader {
 						copy(in, jar, REPLACE_EXISTING);
 					}
 
-					pConfig.setDownloadedCliJar(jar.toString());
+					return jar.toAbsolutePath().toString();
 				} else {
 					throw new MojoExecutionException(pConfig.getCliJarUri()
 							+ " not found");

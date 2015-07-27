@@ -15,15 +15,20 @@ package ch.sourcepond.maven.plugin.jenkins.config;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
+
+import ch.sourcepond.maven.plugin.jenkins.config.download.Downloader;
 
 /**
  * @author rolandhauser
  *
  */
 public class ConfigBuilderFactoryImplTest {
-	private final ConfigBuilderFactoryImpl impl = new ConfigBuilderFactoryImpl();
+	private final Downloader downloader = mock(Downloader.class);
+	private final ConfigBuilderFactoryImpl impl = new ConfigBuilderFactoryImpl(
+			downloader);
 
 	/**
 	 * 

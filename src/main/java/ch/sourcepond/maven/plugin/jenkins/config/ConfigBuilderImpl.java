@@ -27,12 +27,15 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 
+import ch.sourcepond.maven.plugin.jenkins.config.download.Downloader;
+
 /**
  * @author rolandhauser
  *
  */
-final class ConfigBuilderImpl implements ConfigBuilder {
+final class ConfigBuilderImpl implements ConfigBuilder, Config {
 	static final String HTTPS = "https";
+	private final Downloader downloader;
 	private Path workDirectory;
 	private URI baseUri;
 	private URI cliJarUri;
@@ -46,6 +49,13 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 	private boolean noCertificateCheck;
 	private File trustStore;
 	private String trustStorePassword;
+
+	/**
+	 * @param pDownloader
+	 */
+	ConfigBuilderImpl(final Downloader pDownloader) {
+		downloader = pDownloader;
+	}
 
 	/**
 	 * @return
@@ -100,8 +110,10 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 		return dowloadedCliJar;
 	}
 
-	@Override
-	public void setDownloadedCliJar(final String pDownloadedCliJarPath) {
+	/**
+	 * @param pDownloadedCliJarPath
+	 */
+	private void setDownloadedCliJar(final String pDownloadedCliJarPath) {
 		dowloadedCliJar = pDownloadedCliJarPath;
 	}
 
@@ -201,7 +213,8 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 
 	// TODO: Add validations here
 	@Override
-	public Config build() {
+	public Config build() throws MojoExecutionException {
+		setDownloadedCliJar(downloader.downloadCliJar(this));
 		return this;
 	}
 

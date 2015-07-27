@@ -46,8 +46,6 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
-import ch.sourcepond.maven.plugin.jenkins.config.download.DowloaderImpl;
-import ch.sourcepond.maven.plugin.jenkins.config.download.HttpClientFacade;
 
 /**
  * @author rolandhauser
@@ -110,6 +108,7 @@ public class DowloaderImplTest {
 		when(workDirectory.getFileSystem()).thenReturn(fs);
 		when(workDirectory.resolve(JAR_NAME)).thenReturn(jar);
 		when(jar.getFileSystem()).thenReturn(fs);
+		when(jar.toAbsolutePath()).thenReturn(jar);
 		when(fs.provider()).thenReturn(provider);
 		when(provider.newOutputStream(jar, CREATE_NEW, WRITE)).thenReturn(sink);
 	}
@@ -126,10 +125,8 @@ public class DowloaderImplTest {
 				Mockito.eq(testData.length));
 		order.verify(sink).close();
 		order.verify(source.closeVerifier).close();
-		order.verify(config).setDownloadedCliJar(jar.toString());
 		order.verify(response).close();
 		order.verify(client).close();
-
 	}
 
 	/**

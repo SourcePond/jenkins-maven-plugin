@@ -27,7 +27,6 @@ import org.zeroturnaround.exec.InvalidExitValueException;
 import org.zeroturnaround.exec.ProcessExecutor;
 
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
-import ch.sourcepond.maven.plugin.jenkins.config.download.Downloader;
 import ch.sourcepond.maven.plugin.jenkins.process.cmd.CommandFactory;
 
 /**
@@ -37,7 +36,6 @@ import ch.sourcepond.maven.plugin.jenkins.process.cmd.CommandFactory;
 @Named
 @Singleton
 final class ProcessFacadeImpl implements ProcessFacade {
-	private final Downloader dowloader;
 	private final CommandFactory cmdFactory;
 	private final ProcessExecutorFactory procExecFactory;
 
@@ -45,18 +43,23 @@ final class ProcessFacadeImpl implements ProcessFacade {
 	 * @param pRedirectOutputStreamFactory
 	 */
 	@Inject
-	public ProcessFacadeImpl(final Downloader pDownloader,
-			final CommandFactory pCmdFactory,
+	public ProcessFacadeImpl(final CommandFactory pCmdFactory,
 			final ProcessExecutorFactory pProcExecFactory) {
-		dowloader = pDownloader;
 		cmdFactory = pCmdFactory;
 		procExecFactory = pProcExecFactory;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.process.ProcessFacade#execute(org.
+	 * apache.maven.plugin.logging.Log,
+	 * ch.sourcepond.maven.plugin.jenkins.config.Config)
+	 */
 	@Override
 	public void execute(final Log pLog, final Config pConfig)
 			throws MojoExecutionException {
-		dowloader.downloadCliJar(pConfig);
 		final List<String> command = cmdFactory.newCommand(pConfig);
 
 		try {

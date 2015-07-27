@@ -28,5 +28,5 @@ public interface Downloader {
 	 * @return
 	 * @throws MojoExecutionException
 	 */
-	void downloadCliJar(Config pConfig) throws MojoExecutionException;
+	String downloadCliJar(Config pConfig) throws MojoExecutionException;
 }

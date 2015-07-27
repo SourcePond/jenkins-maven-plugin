@@ -13,8 +13,11 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.config;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import ch.sourcepond.maven.plugin.jenkins.config.download.Downloader;
 
 /**
  * @author rolandhauser
@@ -23,9 +26,25 @@ import javax.inject.Singleton;
 @Named
 @Singleton
 final class ConfigBuilderFactoryImpl implements ConfigBuilderFactory {
+	private final Downloader dowloader;
 
+	/**
+	 * @param pDownloader
+	 */
+	@Inject
+	ConfigBuilderFactoryImpl(final Downloader pDownloader) {
+		dowloader = pDownloader;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilderFactory#newBuilder
+	 * ()
+	 */
 	@Override
 	public ConfigBuilder newBuilder() {
-		return new ConfigBuilderImpl();
+		return new ConfigBuilderImpl(dowloader);
 	}
 }

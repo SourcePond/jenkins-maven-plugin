@@ -26,7 +26,7 @@ import org.apache.maven.settings.Settings;
  * @author rolandhauser
  *
  */
-public interface ConfigBuilder extends Config {
+public interface ConfigBuilder {
 
 	ConfigBuilder setSettings(Settings pSettings);
 
@@ -57,5 +57,5 @@ public interface ConfigBuilder extends Config {
 
 	ConfigBuilder setTrustStorePassword(String pPassword);
 
-	Config build();
+	Config build() throws MojoExecutionException;
 }

@@ -131,7 +131,5 @@ public interface Config {
 	 */
 	String getDownloadedCliJar();
 
-	void setDownloadedCliJar(String pDownloadedCliJarPath);
-
 	boolean isNoCertificateCheck();
 }

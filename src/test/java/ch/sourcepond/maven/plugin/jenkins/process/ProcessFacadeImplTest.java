@@ -34,7 +34,6 @@ import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
 
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
-import ch.sourcepond.maven.plugin.jenkins.config.download.Downloader;
 import ch.sourcepond.maven.plugin.jenkins.process.cmd.CommandFactory;
 
 /**
@@ -45,15 +44,14 @@ public class ProcessFacadeImplTest {
 	private static final String ANY_COMMAND = "anyCommand";
 	private static final int ERROR_CODE = 221038;
 	private final Log log = mock(Log.class);
-	private final Downloader downloader = mock(Downloader.class);
 	private final ProcessExecutor executor = mock(ProcessExecutor.class);
 	private final ProcessResult result = mock(ProcessResult.class);
 	private final ProcessExecutorFactory procExecFactory = mock(ProcessExecutorFactory.class);
 	private final Config config = mock(Config.class);
 	private final CommandFactory cmdFactory = mock(CommandFactory.class);
 	private final List<String> command = asList(ANY_COMMAND);
-	private final ProcessFacadeImpl impl = new ProcessFacadeImpl(downloader,
-			cmdFactory, procExecFactory);
+	private final ProcessFacadeImpl impl = new ProcessFacadeImpl(cmdFactory,
+			procExecFactory);
 
 	/**
 	 * @throws URISyntaxException
