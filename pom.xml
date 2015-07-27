@@ -16,8 +16,9 @@
 	<groupId>ch.sourcepond.maven.plugins</groupId>
 	<artifactId>jenkins-maven-plugin</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<description></description>
 	<packaging>maven-plugin</packaging>
+	<name>Jenkins Maven Plugin</name>
+	<inceptionYear>2015</inceptionYear>
 
 	<!-- To run the build successfully, following parameters must be specified 
 		-Djenkins.baseurl -Ddeployment.baseurl and -Dgit.baseurl -->
@@ -453,5 +454,15 @@
 			<url>${deployment.baseurl}/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
+
+	<developers>
+		<developer>
+			<id>holyoli</id>
+			<name>Roland Hauser</name>
+			<organization>SourcePond</organization>
+			<timezone>+1</timezone>
+			<email>sourcepond@gmail.com</email>
+		</developer>
+	</developers>
 
 </project>
