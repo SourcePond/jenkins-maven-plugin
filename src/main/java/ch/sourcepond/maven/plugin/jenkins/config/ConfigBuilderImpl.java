@@ -31,7 +31,7 @@ import org.apache.maven.settings.Settings;
  * @author rolandhauser
  *
  */
-final class ConfigBuilderImpl implements ConfigBuilder, Config {
+final class ConfigBuilderImpl implements ConfigBuilder {
 	static final String HTTPS = "https";
 	private Path workDirectory;
 	private URI baseUri;

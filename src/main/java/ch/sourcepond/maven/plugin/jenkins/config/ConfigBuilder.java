@@ -26,7 +26,7 @@ import org.apache.maven.settings.Settings;
  * @author rolandhauser
  *
  */
-public interface ConfigBuilder {
+public interface ConfigBuilder extends Config {
 
 	ConfigBuilder setSettings(Settings pSettings);
 
