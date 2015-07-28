@@ -18,15 +18,22 @@ import org.apache.maven.plugin.MojoExecutionException;
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
 
 /**
- * @author rolandhauser
+ * Facility to download the Jenkins CLI jar which is necessary to run this
+ * plugin.
  *
  */
 public interface Downloader {
 
 	/**
+	 * Downloads the Jenkins CLI jar ({@link Config#getCliJarUri()}) and stores
+	 * it in the work directory ( {@link Config#getWorkDirectory()}).
+	 * 
 	 * @param pConfig
-	 * @return
+	 *            The config object, must not be {@code null}
+	 * @return Absolute path to the jar file, never {@code null}.
 	 * @throws MojoExecutionException
+	 *             Thrown, if the JAR could not be downloaded or stored in the
+	 *             work directory.
 	 */
 	String downloadCliJar(Config pConfig) throws MojoExecutionException;
 }

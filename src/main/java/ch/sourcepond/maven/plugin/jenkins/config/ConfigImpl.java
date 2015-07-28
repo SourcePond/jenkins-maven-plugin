@@ -1,3 +1,16 @@
+/*Copyright (C) 2015 Roland Hauser, <sourcepond@gmail.com>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.config;
 
 import java.io.File;
@@ -8,11 +21,12 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 
+import ch.sourcepond.maven.plugin.jenkins.config.download.Downloader;
 import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 
 /**
- * @author rolandhauser
- *
+ * Default implementation of the {@link Config} interface.
+ * 
  */
 final class ConfigImpl implements Config, Cloneable {
 	static final String CONFIG_VALIDATION_NO_KEY_AUTH_AND_PRIVATE_KEY_SET = "config.validation.noKeyAuthAndPrivateKeySet";
@@ -33,7 +47,10 @@ final class ConfigImpl implements Config, Cloneable {
 	private String trustStorePassword;
 
 	/**
+	 * Creates a new instance of this class.
+	 * 
 	 * @param pMessages
+	 *            pMessages Facade to get messages, must not be {@code null}
 	 */
 	ConfigImpl(final Messages pMessages) {
 		messages = pMessages;
@@ -62,73 +79,100 @@ final class ConfigImpl implements Config, Cloneable {
 		return clone;
 	}
 
-	/**
-	 * @return
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see ch.sourcepond.maven.plugin.jenkins.config.Config#getWorkDirectory()
 	 */
 	@Override
 	public Path getWorkDirectory() {
 		return workDirectory;
 	}
 
-	/**
-	 * @return
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see ch.sourcepond.maven.plugin.jenkins.config.Config#getBaseUri()
 	 */
 	@Override
 	public URI getBaseUri() {
 		return baseUri;
 	}
 
-	/**
-	 * @return
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see ch.sourcepond.maven.plugin.jenkins.config.Config#isNoKeyAuth()
 	 */
 	@Override
 	public boolean isNoKeyAuth() {
 		return noKeyAuth;
 	}
 
-	/**
-	 * @return
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.Config#getPrivateKeyOrNull()
 	 */
 	@Override
 	public String getPrivateKeyOrNull() {
 		return privateKeyOrNull;
 	}
 
-	/**
-	 * @return
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see ch.sourcepond.maven.plugin.jenkins.config.Config#getCommand()
 	 */
 	@Override
 	public String getCommand() {
 		return command;
 	}
 
-	/**
-	 * @return
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see ch.sourcepond.maven.plugin.jenkins.config.Config#getCliJarUri()
 	 */
 	@Override
 	public URI getCliJarUri() {
 		return cliJarUri;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.Config#getDownloadedCliJar()
+	 */
 	@Override
 	public String getDownloadedCliJar() {
 		return dowloadedCliJar;
 	}
 
 	/**
-	 * @param pDownloadedCliJarPath
+	 * Sets the absolute path to the downloaded CLI jar. See
+	 * {@link Downloader#downloadCliJar(Config)}
 	 */
 	void setDownloadedCliJar(final String pDownloadedCliJarPath) {
 		dowloadedCliJar = pDownloadedCliJarPath;
 	}
 
 	/**
-	 * @param pBaseUri
+	 * See {@link ConfigBuilder#setBaseUrl(java.net.URL, String)}
 	 */
 	void setBaseUri(final URI pBaseUri) {
 		baseUri = pBaseUri;
 	}
 
+	/**
+	 * Sets the concatenation of the base {@link URI} and the relative CLI jar
+	 * path. See {@link ConfigBuilder#setBaseUrl(java.net.URL, String)}.
+	 * 
+	 * @param pCliJarUri
+	 *            {@link URI} must not be {@code null}
+	 */
 	void setCliJarUri(final URI pCliJarUri) {
 		cliJarUri = pCliJarUri;
 	}

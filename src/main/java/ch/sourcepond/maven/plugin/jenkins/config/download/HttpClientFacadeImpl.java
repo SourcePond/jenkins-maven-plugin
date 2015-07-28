@@ -35,6 +35,10 @@ import org.apache.maven.plugin.MojoExecutionException;
 
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
 
+/**
+ * Default implementation ot the {@link HttpClientFacade} interface.
+ *
+ */
 @Named
 @Singleton
 final class HttpClientFacadeImpl implements HttpClientFacade {

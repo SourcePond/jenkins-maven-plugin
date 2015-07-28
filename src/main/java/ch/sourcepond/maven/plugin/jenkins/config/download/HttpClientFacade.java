@@ -20,6 +20,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -27,25 +28,36 @@ import org.apache.maven.plugin.MojoExecutionException;
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
 
 /**
- * @author rolandhauser
+ * Simple facade to separate {@link HttpUriRequest} and
+ * {@link CloseableHttpClient} creation to make the rest of the code better
+ * testable.
  *
  */
 interface HttpClientFacade {
 
 	/**
+	 * Creates a new {@link HttpGet} object.
+	 * 
 	 * @param pUri
-	 * @return
+	 *            {@link URI}, must not be {@code null}.
+	 * @return New get-request, never {@code null}
 	 */
 	HttpUriRequest newGet(URI pUri);
 
 	/**
-	 * @return
+	 * Creates a new {@link CloseableHttpClient} instance. Dependening on the
+	 * {@link Config} specified this can be an ordinary HTTP client or a secure
+	 * HTTPS client.
+	 * 
+	 * @param pConfig
+	 *            {@link Config} instance, must not be {@code null}
+	 * @return New client instance, never {@code null}
 	 * @throws MojoExecutionException
-	 * @throws IOException
-	 * @throws CertificateException
-	 * @throws KeyStoreException
-	 * @throws NoSuchAlgorithmException
 	 * @throws KeyManagementException
+	 * @throws NoSuchAlgorithmException
+	 * @throws KeyStoreException
+	 * @throws CertificateException
+	 * @throws IOException
 	 */
 	CloseableHttpClient newClient(Config pConfig)
 			throws MojoExecutionException, KeyManagementException,
