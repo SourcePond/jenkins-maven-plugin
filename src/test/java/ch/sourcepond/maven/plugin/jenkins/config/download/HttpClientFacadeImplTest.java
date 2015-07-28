@@ -33,7 +33,6 @@ import org.junit.Test;
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
 
 /**
- * @author rolandhauser
  *
  */
 public class HttpClientFacadeImplTest {

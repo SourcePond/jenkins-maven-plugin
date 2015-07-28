@@ -19,7 +19,6 @@ import org.apache.maven.plugin.logging.Log;
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
 
 /**
- * @author rolandhauser
  *
  */
 public interface ProcessFacade {

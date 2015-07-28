@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 /**
- * @author rolandhauser
  *
  */
 public class ProxyParamTest extends TokenBaseTest<ProxyParam> {

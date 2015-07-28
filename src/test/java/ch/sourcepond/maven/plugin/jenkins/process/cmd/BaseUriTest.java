@@ -21,7 +21,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author rolandhauser
  *
  */
 public class BaseUriTest extends TokenBaseTest<BaseUri> {

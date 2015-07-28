@@ -19,16 +19,12 @@ import java.security.cert.CertificateException;
 
 import org.junit.Test;
 
-import ch.sourcepond.maven.plugin.jenkins.config.download.TrustAllStrategy;
-
 /**
- * @author rolandhauser
  *
  */
 public class TrustAllStrategyTest {
 
 	/**
-	 * @throws CertificateException
 	 * 
 	 */
 	@Test

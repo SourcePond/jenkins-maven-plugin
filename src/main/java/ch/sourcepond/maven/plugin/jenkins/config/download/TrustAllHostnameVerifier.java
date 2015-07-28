@@ -19,7 +19,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
 /**
- * @author rolandhauser
+ * Implementation of {@link HostnameVerifier} which allows ANY host.
  *
  */
 @Named

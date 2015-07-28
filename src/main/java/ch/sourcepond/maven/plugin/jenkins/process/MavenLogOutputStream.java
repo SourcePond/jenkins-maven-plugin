@@ -17,7 +17,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.zeroturnaround.exec.stream.LogOutputStream;
 
 /**
- * @author rolandhauser
  *
  */
 final class MavenLogOutputStream extends LogOutputStream {

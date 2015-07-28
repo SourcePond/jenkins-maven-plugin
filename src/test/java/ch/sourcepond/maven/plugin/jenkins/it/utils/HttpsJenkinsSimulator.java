@@ -19,7 +19,6 @@ import java.net.URL;
 import java.util.List;
 
 /**
- * @author rolandhauser
  *
  */
 public class HttpsJenkinsSimulator extends JenkinsSimulator {

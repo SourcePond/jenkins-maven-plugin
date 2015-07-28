@@ -17,7 +17,6 @@ import ch.sourcepond.maven.plugin.jenkins.it.utils.HttpJenkinsSimulator;
 import ch.sourcepond.maven.plugin.jenkins.it.utils.Simulator;
 
 /**
- * @author rolandhauser
  *
  */
 public class HttpITCase extends ITCase {

@@ -19,7 +19,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
 /**
- * @author rolandhauser
  *
  */
 final class HttpServerStartupBarrier extends ServerStartupBarrier {

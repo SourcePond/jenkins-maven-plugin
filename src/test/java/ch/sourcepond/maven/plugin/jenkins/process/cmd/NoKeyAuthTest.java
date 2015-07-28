@@ -21,7 +21,6 @@ import static org.mockito.Mockito.when;
 import org.junit.Test;
 
 /**
- * @author rolandhauser
  *
  */
 public class NoKeyAuthTest extends TokenBaseTest<NoKeyAuth> {

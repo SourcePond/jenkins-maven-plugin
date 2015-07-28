@@ -33,7 +33,6 @@ import org.zeroturnaround.exec.StartedProcess;
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
 
 /**
- * @author rolandhauser
  *
  */
 public class ProcessExecutorFactoryImplTest {

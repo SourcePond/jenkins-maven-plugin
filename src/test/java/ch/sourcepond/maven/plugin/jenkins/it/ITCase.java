@@ -27,7 +27,6 @@ import ch.sourcepond.maven.plugin.jenkins.it.utils.OutputVerificationLog;
 import ch.sourcepond.maven.plugin.jenkins.it.utils.Simulator;
 
 /**
- * @author rolandhauser
  *
  */
 public abstract class ITCase {

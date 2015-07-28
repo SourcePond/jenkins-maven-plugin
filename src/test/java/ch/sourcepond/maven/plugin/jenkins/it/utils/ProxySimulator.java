@@ -23,7 +23,6 @@ import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
 import ch.sourcepond.maven.plugin.jenkins.CliMojo;
 
 /**
- * @author rolandhauser
  *
  */
 public class ProxySimulator extends Simulator {

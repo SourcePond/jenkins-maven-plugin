@@ -24,7 +24,6 @@ import org.junit.Before;
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
 
 /**
- * @author rolandhauser
  *
  */
 public abstract class TokenBaseTest<T extends Token> {

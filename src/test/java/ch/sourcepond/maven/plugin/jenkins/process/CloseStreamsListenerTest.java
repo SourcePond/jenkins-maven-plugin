@@ -26,7 +26,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.junit.Test;
 
 /**
- * @author rolandhauser
  *
  */
 public class CloseStreamsListenerTest {

@@ -25,7 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author rolandhauser
  *
  */
 public class ConfigBuilderImplBuildTest extends ConfigBuilderImplBaseTest {

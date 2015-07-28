@@ -20,7 +20,6 @@ import java.net.ServerSocket;
 import ch.sourcepond.maven.plugin.jenkins.CliMojo;
 
 /**
- * @author rolandhauser
  *
  */
 public abstract class Simulator implements Closeable {

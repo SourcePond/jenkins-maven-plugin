@@ -22,7 +22,6 @@ import java.nio.file.Path;
 import org.junit.Before;
 
 /**
- * @author rolandhauser
  *
  */
 public class HttpsSelfSignedCertifacteITCase extends HttpsITCase {

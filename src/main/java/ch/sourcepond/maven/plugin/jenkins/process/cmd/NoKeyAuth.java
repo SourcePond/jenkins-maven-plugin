@@ -24,7 +24,6 @@ import javax.inject.Singleton;
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
 
 /**
- * @author rolandhauser
  *
  */
 @Named(NoKeyAuth.NO_KEY_AUTH_SWITCH)

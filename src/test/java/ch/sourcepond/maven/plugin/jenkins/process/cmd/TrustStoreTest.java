@@ -21,7 +21,6 @@ import java.io.File;
 import org.junit.Test;
 
 /**
- * @author rolandhauser
  *
  */
 public class TrustStoreTest extends TokenBaseTest<TrustStore> {

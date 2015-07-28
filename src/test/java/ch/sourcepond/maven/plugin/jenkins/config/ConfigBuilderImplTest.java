@@ -36,7 +36,6 @@ import org.apache.maven.settings.Settings;
 import org.junit.Test;
 
 /**
- * @author rolandhauser
  *
  */
 public class ConfigBuilderImplTest extends ConfigBuilderImplBaseTest {

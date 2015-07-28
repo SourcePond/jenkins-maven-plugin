@@ -22,7 +22,6 @@ import javax.inject.Singleton;
 import org.apache.http.ssl.TrustStrategy;
 
 /**
- * @author rolandhauser
  *
  */
 @Named

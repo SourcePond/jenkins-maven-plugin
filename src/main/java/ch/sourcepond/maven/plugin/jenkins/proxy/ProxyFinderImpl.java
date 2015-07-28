@@ -20,7 +20,6 @@ import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 
 /**
- * @author rolandhauser
  *
  */
 @Named

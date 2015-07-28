@@ -14,8 +14,7 @@ limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.message;
 
 /**
- * @author rolandhauser
- *
+ * Simple facade to get messages from a property file.
  */
 public interface Messages {
 

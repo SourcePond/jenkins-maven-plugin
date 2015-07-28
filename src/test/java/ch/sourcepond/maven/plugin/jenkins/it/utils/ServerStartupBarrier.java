@@ -29,7 +29,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 
 /**
- * @author rolandhauser
  *
  */
 abstract class ServerStartupBarrier extends Thread {

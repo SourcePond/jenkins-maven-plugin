@@ -25,10 +25,7 @@ import org.apache.http.ssl.SSLContexts;
 import org.apache.http.ssl.TrustStrategy;
 import org.junit.Test;
 
-import ch.sourcepond.maven.plugin.jenkins.config.download.SSLFactoryImpl;
-
 /**
- * @author rolandhauser
  *
  */
 public class SSLFactoryImplTest {

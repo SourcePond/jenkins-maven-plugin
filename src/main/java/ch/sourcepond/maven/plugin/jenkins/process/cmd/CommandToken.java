@@ -18,11 +18,6 @@ import java.util.List;
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
 
 /**
- * @author rolandhauser
- *
- */
-/**
- * @author rolandhauser
  *
  */
 interface CommandToken {

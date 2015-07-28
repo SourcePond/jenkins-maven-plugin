@@ -18,7 +18,6 @@ import ch.sourcepond.maven.plugin.jenkins.it.utils.ProxySimulator;
 import ch.sourcepond.maven.plugin.jenkins.it.utils.Simulator;
 
 /**
- * @author rolandhauser
  *
  */
 public class HttpProxyITCase extends ITCase {

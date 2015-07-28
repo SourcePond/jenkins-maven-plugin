@@ -22,7 +22,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.zeroturnaround.exec.listener.ProcessListener;
 
 /**
- * @author rolandhauser
  *
  */
 final class CloseStreamsListener extends ProcessListener {

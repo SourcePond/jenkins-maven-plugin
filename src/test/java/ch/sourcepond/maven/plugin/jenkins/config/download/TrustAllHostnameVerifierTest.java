@@ -18,10 +18,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import ch.sourcepond.maven.plugin.jenkins.config.download.TrustAllHostnameVerifier;
-
 /**
- * @author rolandhauser
  *
  */
 public class TrustAllHostnameVerifierTest {

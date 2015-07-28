@@ -28,9 +28,7 @@ import org.mockito.InOrder;
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
 
 /**
- * @author rolandhauser
  *
- * @param <T>
  */
 public class TokenTest {
 	private static final String ANY_KEY = "anyKey";

@@ -35,7 +35,6 @@ import org.zeroturnaround.exec.StartedProcess;
 import ch.sourcepond.maven.plugin.jenkins.CliMojo;
 
 /**
- * @author rolandhauser
  *
  */
 public abstract class JenkinsSimulator extends Simulator {

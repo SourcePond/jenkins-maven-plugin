@@ -23,7 +23,6 @@ import ch.sourcepond.maven.plugin.jenkins.config.download.Downloader;
 import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 
 /**
- * @author rolandhauser
  *
  */
 public class ConfigBuilderFactoryImplTest {

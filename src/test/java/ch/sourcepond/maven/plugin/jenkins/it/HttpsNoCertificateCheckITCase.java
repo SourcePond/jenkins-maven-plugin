@@ -16,7 +16,6 @@ package ch.sourcepond.maven.plugin.jenkins.it;
 import org.junit.Before;
 
 /**
- * @author rolandhauser
  *
  */
 public class HttpsNoCertificateCheckITCase extends HttpsITCase {

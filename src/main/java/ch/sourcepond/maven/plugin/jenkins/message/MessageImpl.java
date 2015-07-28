@@ -24,7 +24,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * @author rolandhauser
+ * Default implementation {@link Messages}.
  *
  */
 @Named

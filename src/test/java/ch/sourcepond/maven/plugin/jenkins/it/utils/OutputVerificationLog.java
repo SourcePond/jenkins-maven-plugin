@@ -22,7 +22,6 @@ import java.util.Set;
 import org.apache.maven.plugin.logging.SystemStreamLog;
 
 /**
- * @author rolandhauser
  *
  */
 public final class OutputVerificationLog extends SystemStreamLog {

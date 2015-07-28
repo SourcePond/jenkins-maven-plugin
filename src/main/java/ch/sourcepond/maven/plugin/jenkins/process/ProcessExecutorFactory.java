@@ -22,7 +22,6 @@ import org.zeroturnaround.exec.ProcessExecutor;
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
 
 /**
- * @author rolandhauser
  *
  */
 interface ProcessExecutorFactory {

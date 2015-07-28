@@ -30,7 +30,6 @@ import ch.sourcepond.maven.plugin.jenkins.config.Config;
 import ch.sourcepond.maven.plugin.jenkins.process.cmd.CommandFactory;
 
 /**
- * @author rolandhauser
  *
  */
 @Named

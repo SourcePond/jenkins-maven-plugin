@@ -16,7 +16,6 @@ package ch.sourcepond.maven.plugin.jenkins.process;
 import org.apache.maven.plugin.logging.Log;
 
 /**
- * @author rolandhauser
  *
  */
 public interface LogBridge {

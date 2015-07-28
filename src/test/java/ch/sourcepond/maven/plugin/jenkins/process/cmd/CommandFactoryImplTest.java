@@ -40,7 +40,6 @@ import ch.sourcepond.maven.plugin.jenkins.InjectorInstance;
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
 
 /**
- * @author rolandhauser
  *
  */
 public class CommandFactoryImplTest {

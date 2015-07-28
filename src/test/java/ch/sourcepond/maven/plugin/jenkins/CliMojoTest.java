@@ -34,7 +34,6 @@ import ch.sourcepond.maven.plugin.jenkins.process.ProcessFacade;
 import ch.sourcepond.maven.plugin.jenkins.proxy.ProxyFinder;
 
 /**
- * @author rolandhauser
  *
  */
 public class CliMojoTest {

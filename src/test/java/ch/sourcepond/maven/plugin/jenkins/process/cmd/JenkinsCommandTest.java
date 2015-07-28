@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 /**
- * @author rolandhauser
  *
  */
 public class JenkinsCommandTest extends TokenBaseTest<JenkinsCommand> {

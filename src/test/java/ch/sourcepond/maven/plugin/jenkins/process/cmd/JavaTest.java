@@ -22,7 +22,6 @@ import java.util.List;
 import org.junit.Test;
 
 /**
- * @author rolandhauser
  *
  */
 public class JavaTest extends TokenBaseTest<Java> {

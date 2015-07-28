@@ -24,7 +24,6 @@ import javax.inject.Singleton;
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
 
 /**
- * @author rolandhauser
  *
  */
 @Named(NoCertificateCheck.NO_CERTIFICATE_CHECK_SWITCH)

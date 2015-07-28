@@ -48,7 +48,6 @@ import org.mockito.Mockito;
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
 
 /**
- * @author rolandhauser
  *
  */
 public class DowloaderImplTest {

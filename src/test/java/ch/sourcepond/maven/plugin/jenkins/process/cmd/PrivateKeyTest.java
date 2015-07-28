@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 /**
- * @author rolandhauser
  *
  */
 public class PrivateKeyTest extends TokenBaseTest<PrivateKey> {
