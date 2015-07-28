@@ -28,9 +28,6 @@
 		This can be done with another, more appropriate plugin and its result can then be specified as stdin to the Jenkins Maven Plugin.
 	</description>
 
-	<!-- To run the build successfully, following parameters must be specified 
-		-Djenkins.baseurl -Ddeployment.baseurl and -Dgit.baseurl -->
-
 	<properties>
 		<!-- Plugin versions -->
 		<maven.version>3.3.3</maven.version>
@@ -43,6 +40,7 @@
 		<download-maven-plugin.version>1.2.1</download-maven-plugin.version>
 		<maven-source-plugin.version>2.4</maven-source-plugin.version>
 		<maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
+		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
 
 		<!-- Additional dependencies for integration testing -->
 		<jetty-server.version>8.1.17.v20150415</jetty-server.version>
@@ -51,6 +49,7 @@
 		<!-- Dependency versions -->
 		<javax.inject.version>1</javax.inject.version>
 		<zt-exec.version>1.8</zt-exec.version>
+		<commons-lang3.version>3.4</commons-lang3.version>
 		<httpclient.version>4.5</httpclient.version>
 		<junit.version>4.12</junit.version>
 		<mockito-all.version>2.0.2-beta</mockito-all.version>
@@ -67,6 +66,11 @@
 		<!-- Additional configuration for integration testing -->
 		<jenkins.war.name>jenkins.war</jenkins.war.name>
 		<jenkins.war.url>http://mirrors.jenkins-ci.org/war-stable/latest</jenkins.war.url>
+
+		<!-- Configuration for SCM, Build-Server and remote Maven Repository -->
+		<jenkins.baseurl>https://sourcepond.ci.cloudbees.com</jenkins.baseurl>
+		<deployment.baseurl>https://oss.sonatype.org</deployment.baseurl>
+		<git.baseurl>https://github.com/SourcePond</git.baseurl>
 	</properties>
 
 	<dependencyManagement>
@@ -90,6 +94,26 @@
 				<groupId>org.eclipse.sisu</groupId>
 				<artifactId>org.eclipse.sisu.inject</artifactId>
 				<version>${sisu-maven-plugin.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${commons-lang3.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.inject</groupId>
+				<artifactId>javax.inject</artifactId>
+				<version>${javax.inject.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.zeroturnaround</groupId>
+				<artifactId>zt-exec</artifactId>
+				<version>${zt-exec.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>${httpclient.version}</version>
 			</dependency>
 
 			<!-- Testing -->
@@ -131,19 +155,20 @@
 			<artifactId>maven-core</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>
-			<version>${javax.inject.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.zeroturnaround</groupId>
 			<artifactId>zt-exec</artifactId>
-			<version>${zt-exec.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>${httpclient.version}</version>
 		</dependency>
 		<dependency>
 			<scope>provided</scope>
@@ -236,6 +261,11 @@
 					<groupId>org.eclipse.sisu</groupId>
 					<artifactId>sisu-maven-plugin</artifactId>
 					<version>${sisu-maven-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<version>${maven-gpg-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
@@ -414,6 +444,19 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -457,13 +500,13 @@
 
 	<distributionManagement>
 		<repository>
-			<id>releases</id>
-			<name>SourcePond Release Repository</name>
-			<url>${deployment.baseurl}/content/repositories/releases</url>
+			<id>ossrh</id>
+			<name>SourcePond Snapshot Repository</name>
+			<url>${deployment.baseurl}/service/local/staging/deploy/maven2/</url>
 		</repository>
 		<snapshotRepository>
-			<id>snapshots</id>
-			<name>SourcePond Snapshot Repository</name>
+			<id>ossrh</id>
+			<name>SourcePond Release Repository</name>
 			<url>${deployment.baseurl}/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
