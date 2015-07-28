@@ -15,6 +15,7 @@ limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.config;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 
@@ -28,34 +29,135 @@ import org.apache.maven.settings.Settings;
  */
 public interface ConfigBuilder {
 
+	/**
+	 * Sets the Maven settings injected into the mojo ${settings}.
+	 * 
+	 * @param pSettings
+	 *            Settings object, must not be {@code null}
+	 * @return This builder, never {@code null}
+	 */
 	ConfigBuilder setSettings(Settings pSettings);
 
 	/**
+	 * Sets the work directory, see {@link Config#getWorkDirectory()}.
+	 * 
 	 * @param pWorkDirectory
-	 * @return
+	 *            Work-directory, must not be {@code null}
+	 * @return This builder, never {@code null}
 	 * @throws MojoExecutionException
+	 *             Thrown, if the directory specified does not exist and could
+	 *             not be created.
 	 */
 	ConfigBuilder setWorkDirectory(Path pWorkDirectory)
 			throws MojoExecutionException;
 
+	/**
+	 * Sets the base {@link URI} where the Jenkins instance to be used is
+	 * available (see {@link Config#getBaseUri()}). Furthermore, initializes the
+	 * {@link URI} where the Jenkins CLI jar can be downloaded (see
+	 * {@link Config#getCliJarUri()}).
+	 * 
+	 * @param pBaseUrl
+	 *            Base {@link URL}, must not be {@code null}
+	 * @param pCliJar
+	 *            Relative path, must not be {@code null}
+	 * @return This builder, never {@code null}
+	 * @throws MojoExecutionException
+	 *             Thrown, if the {@link URL} specified could not be transformed
+	 *             into an {@link URI}, or, if the CLI jar {@link URI} could not
+	 *             be created.
+	 */
 	ConfigBuilder setBaseUrl(URL pBaseUrl, String pCliJar)
 			throws MojoExecutionException;
 
+	/**
+	 * Sets whether SSH authentication key loading is disabled, see
+	 * {@link Config#isNoKeyAuth()}.
+	 * 
+	 * @param pNoKeyAuth
+	 *            {@code true} if disabled, {@code false} otherwise.
+	 * @return This builder, never {@code null}
+	 */
 	ConfigBuilder setNoKeyAuth(boolean pNoKeyAuth);
 
+	/**
+	 * Sets whether SSL certificate check is skipped entirely, see
+	 * {@link Config#isNoCertificateCheck()}.
+	 * 
+	 * @param pNoCertificateCheck
+	 *            {@code true} if skipped, {@code false} otherwise
+	 * @return This builder, never {@code null}
+	 */
 	ConfigBuilder setNoCertificateCheck(boolean pNoCertificateCheck);
 
-	ConfigBuilder setPrivateKey(File pPrivateKey);
+	/**
+	 * Sets the SSH authentication private key, see
+	 * {@link Config#getPrivateKeyOrNull()}.
+	 * 
+	 * @param pPrivateKeyOrNull
+	 *            Private key or {@code null}
+	 * @return This builder, never {@code null}
+	 */
+	ConfigBuilder setPrivateKey(File pPrivateKeyOrNull);
 
+	/**
+	 * Sets the actual command to be executed by the CLI, see
+	 * {@link Config#getCommand()}.
+	 * 
+	 * @param pCommand
+	 *            Command including all options and parameters, must not be
+	 *            {@code null} or blank.
+	 * @return This builder, never {@code null}
+	 */
 	ConfigBuilder setCommand(String pCommand);
 
+	/**
+	 * Sets the {@link File} where to redirect the standard input, see
+	 * {@link Config#getStdinOrNull()}.
+	 * 
+	 * @param pStdin
+	 *            {@link File} or {@code null}
+	 * @return This builder, never {@code null}
+	 */
 	ConfigBuilder setStdin(File pStdin);
 
+	/**
+	 * Sets the proxy if any specified, see {@link Config#getProxyOrNull()}.
+	 * 
+	 * @param pProxy
+	 *            {@link Proxy} instance or {@code null}
+	 * @return This builder, never {@code null}
+	 */
 	ConfigBuilder setProxy(Proxy pProxy);
 
-	ConfigBuilder setTrustStore(File pKeystore);
+	/**
+	 * Sets the trust-store if an SSL connection is used, see
+	 * {@link Config#getTrustStoreOrNull()}.
+	 * 
+	 * @param pTrustStore
+	 *            Trust-store {@link File} or {@code null}
+	 * @return This builder, never {@code null}
+	 */
+	ConfigBuilder setTrustStore(File pTrustStore);
 
+	/**
+	 * Sets the trust-store password, see
+	 * {@link Config#getTrustStorePasswordOrNull()}.
+	 * 
+	 * @param pPassword
+	 *            Trust-store password or {@code null}.
+	 * @return This builder, never {@code null}
+	 */
 	ConfigBuilder setTrustStorePassword(String pPassword);
 
+	/**
+	 * Builds a new instance of {@link Config} based on the parameters specified
+	 * on this builder.
+	 * 
+	 * @return New {@link Config} instance, never {@code null}.
+	 * @throws MojoExecutionException
+	 *             Thrown, if the CLI jar cannot be downloaded or if a
+	 *             validation fails.
+	 */
 	Config build() throws MojoExecutionException;
 }

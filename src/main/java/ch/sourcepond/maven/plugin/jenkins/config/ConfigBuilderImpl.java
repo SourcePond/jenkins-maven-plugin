@@ -31,7 +31,7 @@ import ch.sourcepond.maven.plugin.jenkins.config.download.Downloader;
 import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 
 /**
- * @author rolandhauser
+ * Default implementation of the {@link ConfigBuilder} interface.
  *
  */
 final class ConfigBuilderImpl implements ConfigBuilder {
@@ -40,7 +40,12 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 	private final Downloader downloader;
 
 	/**
+	 * Creates a new instance of this class.
+	 * 
+	 * @param pMessages
+	 *            Facade to get messages, must not be {@code null}
 	 * @param pDownloader
+	 *            Facade to download the CLI jar, must not be {@code null}
 	 */
 	ConfigBuilderImpl(final Messages pMessages, final Downloader pDownloader) {
 		config = new ConfigImpl(pMessages);
@@ -48,7 +53,10 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 	}
 
 	/**
-	 * @return
+	 * Returns the base config instance which will cloned when {@link #build()}
+	 * is called. This method is for internal usage only!
+	 * 
+	 * @return {@link ConfigImpl} instance, never {@code null}
 	 */
 	ConfigImpl getBaseConfig() {
 		return config;
@@ -174,6 +182,13 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 		return (Config) config.clone();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setStdin(java
+	 * .io.File)
+	 */
 	@Override
 	public ConfigBuilder setStdin(final File pStdin) {
 		if (pStdin != null) {
@@ -182,18 +197,39 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 		return this;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setProxy(org.
+	 * apache.maven.settings.Proxy)
+	 */
 	@Override
 	public ConfigBuilder setProxy(final Proxy pProxy) {
 		config.setProxy(pProxy);
 		return this;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setSettings(org
+	 * .apache.maven.settings.Settings)
+	 */
 	@Override
 	public ConfigBuilder setSettings(final Settings pSettings) {
 		config.setSettings(pSettings);
 		return this;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setTrustStore
+	 * (java.io.File)
+	 */
 	@Override
 	public ConfigBuilder setTrustStore(final File pTrustStore) {
 		config.setTrustStore(pTrustStore);
