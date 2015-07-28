@@ -14,13 +14,14 @@ limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.config;
 
 /**
- * @author rolandhauser
- *
+ * Factory interface to create new {@link ConfigBuilder} instances.
  */
 public interface ConfigBuilderFactory {
 
 	/**
-	 * @return
+	 * Creates a new {@link ConfigBuilder}.
+	 * 
+	 * @return {@link ConfigBuilder} instance, never {@code null}
 	 */
 	ConfigBuilder newBuilder();
 }

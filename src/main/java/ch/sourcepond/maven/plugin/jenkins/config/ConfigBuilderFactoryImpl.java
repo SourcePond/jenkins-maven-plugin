@@ -21,8 +21,7 @@ import ch.sourcepond.maven.plugin.jenkins.config.download.Downloader;
 import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 
 /**
- * @author rolandhauser
- *
+ * Default implementation of the {@link ConfigBuilderFactory} interface.
  */
 @Named
 @Singleton
@@ -31,7 +30,12 @@ final class ConfigBuilderFactoryImpl implements ConfigBuilderFactory {
 	private final Downloader dowloader;
 
 	/**
+	 * Creates a new instance of this class.
+	 * 
+	 * @param pMessages
+	 *            Facade to get messages, must not be {@code null}
 	 * @param pDownloader
+	 *            Facade to download the CLI jar, must not be {@code null}
 	 */
 	@Inject
 	ConfigBuilderFactoryImpl(final Messages pMessages,
