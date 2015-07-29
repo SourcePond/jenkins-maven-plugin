@@ -14,7 +14,7 @@ Note: Because the plugin is not released yet it's only available from https://os
 
 ## Basic usage
 
-| Configuration element  | Required | Default | Description |
+| Name  | Required | Default | Description |
 | ---------------------- | -------- | ------- | ----------- ||| workDirectory | yes | ${project.build.directory}/jenkins | Specifies where downloaded artifacts should be stored. |
 | baseUrl | yes | ${project.ciManagement.url} | Specifies the URL where the Jenkins instance used by the plugin is available. |
 | cliJar | yes | jnlpJars/jenkins-cli.jar | Specifies the relative path to baseUrl where the CLI-jar (necessary to run the plugin) can be downloaded. |
