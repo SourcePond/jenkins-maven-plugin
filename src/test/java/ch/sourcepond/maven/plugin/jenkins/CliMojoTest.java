@@ -89,7 +89,7 @@ public class CliMojoTest {
 		when(builder.setPrivateKey(privateKey)).thenReturn(builder);
 		when(builder.setTrustStore(trustStore)).thenReturn(builder);
 		when(builder.setTrustStorePassword(PASSWORD)).thenReturn(builder);
-		when(builder.build()).thenReturn(config);
+		when(builder.build(log)).thenReturn(config);
 	}
 
 	/**

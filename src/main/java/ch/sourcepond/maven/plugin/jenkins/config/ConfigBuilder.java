@@ -20,6 +20,7 @@ import java.net.URL;
 import java.nio.file.Path;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 
@@ -154,10 +155,12 @@ public interface ConfigBuilder {
 	 * Builds a new instance of {@link Config} based on the parameters specified
 	 * on this builder.
 	 * 
+	 * @param pLog
+	 *            Logger, must not be {@code null}
 	 * @return New {@link Config} instance, never {@code null}.
 	 * @throws MojoExecutionException
 	 *             Thrown, if the CLI jar cannot be downloaded or if a
 	 *             validation fails.
 	 */
-	Config build() throws MojoExecutionException;
+	Config build(Log pLog) throws MojoExecutionException;
 }

@@ -24,6 +24,7 @@ import java.net.URL;
 import java.nio.file.Path;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 
@@ -169,7 +170,7 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 	 * @see ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#build()
 	 */
 	@Override
-	public Config build() throws MojoExecutionException {
+	public Config build(final Log pLog) throws MojoExecutionException {
 		assert getBaseConfig().getBaseUri() != null : "baseUri is null";
 		assert getBaseConfig().getCliJarUri() != null : "cliJarUri is null";
 		assert !isBlank(getBaseConfig().getCommand()) : "command is null";
@@ -177,7 +178,7 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 		assert getBaseConfig().getWorkDirectory() != null : "workDirectory is null";
 
 		setDownloadedCliJar(downloader.downloadCliJar(config));
-		getBaseConfig().validate();
+		getBaseConfig().validate(pLog);
 
 		return (Config) config.clone();
 	}

@@ -184,7 +184,8 @@ public class CliMojo extends AbstractMojo {
 						.setStdin(stdin).setNoKeyAuth(noKeyAuth)
 						.setNoCertificateCheck(noCertificateCheck)
 						.setPrivateKey(privateKey).setTrustStore(trustStore)
-						.setTrustStorePassword(trustStorePassword).build());
+						.setTrustStorePassword(trustStorePassword)
+						.build(getLog()));
 	}
 
 	/**

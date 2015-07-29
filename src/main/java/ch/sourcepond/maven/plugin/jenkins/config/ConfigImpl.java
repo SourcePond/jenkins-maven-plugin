@@ -13,11 +13,14 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.config;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Path;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 
@@ -29,8 +32,12 @@ import ch.sourcepond.maven.plugin.jenkins.message.Messages;
  * 
  */
 final class ConfigImpl implements Config, Cloneable {
-	static final String CONFIG_VALIDATION_NO_KEY_AUTH_AND_PRIVATE_KEY_SET = "config.validation.noKeyAuthAndPrivateKeySet";
+	static final String CONFIG_VALIDATION_ERROR_NO_KEY_AUTH_AND_PRIVATE_KEY_SET = "config.validation.error.noKeyAuthAndPrivateKeySet";
+	static final String CONFIG_VALIDATION_ERROR_NO_TRUSTSTORE_PASSWORD_SPECIFIED = "config.validation.error.noTruststorePasswordSpecified";
+	static final String CONFIG_VALIDATION_ERROR_TRUSTSTORE_PASSWORD_TOO_SHORT = "config.validation.error.truststorePasswordTooShort";
+	static final String CONFIG_VALIDATION_WARN_TRUSTSTORE_PASSWORD_NOT_NECESSARY = "config.validation.warn.truststorePasswordNotNecessary";
 	static final String HTTPS = "https";
+	static final int MIN_TRUSTSTORE_PWD_LENGTH = 6;
 	private final Messages messages;
 	private Path workDirectory;
 	private URI baseUri;
@@ -296,11 +303,35 @@ final class ConfigImpl implements Config, Cloneable {
 	/**
 	 * @throws MojoExecutionException
 	 */
-	public void validate() throws MojoExecutionException {
+	void validate(final Log pLog) throws MojoExecutionException {
+		// Do not allow noKeyAuth when private key is set
 		if (isNoKeyAuth() && getPrivateKeyOrNull() != null) {
 			throw new MojoExecutionException(messages.getMessage(
-					CONFIG_VALIDATION_NO_KEY_AUTH_AND_PRIVATE_KEY_SET,
+					CONFIG_VALIDATION_ERROR_NO_KEY_AUTH_AND_PRIVATE_KEY_SET,
 					getPrivateKeyOrNull()));
+		}
+
+		// If a trust-store has been specified, insure that a password is set
+		if (getTrustStoreOrNull() != null) {
+			if (isBlank(getTrustStorePasswordOrNull())) {
+				throw new MojoExecutionException(
+						messages.getMessage(
+								CONFIG_VALIDATION_ERROR_NO_TRUSTSTORE_PASSWORD_SPECIFIED,
+								getTrustStoreOrNull()));
+			}
+
+			if (MIN_TRUSTSTORE_PWD_LENGTH > getTrustStorePasswordOrNull()
+					.length()) {
+				throw new MojoExecutionException(messages.getMessage(
+						CONFIG_VALIDATION_ERROR_TRUSTSTORE_PASSWORD_TOO_SHORT,
+						MIN_TRUSTSTORE_PWD_LENGTH));
+			}
+		}
+
+		if (getTrustStoreOrNull() == null
+				&& !isBlank(getTrustStorePasswordOrNull())) {
+			pLog.warn(messages
+					.getMessage(CONFIG_VALIDATION_WARN_TRUSTSTORE_PASSWORD_NOT_NECESSARY));
 		}
 	}
 }
