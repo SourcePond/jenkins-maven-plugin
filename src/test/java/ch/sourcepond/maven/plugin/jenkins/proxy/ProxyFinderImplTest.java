@@ -13,9 +13,12 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.proxy;
 
+import static ch.sourcepond.maven.plugin.jenkins.proxy.ProxyFinderImpl.CONFIG_VALIDATION_ERROR_NO_PROXY_FOUND;
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -25,13 +28,17 @@ import org.apache.maven.settings.Settings;
 import org.junit.Before;
 import org.junit.Test;
 
+import ch.sourcepond.maven.plugin.jenkins.message.Messages;
+
 /**
  *
  */
 public class ProxyFinderImplTest {
+	private static final String ANY_MESSAGE = "anyMessage";
 	private static final String MATCHING_ID = "matchingId";
 	private static final String IGNORED_ID = "ignoredId";
-	private final ProxyFinderImpl impl = new ProxyFinderImpl();
+	private final Messages messages = mock(Messages.class);
+	private final ProxyFinderImpl impl = new ProxyFinderImpl(messages);
 	private final Settings settings = mock(Settings.class);
 	private final Proxy matchingProxy = mock(Proxy.class);
 	private final Proxy ignoredProxy = mock(Proxy.class);
@@ -48,10 +55,11 @@ public class ProxyFinderImplTest {
 	}
 
 	/**
+	 * @throws MojoExecutionException
 	 * 
 	 */
 	@Test(expected = AssertionError.class)
-	public void verifyNoSettings() {
+	public void verifyNoSettings() throws MojoExecutionException {
 		impl.findProxy(MATCHING_ID, null);
 	}
 
@@ -60,15 +68,16 @@ public class ProxyFinderImplTest {
 	 * 
 	 */
 	@Test
-	public void verifyFindProxy() {
+	public void verifyFindProxy() throws MojoExecutionException {
 		assertSame(matchingProxy, impl.findProxy(MATCHING_ID, settings));
 	}
 
 	/**
+	 * @throws MojoExecutionException
 	 * 
 	 */
 	@Test
-	public void verifyNoProxyIdSpecified() {
+	public void verifyNoProxyIdSpecified() throws MojoExecutionException {
 		assertNull(impl.findProxy(null, settings));
 	}
 
@@ -77,7 +86,8 @@ public class ProxyFinderImplTest {
 	 * 
 	 */
 	@Test
-	public void verifyFindProxyIgnoredProxyHasNoId() {
+	public void verifyFindProxyIgnoredProxyHasNoId()
+			throws MojoExecutionException {
 		when(ignoredProxy.getId()).thenReturn(null);
 		assertSame(matchingProxy, impl.findProxy(MATCHING_ID, settings));
 	}
@@ -88,7 +98,15 @@ public class ProxyFinderImplTest {
 	 */
 	@Test
 	public void verifyNoProxyFound() {
+		when(
+				messages.getMessage(CONFIG_VALIDATION_ERROR_NO_PROXY_FOUND,
+						MATCHING_ID)).thenReturn(ANY_MESSAGE);
 		when(settings.getProxies()).thenReturn(asList(ignoredProxy));
-		assertNull(impl.findProxy(MATCHING_ID, settings));
+		try {
+			impl.findProxy(MATCHING_ID, settings);
+			fail("Exception expected");
+		} catch (final MojoExecutionException expected) {
+			assertEquals(ANY_MESSAGE, expected.getMessage());
+		}
 	}
 }

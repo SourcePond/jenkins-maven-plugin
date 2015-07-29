@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.proxy;
 
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 
@@ -26,5 +27,6 @@ public interface ProxyFinder {
 	 * @param pSettings
 	 * @return
 	 */
-	Proxy findProxy(String pProxyIdOrNull, Settings pSettings);
+	Proxy findProxy(String pProxyIdOrNull, Settings pSettings)
+			throws MojoExecutionException;
 }

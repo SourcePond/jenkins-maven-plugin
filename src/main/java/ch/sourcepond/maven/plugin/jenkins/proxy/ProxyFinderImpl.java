@@ -13,11 +13,15 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.proxy;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
+
+import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 
 /**
  *
@@ -25,6 +29,16 @@ import org.apache.maven.settings.Settings;
 @Named
 @Singleton
 final class ProxyFinderImpl implements ProxyFinder {
+	static final String CONFIG_VALIDATION_ERROR_NO_PROXY_FOUND = "config.validation.error.noProxyFound";
+	private final Messages messages;
+
+	/**
+	 * @param pMessages
+	 */
+	@Inject
+	ProxyFinderImpl(final Messages pMessages) {
+		messages = pMessages;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -33,7 +47,8 @@ final class ProxyFinderImpl implements ProxyFinder {
 	 * sourcepond.maven.plugin.jenkins.config.Config)
 	 */
 	@Override
-	public Proxy findProxy(final String pProxyIdOrNull, final Settings pSettings) {
+	public Proxy findProxy(final String pProxyIdOrNull, final Settings pSettings)
+			throws MojoExecutionException {
 		assert pSettings != null : "pSettings is null but should not be!";
 
 		Proxy proxy = null;
@@ -47,6 +62,11 @@ final class ProxyFinderImpl implements ProxyFinder {
 					proxy = p;
 					break;
 				}
+			}
+
+			if (proxy == null) {
+				throw new MojoExecutionException(messages.getMessage(
+						CONFIG_VALIDATION_ERROR_NO_PROXY_FOUND, pProxyIdOrNull));
 			}
 		}
 		return proxy;
