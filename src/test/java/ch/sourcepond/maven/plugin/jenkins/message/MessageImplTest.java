@@ -41,7 +41,8 @@ public class MessageImplTest {
 	public void verifyTranslations() {
 		assertEquals(
 				"\"noKeyAuth\" cannot be true when \"privateKey\" has value test. Correct POM and try again.",
-				impl.getMessage("config.validation.noKeyAuthAndPrivateKeySet",
+				impl.getMessage(
+						"config.validation.error.noKeyAuthAndPrivateKeySet",
 						"test"));
 	}
 }
