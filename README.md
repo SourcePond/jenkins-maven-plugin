@@ -12,10 +12,12 @@ To use the Jenkins Maven Plugin in your project, add following plugin definition
 ```
 Note: Because the plugin is not released yet it's only available from https://oss.sonatype.org/content/repositories/snapshots
 
-## Basic usage
+## Configuration reference
+The table below gives an overview about the parameters which can be used. 
 
 | Name  | Required | Default | Description |
-| ---------------------- | -------- | ------- | ----------- ||| workDirectory | yes | ${project.build.directory}/jenkins | Specifies where downloaded artifacts should be stored. |
+| ---------------------- | -------- | ------- | ----------- |
+| workDirectory | yes | ${project.build.directory}/jenkins | Specifies where downloaded artifacts should be stored. |
 | baseUrl | yes | ${project.ciManagement.url} | Specifies the URL where the Jenkins instance used by the plugin is available. |
 | cliJar | yes | jnlpJars/jenkins-cli.jar | Specifies the relative path to baseUrl where the CLI-jar (necessary to run the plugin) can be downloaded. |
 | command | yes | | Specifies the Jenkins command including all its options and arguments to be executed through the CLI. |
