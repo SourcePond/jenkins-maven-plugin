@@ -28,3 +28,6 @@ The table below gives an overview about the parameters which can be specified.
 | **noCertificateCheck** | Specifies, whether certificate check should completely be disabled when the CLI connects to an SSL secured Jenkins instance. This parameter will be passed as "-noCertificateCheck" option to the CLI. This setting will bypass trustStore and trustStorePassword. Note: avoid enabling this switch because it's not secure (the CLI will trust everyone). Defaults to *false* |
 | **trustStore** | Specifies the trust-store to be used by the CLI if it should connect to an SSL secured Jenkins instance. This parameter will be passed as "-Djavax.net.ssl.trustStore" option to the JVM which runs the CLI. If specified, a password must be set with configuration element *trustStorePassword*. |
 | **trustStorePassword** | Specifies the password for the trust-store to be used by the CLI trustStore. This parameter will be passed as "-Djavax.net.ssl.trustStorePassword" option to the JVM which runs the CLI. According to keytool the password must be at least 6 characters. |
+
+## Examples
+### Execute help command
