@@ -72,16 +72,6 @@ You can find the full source code of this example in directory examples/create-j
 				<command>create-job ${project.artifactId}</command>
 			</configuration>
 		</execution>
-		<execution>
-			<id>run-job</id>
-			<goals>
-				<goal>cli</goal>
-			</goals>
-			<configuration>
-				<stdin>${transformed.config}</stdin>
-				<command>create-job ${project.artifactId}</command>
-			</configuration>
-		</execution>
 	</executions>
 </plugin>
 ```
