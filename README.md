@@ -30,4 +30,58 @@ The table below gives an overview about the parameters which can be specified.
 | **trustStorePassword** | Specifies the password for the trust-store to be used by the CLI trustStore. This parameter will be passed as "-Djavax.net.ssl.trustStorePassword" option to the JVM which runs the CLI. According to keytool the password must be at least 6 characters. |
 
 ## Examples
-### Execute help command
+### Create a new job on Jenkins
+You can find the full source code of this example in directory examples/create-job of this project.
+```
+<plugin>
+	<groupId>net.sf.xsltmp</groupId>
+	<artifactId>xslt-generator-maven-plugin</artifactId>
+	<executions>
+		<execution>
+			<id>transform-config</id>
+			<phase>generate-sources</phase>
+			<goals>
+				<goal>many-to-many</goal>
+			</goals>
+			<configuration>
+				<parameters>
+					<description>${project.description}</description>
+					<giturl>${project.scm.connection}</giturl>
+					<credentialsId>${credentialsId}</credentialsId>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>${project.artifactId}</artifactId>
+				</parameters>
+				<xslTemplate>${resources.directory}/${xslt.name}</xslTemplate>
+				<srcDir>${resources.directory}</srcDir>
+				<srcIncludes>**/config.xml</srcIncludes>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
+<plugin>
+	<groupId>ch.sourcepond.maven.plugins</groupId>
+	<artifactId>jenkins-maven-plugin</artifactId>
+	<executions>
+		<execution>
+			<id>create-job</id>
+			<goals>
+				<goal>cli</goal>
+			</goals>
+			<configuration>
+				<stdin>${transformed.config}</stdin>
+				<command>create-job ${project.artifactId}</command>
+			</configuration>
+		</execution>
+		<execution>
+			<id>run-job</id>
+			<goals>
+				<goal>cli</goal>
+			</goals>
+			<configuration>
+				<stdin>${transformed.config}</stdin>
+				<command>create-job ${project.artifactId}</command>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
+```
