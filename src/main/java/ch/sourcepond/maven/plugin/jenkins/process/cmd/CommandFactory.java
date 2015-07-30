@@ -15,19 +15,23 @@ package ch.sourcepond.maven.plugin.jenkins.process.cmd;
 
 import java.util.List;
 
-import org.apache.maven.plugin.MojoExecutionException;
+import org.zeroturnaround.exec.ProcessExecutor;
 
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
 
 /**
- *
+ * Factory to create the actual CLI command to be executed by a
+ * {@link ProcessExecutor}.
  */
 public interface CommandFactory {
 
 	/**
+	 * Creates the actual CLI command to be executed.
+	 * 
 	 * @param pConfig
-	 * @return
-	 * @throws MojoExecutionException
+	 *            {@link Config} instance which contains all necessary
+	 *            information to build the command, must not be {@code null}
+	 * @return List with all command tokens, never {@code null} or empty.
 	 */
 	List<String> newCommand(Config pConfig);
 }

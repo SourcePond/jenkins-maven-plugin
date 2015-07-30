@@ -33,10 +33,15 @@ abstract class Token implements CommandToken {
 	}
 
 	/**
+	 * Determines whether this token should be visited.
+	 * 
 	 * @param pConfig
-	 * @return
+	 *            {@link Config} instance which contains all necessary
+	 *            information, must not be {@code null}.
+	 * @return {@code true} if this token should be visited, {@code false}
+	 *         otherwise
 	 */
-	protected boolean isResponsible(final Config pConfig) {
+	protected boolean isVisitNecessary(final Config pConfig) {
 		return true;
 	}
 
@@ -58,7 +63,7 @@ abstract class Token implements CommandToken {
 		assert pTokens != null : "pTokens is null";
 		assert pConfig != null : " pConfig is null";
 
-		if (isResponsible(pConfig)) {
+		if (isVisitNecessary(pConfig)) {
 			doVisitToken(pTokens, pConfig);
 		}
 		if (next != null) {

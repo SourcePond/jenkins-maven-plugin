@@ -41,7 +41,7 @@ final class TrustStore extends Token {
 	 * @return
 	 */
 	@Override
-	protected boolean isResponsible(final Config pConfig) {
+	protected boolean isVisitNecessary(final Config pConfig) {
 		return pConfig.isSecure() && pConfig.getTrustStoreOrNull() != null;
 	}
 

@@ -40,7 +40,7 @@ final class PrivateKey extends Token {
 	}
 
 	@Override
-	protected boolean isResponsible(final Config pConfig) {
+	protected boolean isVisitNecessary(final Config pConfig) {
 		return pConfig.getPrivateKeyOrNull() != null;
 	}
 

@@ -46,7 +46,7 @@ final class NoKeyAuth extends Token {
 	 * (ch.sourcepond.maven.plugin.jenkins.config.Config)
 	 */
 	@Override
-	protected boolean isResponsible(final Config pConfig) {
+	protected boolean isVisitNecessary(final Config pConfig) {
 		return pConfig.isNoKeyAuth();
 	}
 

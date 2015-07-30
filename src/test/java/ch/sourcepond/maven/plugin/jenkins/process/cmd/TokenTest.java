@@ -61,7 +61,7 @@ public class TokenTest {
 		 * (ch.sourcepond.maven.plugin.jenkins.config.Config)
 		 */
 		@Override
-		protected boolean isResponsible(final Config pConfig) {
+		protected boolean isVisitNecessary(final Config pConfig) {
 			return responsible;
 		}
 
@@ -166,7 +166,7 @@ public class TokenTest {
 	 */
 	@Test
 	public void verifyDefaultValueIsReponsible() {
-		assertTrue(noNext.isResponsible(null));
+		assertTrue(noNext.isVisitNecessary(null));
 	}
 
 	/**

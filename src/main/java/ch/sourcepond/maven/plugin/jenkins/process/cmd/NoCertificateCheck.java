@@ -44,7 +44,7 @@ final class NoCertificateCheck extends Token {
 	 * @return
 	 */
 	@Override
-	protected boolean isResponsible(final Config pConfig) {
+	protected boolean isVisitNecessary(final Config pConfig) {
 		return pConfig.isNoCertificateCheck();
 	}
 
