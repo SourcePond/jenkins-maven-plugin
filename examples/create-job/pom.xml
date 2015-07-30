@@ -1,0 +1,102 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<groupId>ch.sourcepond.build</groupId>
+		<artifactId>ch.sourcepond.build</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<description>This is a test project</description>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>ch.sourcepond</groupId>
+	<artifactId>ch.sourcepond.example</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+
+	<properties>
+		<resources.directory>${basedir}/src/main/resources</resources.directory>
+		<config.name>config.xml</config.name>
+		<config.template>${resources.directory}/${config.name}</config.template>
+		<xslt.name>job.xslt</xslt.name>
+		<transformed.config>${project.build.directory}/generated-xml/xslt-generator/${config.name}</transformed.config>
+		<credentialsId>[YOUR CREDENTIAL-ID TO ACCESS JENKINS API]</credentialsId>
+	</properties>
+
+	<scm>
+		<connection>ssh://[YOUR GIT-HOST]/opt/git/${project.artifactId}.git</connection>
+		<developerConnection>${project.scm.connection}</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
+	<ciManagement>
+		<url>http://[YOUR JENKINS HOST]:8080/[YOUR JENKINS PATH]</url>
+	</ciManagement>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>net.sf.xsltmp</groupId>
+					<artifactId>xslt-generator-maven-plugin</artifactId>
+					<version>1.8</version>
+				</plugin>
+				<plugin>
+					<groupId>ch.sourcepond.maven.plugins</groupId>
+					<artifactId>jenkins-maven-plugin</artifactId>
+					<version>1.0.0-SNAPSHOT</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>net.sf.xsltmp</groupId>
+				<artifactId>xslt-generator-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>transform-config</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>many-to-many</goal>
+						</goals>
+						<configuration>
+							<parameters>
+								<description>${project.description}</description>
+								<giturl>${project.scm.connection}</giturl>
+								<credentialsId>${credentialsId}</credentialsId>
+								<groupId>${project.groupId}</groupId>
+								<artifactId>${project.artifactId}</artifactId>
+							</parameters>
+							<xslTemplate>${resources.directory}/${xslt.name}</xslTemplate>
+							<srcDir>${resources.directory}</srcDir>
+							<srcIncludes>**/config.xml</srcIncludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>ch.sourcepond.maven.plugins</groupId>
+				<artifactId>jenkins-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>create-job</id>
+						<goals>
+							<goal>cli</goal>
+						</goals>
+						<configuration>
+							<stdin>${transformed.config}</stdin>
+							<command>create-job ${project.artifactId}</command>
+						</configuration>
+					</execution>
+					<execution>
+						<id>run-job</id>
+						<goals>
+							<goal>cli</goal>
+						</goals>
+						<configuration>
+							<stdin>${transformed.config}</stdin>
+							<command>create-job ${project.artifactId}</command>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
