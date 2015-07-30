@@ -376,34 +376,6 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.maven.surefire</groupId>
-						<!-- Use the older JUnit 4 provider -->
-						<artifactId>surefire-junit47</artifactId>
-						<version>${maven-surefire-plugin.version}</version>
-					</dependency>
-				</dependencies>
-				<configuration>
-					<skip>${skip.integration.tests}</skip>
-					<excludes>
-						<exclude>**/*Test.java</exclude>
-					</excludes>
-					<includes>
-						<include>**/*ITCase.java</include>
-					</includes>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>integration-test</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
 				<executions>
 					<execution>
@@ -430,16 +402,6 @@
 	</build>
 
 	<profiles>
-		<!-- The Configuration of the development profile -->
-		<profile>
-			<id>development</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<properties>
-				<skip.integration.tests>true</skip.integration.tests>
-			</properties>
-		</profile>
 		<!-- The Configuration of the integration-test profile -->
 		<profile>
 			<id>integration-test</id>
@@ -466,9 +428,37 @@
 							</execution>
 						</executions>
 					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<dependencies>
+							<dependency>
+								<groupId>org.apache.maven.surefire</groupId>
+								<!-- Use the older JUnit 4 provider -->
+								<artifactId>surefire-junit47</artifactId>
+								<version>${maven-surefire-plugin.version}</version>
+							</dependency>
+						</dependencies>
+						<configuration>
+							<excludes>
+								<exclude>**/*Test.java</exclude>
+							</excludes>
+							<includes>
+								<include>**/*ITCase.java</include>
+							</includes>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>
+		
 		<!-- Profile for running release builds -->
 		<profile>
 			<id>release</id>
