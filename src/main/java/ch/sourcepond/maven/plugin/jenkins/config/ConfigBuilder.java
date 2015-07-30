@@ -123,6 +123,25 @@ public interface ConfigBuilder {
 	ConfigBuilder setStdin(File pStdin);
 
 	/**
+	 * Sets the {@link File} where to redirect the standard out, see
+	 * {@link Config#getStdoutOrNull()}.
+	 * 
+	 * @param pStdout
+	 *            {@link File} or {@code null}
+	 * @return This builder, never {@code null}
+	 */
+	ConfigBuilder setStdout(File pStdout);
+
+	/**
+	 * Sets whether the standard output shall be appended to the file specified
+	 * by {@link #setStdout(File)}. See {@link Config#isAppending()}
+	 * 
+	 * @param pAppend
+	 * @return
+	 */
+	ConfigBuilder setAppend(boolean pAppend);
+
+	/**
 	 * Sets the proxy if any specified, see {@link Config#getProxyOrNull()}.
 	 * 
 	 * @param pProxy

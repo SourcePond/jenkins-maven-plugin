@@ -111,6 +111,22 @@ public interface Config {
 	Path getStdinOrNull();
 
 	/**
+	 * Returns the file to be used as stdout by the CLI; specified through mojo
+	 * parameter <em>stdout</em>.
+	 * 
+	 * @return Path to stdout or {@code null}
+	 */
+	Path getStdoutOrNull();
+
+	/**
+	 * Returns whether the standard output of the CLI should be appended to the
+	 * target file. Specified through mojo parameter <em>append</em>.
+	 * 
+	 * @return {@code true} if appending, {@code false} if overwriting.
+	 */
+	boolean isAppending();
+
+	/**
 	 * Returns the download link of the jenkins-cli.jar to be used by the
 	 * plugin. The cli-uri is the concatenation of the required mojo parameters
 	 * <em>baseUrl</em> and <em>cliJar</em>.

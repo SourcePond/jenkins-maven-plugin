@@ -19,6 +19,7 @@ import static ch.sourcepond.maven.plugin.jenkins.config.ConfigImpl.CONFIG_VALIDA
 import static ch.sourcepond.maven.plugin.jenkins.config.ConfigImpl.CONFIG_VALIDATION_WARN_TRUSTSTORE_PASSWORD_NOT_NECESSARY;
 import static ch.sourcepond.maven.plugin.jenkins.config.ConfigImpl.MIN_TRUSTSTORE_PWD_LENGTH;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -26,9 +27,14 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.net.URI;
+import java.nio.file.Path;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.settings.Proxy;
+import org.apache.maven.settings.Settings;
 import org.junit.Test;
 
 import ch.sourcepond.maven.plugin.jenkins.message.Messages;
@@ -45,6 +51,38 @@ public class ConfigImplTest {
 	private final Log log = mock(Log.class);
 	private final Messages messages = mock(Messages.class);
 	private final ConfigImpl impl = new ConfigImpl(messages);
+
+	/**
+	 * 
+	 */
+	@Test
+	public void verifyClonedFields() throws Exception {
+		impl.setAppending(true);
+		impl.setBaseUri(new URI("http://baseUri"));
+		impl.setCliJarUri(new URI("http://baseUri/cli"));
+		impl.setCommand("anyCommand");
+		impl.setDownloadedCliJar("anyDownloadedCliJarPath");
+		impl.setNoCertificateCheck(true);
+		impl.setNoKeyAuth(true);
+		impl.setPrivateKey("anyPrivateKeyPath");
+		impl.setProxy(mock(Proxy.class));
+		impl.setSettings(mock(Settings.class));
+		impl.setStdin(mock(Path.class));
+		impl.setStdout(mock(Path.class));
+		impl.setTrustStore(new File("anyTrustStore"));
+		impl.setTrustStorePassword("anyTrustStorePassword");
+		impl.setWorkDirectory(mock(Path.class));
+
+		final ConfigImpl clone = (ConfigImpl) impl.clone();
+		assertNotSame(impl, clone);
+		final Field[] fields = ConfigImpl.class.getDeclaredFields();
+		for (final Field f : fields) {
+			f.setAccessible(true);
+			assertEquals(f.getName()
+					+ " has different values on original and clone!",
+					f.get(impl), f.get(clone));
+		}
+	}
 
 	/**
 	 * @throws MojoExecutionException

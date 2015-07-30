@@ -202,6 +202,34 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setStdout(java
+	 * .io.File)
+	 */
+	@Override
+	public ConfigBuilder setStdout(final File pStdout) {
+		if (pStdout != null) {
+			config.setStdout(pStdout.toPath());
+		}
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setAppend(boolean
+	 * )
+	 */
+	@Override
+	public ConfigBuilder setAppend(final boolean pAppend) {
+		config.setAppending(pAppend);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setProxy(org.
 	 * apache.maven.settings.Proxy)
 	 */

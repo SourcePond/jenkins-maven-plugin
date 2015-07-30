@@ -40,6 +40,7 @@ import org.junit.Test;
  */
 public class ConfigBuilderImplTest extends ConfigBuilderImplBaseTest {
 	private static final String ANY_STRING = "anyString";
+	private static final File ANY_FILE = new File(ANY_STRING);
 
 	/**
 	 * 
@@ -126,9 +127,8 @@ public class ConfigBuilderImplTest extends ConfigBuilderImplBaseTest {
 	 */
 	@Test
 	public void verifySetGetPrivateKey() {
-		final File privateKey = new File(ANY_STRING);
-		assertSame(impl, impl.setPrivateKey(privateKey));
-		assertEquals(privateKey.getAbsolutePath(), impl.getBaseConfig()
+		assertSame(impl, impl.setPrivateKey(ANY_FILE));
+		assertEquals(ANY_FILE.getAbsolutePath(), impl.getBaseConfig()
 				.getPrivateKeyOrNull());
 	}
 
@@ -146,9 +146,27 @@ public class ConfigBuilderImplTest extends ConfigBuilderImplBaseTest {
 	 */
 	@Test
 	public void verifySetGetStdin() {
-		final File privateKey = new File(ANY_STRING);
-		assertSame(impl, impl.setStdin(privateKey));
-		assertEquals(privateKey, impl.getBaseConfig().getStdinOrNull().toFile());
+		assertSame(impl, impl.setStdin(ANY_FILE));
+		assertEquals(ANY_FILE, impl.getBaseConfig().getStdinOrNull().toFile());
+	}
+
+	/**
+	 * 
+	 */
+	@Test
+	public void verifySetGetStdout() {
+		assertSame(impl, impl.setStdout(ANY_FILE));
+		assertEquals(ANY_FILE, impl.getBaseConfig().getStdoutOrNull().toFile());
+	}
+
+	/**
+	 * 
+	 */
+	@Test
+	public void verifySetAppending() {
+		assertFalse(impl.getBaseConfig().isAppending());
+		assertSame(impl, impl.setAppend(true));
+		assertTrue(impl.getBaseConfig().isAppending());
 	}
 
 	/**

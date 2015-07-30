@@ -51,6 +51,7 @@ public class CliMojoTest {
 	private final File workDirectory = new File("workDirectory");
 	private final File privateKey = new File("privateKey");
 	private final File stdin = new File("stdin");
+	private final File stdout = new File("stdout");
 	private final File trustStore = new File("trustStore");
 	private final Config config = mock(Config.class);
 	private final CliMojo impl = new CliMojo(cbf, procFacade, finder);
@@ -71,6 +72,8 @@ public class CliMojoTest {
 		impl.setPrivateKey(privateKey);
 		impl.setCommand(COMMAND);
 		impl.setStdin(stdin);
+		impl.setStdout(stdout);
+		impl.setAppend(true);
 		impl.setSettings(settings);
 		impl.setProxyId(PROXY_ID);
 		impl.setTrustStore(trustStore);
@@ -84,6 +87,8 @@ public class CliMojoTest {
 		when(builder.setBaseUrl(baseUrl, CLI_JAR)).thenReturn(builder);
 		when(builder.setCommand(COMMAND)).thenReturn(builder);
 		when(builder.setStdin(stdin)).thenReturn(builder);
+		when(builder.setStdout(stdout)).thenReturn(builder);
+		when(builder.setAppend(true)).thenReturn(builder);
 		when(builder.setNoKeyAuth(true)).thenReturn(builder);
 		when(builder.setNoCertificateCheck(true)).thenReturn(builder);
 		when(builder.setPrivateKey(privateKey)).thenReturn(builder);

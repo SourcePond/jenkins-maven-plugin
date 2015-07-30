@@ -109,6 +109,25 @@ public class CliMojo extends AbstractMojo {
 	private File stdin;
 
 	/**
+	 * Specifies the file where the standard output of the CLI should be
+	 * written. If set, the command sends the data received through stdout to
+	 * the file specified (useful for example if the output of a command like
+	 * "list-jobs" should be further processed). If not set, stdout is only
+	 * written to the log. Note: if <em>stdout</em> is set to {@code false}
+	 * (default) the target file will be replaced.
+	 */
+	@Parameter
+	private File stdout;
+
+	/**
+	 * Specifies whether the target file defined by {@link #stdout} should be
+	 * replaced if existing (default). If set to {@code true} and the target
+	 * file exists, all data will be appended to the existing file.
+	 */
+	@Parameter
+	private boolean append;
+
+	/**
 	 * Specifies the settings-id of the <a
 	 * href="https://maven.apache.org/guides/mini/guide-proxies.html"
 	 * >proxy-server</a> which the CLI should use to connect to the Jenkins
@@ -181,7 +200,8 @@ public class CliMojo extends AbstractMojo {
 						.setProxy(pf.findProxy(proxyId, settings))
 						.setWorkDirectory(workDirectory.toPath())
 						.setBaseUrl(baseUrl, cliJar).setCommand(command)
-						.setStdin(stdin).setNoKeyAuth(noKeyAuth)
+						.setStdin(stdin).setStdout(stdout).setAppend(append)
+						.setNoKeyAuth(noKeyAuth)
 						.setNoCertificateCheck(noCertificateCheck)
 						.setPrivateKey(privateKey).setTrustStore(trustStore)
 						.setTrustStorePassword(trustStorePassword)
@@ -321,5 +341,19 @@ public class CliMojo extends AbstractMojo {
 	// remove this method
 	public Settings getSettings() {
 		return settings;
+	}
+
+	/**
+	 * @param pStdout
+	 */
+	public void setStdout(final File pStdout) {
+		stdout = pStdout;
+	}
+
+	/**
+	 * @param pAppend
+	 */
+	public void setAppend(final boolean pAppend) {
+		append = pAppend;
 	}
 }

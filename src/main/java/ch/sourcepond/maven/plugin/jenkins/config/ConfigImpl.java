@@ -52,6 +52,8 @@ final class ConfigImpl implements Config, Cloneable {
 	private boolean noCertificateCheck;
 	private File trustStore;
 	private String trustStorePassword;
+	private Path stdout;
+	private boolean appending;
 
 	/**
 	 * Creates a new instance of this class.
@@ -70,20 +72,12 @@ final class ConfigImpl implements Config, Cloneable {
 	 */
 	@Override
 	public Object clone() {
-		final ConfigImpl clone = new ConfigImpl(messages);
-		clone.setBaseUri(getBaseUri());
-		clone.setCliJarUri(getCliJarUri());
-		clone.setCommand(getCommand());
-		clone.setDownloadedCliJar(getDownloadedCliJar());
-		clone.setNoCertificateCheck(isNoCertificateCheck());
-		clone.setNoKeyAuth(isNoKeyAuth());
-		clone.setPrivateKey(getPrivateKeyOrNull());
-		clone.setProxy(getProxyOrNull());
-		clone.setSettings(getSettings());
-		clone.setStdin(getStdinOrNull());
-		clone.setTrustStore(getTrustStoreOrNull());
-		clone.setTrustStorePassword(getTrustStorePasswordOrNull());
-		return clone;
+		try {
+			return super.clone();
+		} catch (final CloneNotSupportedException e) {
+			// Will never happen because this class implement Cloneable
+			throw new UnsupportedOperationException(e);
+		}
 	}
 
 	/*
@@ -228,11 +222,32 @@ final class ConfigImpl implements Config, Cloneable {
 		return stdin;
 	}
 
+	@Override
+	public Path getStdoutOrNull() {
+		return stdout;
+	}
+
+	@Override
+	public boolean isAppending() {
+		return appending;
+	}
+
 	/**
 	 * @param pStdin
 	 */
 	void setStdin(final Path pStdin) {
 		stdin = pStdin;
+	}
+
+	/**
+	 * @param pStdout
+	 */
+	void setStdout(final Path pStdout) {
+		stdout = pStdout;
+	}
+
+	void setAppending(final boolean pAppending) {
+		appending = pAppending;
 	}
 
 	@Override
