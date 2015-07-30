@@ -19,14 +19,22 @@ import org.apache.maven.plugin.logging.Log;
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
 
 /**
- *
+ * Facade to create and execute a native process to execute a CLI command.
  */
 public interface ProcessFacade {
 
 	/**
+	 * Executes the CLI with the command, options and arguments specified by the
+	 * {@link Config} parameter.
+	 * 
 	 * @param pLog
+	 *            Log where to redirect <em>stdout</em> and <em>stderr</em>,
+	 *            must not be {@code null}
 	 * @param pConfig
-	 * @return
+	 *            {@link Config} instance which holds all necessary
+	 *            configuration.
+	 * @throws MojoExecutionException
+	 *             Thrown, if something went wrong.
 	 */
 	void execute(Log pLog, Config pConfig) throws MojoExecutionException;
 }
