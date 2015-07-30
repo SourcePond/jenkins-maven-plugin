@@ -139,7 +139,7 @@ public interface Config {
 	 * Returns the absolute path to the local copy of the jenkins-cli.jar. The
 	 * file is downloaded from the URI returned by {@link #getCliJarUri()}. The
 	 * download is be performed during building this config (see
-	 * {@link ConfigBuilder#build()}).
+	 * {@link ConfigBuilder#build(org.apache.maven.plugin.logging.Log)}).
 	 * 
 	 * @return Absolute path, never {@code null}
 	 */

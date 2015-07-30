@@ -14,6 +14,7 @@ import org.junit.Test;
  *
  */
 public class MessageImplTest {
+	private static final String ANY_KEY = "anyKey";
 	private final MessageImpl impl = new MessageImpl();
 	private Locale currentLocale;
 
@@ -32,6 +33,14 @@ public class MessageImplTest {
 	@After
 	public void tearDown() {
 		Locale.setDefault(currentLocale);
+	}
+
+	/**
+	 * 
+	 */
+	@Test
+	public void verifyTranslationsKeyNotFound() {
+		assertEquals(ANY_KEY, impl.getMessage(ANY_KEY));
 	}
 
 	/**

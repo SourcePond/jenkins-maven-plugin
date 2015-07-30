@@ -33,6 +33,9 @@ final class MessageImpl implements Messages {
 	static final String BASE_NAME = "resources";
 	private final ResourceBundle bundle;
 
+	/**
+	 * Creates a new instance of this class.
+	 */
 	@Inject
 	MessageImpl() {
 		bundle = getBundle(BASE_NAME);
@@ -51,7 +54,7 @@ final class MessageImpl implements Messages {
 			final String value = bundle.getString(pKey);
 			return format(value, pArguments);
 		} catch (final MissingResourceException e) {
-			return "[No resource found for key '" + pKey + "']";
+			return pKey;
 		}
 	}
 

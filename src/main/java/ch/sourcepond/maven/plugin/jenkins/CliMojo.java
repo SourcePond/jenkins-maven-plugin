@@ -313,7 +313,9 @@ public class CliMojo extends AbstractMojo {
 	}
 
 	/**
-	 * @return
+	 * Returns the Maven settings injected via ${settings}
+	 * 
+	 * @return Maven settings, never {@code null}
 	 */
 	// TODO: Getter is only used by integration-test. Find a better solution and
 	// remove this method

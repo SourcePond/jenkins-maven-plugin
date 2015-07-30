@@ -19,9 +19,18 @@ package ch.sourcepond.maven.plugin.jenkins.message;
 public interface Messages {
 
 	/**
+	 * Determines the string with the key specified from the
+	 * <em>resources.properties</em> file and formats it with the replacements
+	 * specified. If no string with the key specified could be found, the key
+	 * itself will be returned.
+	 * 
 	 * @param pKey
-	 * @param pReplacments
-	 * @return
+	 *            Message key, must not be {@code null}
+	 * @param pReplacements
+	 *            Replacements to format the message, must not {@code null} but
+	 *            can be empty
+	 * 
+	 * @return Formatted message, or, key if no message could be found
 	 */
-	String getMessage(String pKey, Object... pReplacments);
+	String getMessage(String pKey, Object... pReplacements);
 }
