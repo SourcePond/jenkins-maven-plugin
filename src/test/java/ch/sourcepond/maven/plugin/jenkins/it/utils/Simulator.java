@@ -13,9 +13,15 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.it.utils;
 
+import static java.nio.file.FileSystems.getDefault;
+import static org.apache.commons.lang3.SystemUtils.USER_DIR;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.nio.file.Path;
+
+import org.apache.maven.plugin.logging.Log;
 
 import ch.sourcepond.maven.plugin.jenkins.CliMojo;
 
@@ -23,6 +29,7 @@ import ch.sourcepond.maven.plugin.jenkins.CliMojo;
  *
  */
 public abstract class Simulator implements Closeable {
+	public static final Path TARGET = getDefault().getPath(USER_DIR, "target");
 	public static final String BASE_PATH = "";
 	public static final String CLI_JAR_PATH = "/jnlpJars/jenkins-cli.jar";
 	public static final String CLI_SITE_PATH = "/cli";
@@ -52,5 +59,5 @@ public abstract class Simulator implements Closeable {
 	/**
 	 * @throws Exception
 	 */
-	public abstract void setup(final CliMojo mojo) throws Exception;
+	public abstract void setup(Log pLog, CliMojo mojo) throws Exception;
 }

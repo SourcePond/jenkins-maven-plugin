@@ -15,6 +15,7 @@ package ch.sourcepond.maven.plugin.jenkins.it.utils;
 
 import java.io.IOException;
 
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
 import org.littleshoot.proxy.HttpProxyServer;
@@ -49,10 +50,10 @@ public class ProxySimulator extends Simulator {
 	}
 
 	@Override
-	public void setup(final CliMojo mojo) throws Exception {
+	public void setup(final Log pLog, final CliMojo mojo) throws Exception {
 		server = DefaultHttpProxyServer.bootstrap().withPort(getPort())
 				.withAllowLocalOnly(true).start();
-		delegate.setup(mojo);
+		delegate.setup(pLog, mojo);
 
 		final Proxy proxy = new Proxy();
 		proxy.setId(PROXY_ID);

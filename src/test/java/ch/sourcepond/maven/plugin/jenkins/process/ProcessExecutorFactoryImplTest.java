@@ -19,6 +19,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -38,9 +39,9 @@ import ch.sourcepond.maven.plugin.jenkins.config.Config;
 public class ProcessExecutorFactoryImplTest {
 	private final Log log = mock(Log.class);
 	private final Config config = mock(Config.class);
+	private final CloseStreamsListener listener = mock(CloseStreamsListener.class);
 	private final InputStream stdin = mock(InputStream.class);
 	private final OutputStream stdout = mock(OutputStream.class);
-	private final OutputStream stderr = mock(OutputStream.class);
 	private final RedirectStreamFactory rosFactory = mock(RedirectStreamFactory.class);
 	private final ProcessExecutorFactoryImpl impl = new ProcessExecutorFactoryImpl(
 			rosFactory);
@@ -50,24 +51,28 @@ public class ProcessExecutorFactoryImplTest {
 	 * 
 	 */
 	@Before
-	public void setup() throws MojoExecutionException {
-		when(rosFactory.newErrorRedirect(log)).thenReturn(stderr);
-		when(rosFactory.newOutputRedirect(log)).thenReturn(stdout);
-		when(rosFactory.openStdin(config)).thenReturn(stdin);
+	public void setup() throws IOException {
+		// Setup factory
+		when(rosFactory.newStdout(config)).thenReturn(stdout);
+		when(rosFactory.newStdin(config)).thenReturn(stdin);
+		when(rosFactory.newListener(log)).thenReturn(listener);
+
+		// Setup listener
+		when(listener.setStdout(stdout)).thenReturn(stdout);
+		when(listener.setStdin(stdin)).thenReturn(stdin);
 	}
 
 	/**
 	 * 
 	 */
 	@Test
-	public void verifyStdinProcess() throws Exception {
+	public void verifyCloseStreamsAfterProcessFinished() throws Exception {
 		final ProcessExecutor exec = impl.newExecutor(log, config,
 				asList("java", "-version"));
 		final StartedProcess proc = exec.start();
 		final ProcessResult res = proc.getFuture().get();
 		assertEquals(0, res.getExitValue());
-		verify(stdout).close();
-		verify(stdout).close();
-		verify(stdin).close();
+		verify(stdout).flush();
+		verify(listener).afterStop(proc.getProcess());
 	}
 }

@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.plugin.logging.SystemStreamLog;
@@ -35,20 +36,20 @@ public final class OutputVerificationLog extends SystemStreamLog {
 	 * )
 	 */
 	@Override
-	public void error(final CharSequence content) {
+	public void info(final CharSequence content) {
 		contents.add(content);
 	}
 
 	/**
 	 * @param pExpectedLines
 	 */
-	public void verifyContent(final String... pExpectedLines) {
-		assertEquals(pExpectedLines.length, contents.size());
+	public void verifyContent(final List<String> pExpectedLines) {
+		assertEquals(pExpectedLines.size(), contents.size());
 
-		int i = 0;
+		final Iterator<String> expected = pExpectedLines.iterator();
 		for (final Iterator<CharSequence> it = contents.iterator(); it
-				.hasNext(); i++) {
-			assertEquals(pExpectedLines[i], it.next());
+				.hasNext();) {
+			assertEquals(expected.next(), it.next());
 		}
 	}
 }

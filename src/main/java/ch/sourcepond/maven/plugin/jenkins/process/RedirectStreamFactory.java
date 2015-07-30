@@ -13,10 +13,10 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.process;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
@@ -27,18 +27,27 @@ import ch.sourcepond.maven.plugin.jenkins.config.Config;
 interface RedirectStreamFactory {
 
 	/**
+	 * @param pLog
 	 * @return
 	 */
-	OutputStream newOutputRedirect(Log pLog);
+	CloseStreamsListener newListener(Log pLog);
 
 	/**
 	 * @return
 	 */
-	OutputStream newErrorRedirect(Log pLog);
+	OutputStream newLogRedirect(Log pLog);
 
 	/**
 	 * @param pConfig
 	 * @return
+	 * @throws IOException
 	 */
-	InputStream openStdin(Config pConfig) throws MojoExecutionException;
+	OutputStream newStdout(Config pConfig) throws IOException;
+
+	/**
+	 * @param pConfig
+	 * @return
+	 * @throws IOException
+	 */
+	InputStream newStdin(Config pConfig) throws IOException;
 }

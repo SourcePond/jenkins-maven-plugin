@@ -13,34 +13,37 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.it;
 
-import java.util.List;
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.util.Iterator;
 
 import org.junit.Before;
 
 /**
  *
  */
-public class HttpsNoCertificateCheckITCase extends HttpsITCase {
+public class AppendStdoutITCase extends StdoutITCase {
 
 	/**
-	 * @throws Exception
+	 * @throws IOException
 	 */
 	@Before
-	public void setupNoCertificateCheck() throws Exception {
-		super.setup();
-		mojo.setNoCertificateCheck(true);
+	public void setupStdoutTruncate() throws IOException {
+		mojo.setAppend(true);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * ch.sourcepond.maven.plugin.jenkins.it.ITCase#specifyExpectedStdout(java
-	 * .util.List)
+	 * ch.sourcepond.maven.plugin.jenkins.it.StdoutITCase#verifyWrittenLines
+	 * (java.util.Iterator)
 	 */
 	@Override
-	protected void specifyExpectedStdout(final List<String> pLines) {
-		pLines.add("Skipping HTTPS certificate checks altogether. Note that this is not secure at all.");
-		super.specifyExpectedStdout(pLines);
+	protected void verifyWrittenLines(final Iterator<String> pLines)
+			throws IOException {
+		assertEquals(ANY_LINE, pLines.next());
+		super.verifyWrittenLines(pLines);
 	}
 }

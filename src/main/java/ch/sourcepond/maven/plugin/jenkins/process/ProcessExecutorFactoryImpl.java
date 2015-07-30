@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.process;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -55,17 +55,30 @@ final class ProcessExecutorFactoryImpl implements ProcessExecutorFactory {
 	public ProcessExecutor newExecutor(final Log pLog, final Config pConfig,
 			final List<String> pCommand) throws MojoExecutionException {
 		final ProcessExecutor executor = new ProcessExecutor(pCommand);
+		final CloseStreamsListener listener = rosFactory.newListener(pLog);
 
-		final OutputStream stdout = rosFactory.newOutputRedirect(pLog);
-		executor.redirectOutput(stdout);
+		try {
+			final OutputStream logOut = rosFactory.newLogRedirect(pLog);
 
-		final OutputStream stderr = rosFactory.newErrorRedirect(pLog);
-		executor.redirectError(stderr);
+			// stdout/stderr to log
+			executor.redirectOutput(logOut);
+			executor.redirectError(logOut);
 
-		final InputStream stdin = rosFactory.openStdin(pConfig);
-		executor.redirectInput(stdin);
+			final OutputStream out = listener.setStdout(rosFactory
+					.newStdout(pConfig));
 
-		return executor.addListener(new CloseStreamsListener(pLog, stdout,
-				stderr, stdin));
+			// Stdout to file (if any)
+			executor.redirectOutputAlsoTo(out);
+			executor.redirectErrorAlsoTo(out);
+
+			// Stdin
+			executor.redirectInput(listener.setStdin(rosFactory
+					.newStdin(pConfig)));
+		} catch (final IOException e) {
+			listener.closeAll();
+			throw new MojoExecutionException(e.getMessage(), e);
+		}
+
+		return executor.addListener(listener);
 	}
 }

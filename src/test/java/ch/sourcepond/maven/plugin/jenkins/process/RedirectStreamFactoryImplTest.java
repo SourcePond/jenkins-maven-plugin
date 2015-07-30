@@ -13,6 +13,8 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.process;
 
+import static java.nio.file.StandardOpenOption.APPEND;
+import static org.apache.commons.io.output.NullOutputStream.NULL_OUTPUT_STREAM;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
@@ -29,7 +31,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.nio.file.spi.FileSystemProvider;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,9 +44,11 @@ public class RedirectStreamFactoryImplTest {
 	private static final String TEST_LINE = "testline";
 	private final Log log = mock(Log.class);
 	private final Path stdinPath = mock(Path.class);
+	private final Path stdoutPath = mock(Path.class);
 	private final FileSystem fs = mock(FileSystem.class);
 	private final FileSystemProvider provider = mock(FileSystemProvider.class);
 	private final InputStream stdin = mock(InputStream.class);
+	private final OutputStream stdout = mock(OutputStream.class);
 	private final Config config = mock(Config.class);
 	private final RedirectStreamFactoryImpl impl = new RedirectStreamFactoryImpl();
 
@@ -55,6 +58,7 @@ public class RedirectStreamFactoryImplTest {
 	@Before
 	public void setup() throws Exception {
 		when(stdinPath.getFileSystem()).thenReturn(fs);
+		when(stdoutPath.getFileSystem()).thenReturn(fs);
 		when(fs.provider()).thenReturn(provider);
 		when(provider.newInputStream(stdinPath)).thenReturn(stdin);
 		when(config.getStdinOrNull()).thenReturn(stdinPath);
@@ -65,20 +69,9 @@ public class RedirectStreamFactoryImplTest {
 	 */
 	@Test
 	public void verifyOutputRedirect() throws IOException {
-		final OutputStream out = impl.newOutputRedirect(log);
+		final OutputStream out = impl.newLogRedirect(log);
 		out.write((TEST_LINE + "\n").getBytes());
 		verify(log).info(TEST_LINE);
-		verifyNoMoreInteractions(log);
-	}
-
-	/**
-	 * 
-	 */
-	@Test
-	public void verifyErrorRedirect() throws IOException {
-		final OutputStream out = impl.newErrorRedirect(log);
-		out.write((TEST_LINE + "\n").getBytes());
-		verify(log).error(TEST_LINE);
 		verifyNoMoreInteractions(log);
 	}
 
@@ -87,7 +80,7 @@ public class RedirectStreamFactoryImplTest {
 	 */
 	@Test
 	public void verifyOpenStdin() throws Exception {
-		assertSame(stdin, impl.openStdin(config));
+		assertSame(stdin, impl.newStdin(config));
 	}
 
 	/**
@@ -99,10 +92,10 @@ public class RedirectStreamFactoryImplTest {
 		doThrow(expected).when(provider).newInputStream(stdinPath);
 
 		try {
-			impl.openStdin(config);
+			impl.newStdin(config);
 			fail("Exception expected");
-		} catch (final MojoExecutionException e) {
-			assertSame(expected, e.getCause());
+		} catch (final IOException e) {
+			assertSame(expected, e);
 		}
 	}
 
@@ -112,7 +105,38 @@ public class RedirectStreamFactoryImplTest {
 	@Test
 	public void verifyOpenStdinNoInput() throws Exception {
 		when(config.getStdinOrNull()).thenReturn(null);
-		final InputStream stdin = impl.openStdin(config);
+		final InputStream stdin = impl.newStdin(config);
 		assertEquals(-1, stdin.read());
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	@Test
+	public void verifyStdoutTruncateMode() throws Exception {
+		when(config.getStdoutOrNull()).thenReturn(stdoutPath);
+		when(provider.newOutputStream(stdoutPath)).thenReturn(stdout);
+		assertSame(stdout, impl.newStdout(config));
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	@Test
+	public void verifyStdoutAppendMode() throws Exception {
+		when(config.isAppending()).thenReturn(true);
+		when(config.getStdoutOrNull()).thenReturn(stdoutPath);
+		when(provider.newOutputStream(stdoutPath, APPEND)).thenReturn(stdout);
+		assertSame(stdout, impl.newStdout(config));
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	@Test
+	public void verifyNoStdout() throws Exception {
+		when(provider.newOutputStream(stdoutPath, APPEND)).thenReturn(stdout);
+		final OutputStream stdout = impl.newStdout(config);
+		assertEquals(NULL_OUTPUT_STREAM, stdout);
 	}
 }

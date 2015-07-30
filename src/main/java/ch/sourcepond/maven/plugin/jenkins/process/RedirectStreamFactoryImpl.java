@@ -13,11 +13,12 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.process;
 
-import static ch.sourcepond.maven.plugin.jenkins.process.LogBridge.ERROR;
 import static ch.sourcepond.maven.plugin.jenkins.process.LogBridge.INFO;
 import static java.nio.file.Files.newInputStream;
+import static java.nio.file.Files.newOutputStream;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static org.apache.commons.io.output.NullOutputStream.NULL_OUTPUT_STREAM;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,7 +27,7 @@ import java.nio.file.Path;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.maven.plugin.logging.Log;
 
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
@@ -45,19 +46,30 @@ final class RedirectStreamFactoryImpl implements RedirectStreamFactory {
 	 * #newOutputRedirect(org.apache.maven.plugin.logging.Log)
 	 */
 	@Override
-	public OutputStream newOutputRedirect(final Log pLog) {
+	public OutputStream newLogRedirect(final Log pLog) {
 		return new MavenLogOutputStream(pLog, INFO);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see ch.sourcepond.maven.plugin.jenkins.process.RedirectStreamFactory
-	 * #newErrorRedirect(org.apache.maven.plugin.logging.Log)
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.process.RedirectStreamFactory#newStdout
+	 * (ch.sourcepond.maven.plugin.jenkins.config.Config)
 	 */
 	@Override
-	public OutputStream newErrorRedirect(final Log pLog) {
-		return new MavenLogOutputStream(pLog, ERROR);
+	public OutputStream newStdout(final Config pConfig) throws IOException {
+		final OutputStream out;
+		if (pConfig.getStdoutOrNull() != null) {
+			if (pConfig.isAppending()) {
+				out = newOutputStream(pConfig.getStdoutOrNull(), APPEND);
+			} else {
+				out = newOutputStream(pConfig.getStdoutOrNull());
+			}
+		} else {
+			out = NULL_OUTPUT_STREAM;
+		}
+		return out;
 	}
 
 	/*
@@ -68,20 +80,26 @@ final class RedirectStreamFactoryImpl implements RedirectStreamFactory {
 	 * sourcepond.maven.plugin.jenkins.config.Config)
 	 */
 	@Override
-	public InputStream openStdin(final Config pConfig)
-			throws MojoExecutionException {
+	public InputStream newStdin(final Config pConfig) throws IOException {
 		final Path stdinPath = pConfig.getStdinOrNull();
 		final InputStream stdin;
 		if (stdinPath != null) {
-			try {
-				stdin = newInputStream(stdinPath);
-			} catch (final IOException e) {
-				throw new MojoExecutionException(e.getMessage(), e);
-			}
+			stdin = newInputStream(stdinPath);
 		} else {
-			stdin = new ByteArrayInputStream(new byte[0]);
+			stdin = new NullInputStream(0);
 		}
 		return stdin;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.process.RedirectStreamFactory#newListener
+	 * (org.apache.maven.plugin.logging.Log)
+	 */
+	@Override
+	public CloseStreamsListener newListener(final Log pLog) {
+		return new CloseStreamsListener(pLog);
+	}
 }

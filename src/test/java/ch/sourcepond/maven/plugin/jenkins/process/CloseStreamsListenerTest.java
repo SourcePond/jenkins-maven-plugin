@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.process;
 
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -23,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.maven.plugin.logging.Log;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -31,10 +33,35 @@ import org.junit.Test;
 public class CloseStreamsListenerTest {
 	private final Log log = mock(Log.class);
 	private final OutputStream stdout = mock(OutputStream.class);
-	private final OutputStream stderr = mock(OutputStream.class);
 	private final InputStream stdin = mock(InputStream.class);
-	private final CloseStreamsListener impl = new CloseStreamsListener(log,
-			stdout, stderr, stdin);
+	private final RedirectStreamFactoryImpl factory = new RedirectStreamFactoryImpl();
+	private final CloseStreamsListener impl = factory.newListener(log);
+
+	/**
+	 * 
+	 */
+	@Before
+	public void setup() {
+		impl.setStdout(stdout);
+		impl.setStdin(stdin);
+	}
+
+	/**
+	 * 
+	 */
+	@Test
+	public void verifySetStdout() {
+		assertSame(stdout, impl.setStdout(stdout));
+	}
+
+	/**
+	 * 
+	 */
+	@Test
+	public void verifyHandleNullStreams() {
+		// This should not cause an exception
+		new CloseStreamsListener(log).closeAll();
+	}
 
 	/**
 	 * 
@@ -42,10 +69,9 @@ public class CloseStreamsListenerTest {
 	@Test
 	public void afterStop() throws Exception {
 		impl.afterStop(null);
-		verify(stderr).close();
 		verify(stdin).close();
 		verify(stdout).close();
-		verifyNoMoreInteractions(stderr, stdin, stdout);
+		verifyNoMoreInteractions(stdin, stdout);
 	}
 
 	/**
@@ -54,7 +80,7 @@ public class CloseStreamsListenerTest {
 	@Test
 	public void afterStopExceptionWhileClosing() throws Exception {
 		final IOException expected = new IOException();
-		doThrow(expected).when(stderr).close();
+		doThrow(expected).when(stdin).close();
 
 		// This should not cause an exception
 		impl.afterStop(null);

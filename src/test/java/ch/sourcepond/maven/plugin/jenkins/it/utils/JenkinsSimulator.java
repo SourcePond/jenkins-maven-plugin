@@ -13,10 +13,8 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.it.utils;
 
-import static java.nio.file.FileSystems.getDefault;
 import static java.nio.file.Files.createDirectories;
 import static java.util.UUID.randomUUID;
-import static org.apache.commons.lang3.SystemUtils.USER_DIR;
 import static org.apache.commons.lang3.Validate.isTrue;
 
 import java.io.IOException;
@@ -28,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.settings.Settings;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.StartedProcess;
@@ -39,9 +38,8 @@ import ch.sourcepond.maven.plugin.jenkins.CliMojo;
  */
 public abstract class JenkinsSimulator extends Simulator {
 	private static final String LOCALHOST = "localhost";
-	private final Path target = getDefault().getPath(USER_DIR, "target");
-	private final Path war = target.resolve("jenkins.war");
-	private final Path jenkinsHome = target.resolve(randomUUID().toString());
+	private final Path war = TARGET.resolve("jenkins.war");
+	private final Path jenkinsHome = TARGET.resolve(randomUUID().toString());
 	private StartedProcess proc;
 
 	/**
@@ -77,7 +75,7 @@ public abstract class JenkinsSimulator extends Simulator {
 	 * Starts the embedded Jetty server.
 	 */
 	@Override
-	public void setup(final CliMojo mojo) throws Exception {
+	public void setup(final Log pLog, final CliMojo mojo) throws Exception {
 		isTrue(Files.isRegularFile(war),
 				war
 						+ " does not exist! Run this project with Maven to downlad jenkins.war.");
@@ -99,6 +97,11 @@ public abstract class JenkinsSimulator extends Simulator {
 		// Setup mojo
 		mojo.setSettings(new Settings());
 		mojo.setBaseUrl(new URL(getProcotol(), LOCALHOST, getPort(), BASE_PATH));
+
+		mojo.setLog(pLog);
+		mojo.setWorkDirectory(TARGET.toFile());
+		mojo.setCommand("help create-job");
+		mojo.setCliJar(CLI_JAR_PATH);
 	}
 
 	/**

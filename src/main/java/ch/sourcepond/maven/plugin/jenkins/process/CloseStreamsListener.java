@@ -24,11 +24,10 @@ import org.zeroturnaround.exec.listener.ProcessListener;
 /**
  *
  */
-final class CloseStreamsListener extends ProcessListener {
+class CloseStreamsListener extends ProcessListener {
 	private final Log log;
-	private final OutputStream stdout;
-	private final OutputStream stderr;
-	private final InputStream stdin;
+	private OutputStream stdout;
+	private InputStream stdin;
 
 	/**
 	 * @param pLog
@@ -36,23 +35,45 @@ final class CloseStreamsListener extends ProcessListener {
 	 * @param pStderr
 	 * @param pStdin
 	 */
-	CloseStreamsListener(final Log pLog, final OutputStream pStdout,
-			final OutputStream pStderr, final InputStream pStdin) {
+	CloseStreamsListener(final Log pLog) {
 		log = pLog;
+	}
+
+	/**
+	 * @param stdout
+	 */
+	OutputStream setStdout(final OutputStream pStdout) {
 		stdout = pStdout;
-		stderr = pStderr;
+		return pStdout;
+	}
+
+	/**
+	 * @param stdin
+	 */
+	InputStream setStdin(final InputStream pStdin) {
 		stdin = pStdin;
+		return pStdin;
 	}
 
 	/**
 	 * @param pStream
 	 */
 	private void closeStream(final Closeable pStream) {
-		try {
-			pStream.close();
-		} catch (final IOException e) {
-			log.warn(e);
+		if (pStream != null) {
+			try {
+				pStream.close();
+			} catch (final IOException e) {
+				log.warn(e);
+			}
 		}
+	}
+
+	/**
+	 * Closes all non-null streams set on this object.
+	 */
+	void closeAll() {
+		closeStream(stdout);
+		closeStream(stdin);
 	}
 
 	/*
@@ -64,8 +85,6 @@ final class CloseStreamsListener extends ProcessListener {
 	 */
 	@Override
 	public void afterStop(final Process process) {
-		closeStream(stdout);
-		closeStream(stderr);
-		closeStream(stdin);
+		closeAll();
 	}
 }

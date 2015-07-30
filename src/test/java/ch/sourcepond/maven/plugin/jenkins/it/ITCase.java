@@ -13,9 +13,8 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.it;
 
-import static ch.sourcepond.maven.plugin.jenkins.it.utils.Simulator.CLI_JAR_PATH;
-
-import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -43,11 +42,13 @@ public abstract class ITCase {
 	@Before
 	public void setup() throws Exception {
 		simulator = newSimulator();
-		simulator.setup(mojo);
-		mojo.setLog(log);
-		mojo.setWorkDirectory(new File("target"));
-		mojo.setCommand("help create-job");
-		mojo.setCliJar(CLI_JAR_PATH);
+		simulator.setup(log, mojo);
+	}
+
+	protected void specifyExpectedStdout(final List<String> pLines) {
+		pLines.add("java -jar jenkins-cli.jar create-job NAME");
+		pLines.add("Creates a new job by reading stdin as a configuration XML file.");
+		pLines.add(" NAME : Name of the job to create");
 	}
 
 	/**
@@ -56,10 +57,9 @@ public abstract class ITCase {
 	@Test
 	public void verifyHttpRequest() throws Exception {
 		mojo.execute();
-		log.verifyContent(
-				"java -jar jenkins-cli.jar create-job NAME",
-				"Creates a new job by reading stdin as a configuration XML file.",
-				" NAME : Name of the job to create");
+		final List<String> expectedLines = new LinkedList<>();
+		specifyExpectedStdout(expectedLines);
+		log.verifyContent(expectedLines);
 	}
 
 	/**
