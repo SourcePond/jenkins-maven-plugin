@@ -30,8 +30,9 @@ The table below gives an overview about the parameters which can be specified.
 | **trustStorePassword** | Specifies the password for the trust-store to be used by the CLI trustStore. This parameter will be passed as "-Djavax.net.ssl.trustStorePassword" option to the JVM which runs the CLI. According to keytool the password must be at least 6 characters. |
 
 ## Examples
-### Create a new job on Jenkins
-You can find the full source code of this example in directory examples/create-job of this project.
+You can find the full source code of the examples below in directory examples.
+
+### Create a new job on Jenkins (examples/create-job)
 ```
 <plugin>
 	<groupId>net.sf.xsltmp</groupId>
