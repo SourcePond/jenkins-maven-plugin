@@ -72,6 +72,7 @@
 		<jenkins.baseurl>https://sourcepond.ci.cloudbees.com</jenkins.baseurl>
 		<deployment.baseurl>https://oss.sonatype.org</deployment.baseurl>
 		<git.baseurl>https://github.com/SourcePond</git.baseurl>
+		<project.scm.id>github</project.scm.id>
 	</properties>
 
 	<dependencyManagement>
