@@ -74,7 +74,7 @@ And execute following command in your project folder (where the pom.xml is locat
 ```
 mvn jenkins:cli -Djenkins.command="help create-job"
 ```
-You can also define your Jenkins baseUrl like this:
+You can also define your Jenkins baseURL like this:
 ```
 mvn jenkins:cli -Djenkins.baseURL=http://[HOST]:[PORT]/[JENKINS PATH] -Djenkins.command=[CMD]
 ```
