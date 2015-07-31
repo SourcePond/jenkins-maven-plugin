@@ -53,6 +53,7 @@ import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 final class DownloaderImpl implements Downloader {
 	static final String DOWNLOADER_ERROR_NO_VERSION_HEADER = "downloader.error.noVersionHeader";
 	static final String DOWNLOADER_INFO_VERSION_FOUND = "downloader.info.versionFound";
+	static final String DOWNLOADER_INFO_USED_CLI_JAR = "downloader.info.usedCliJar";
 	static final String VERSION_HEADER_NAME = "X-Jenkins";
 	static final String JAR_NAME = "jenkins-cli.jar";
 	private final Messages messages;
@@ -168,7 +169,15 @@ final class DownloaderImpl implements Downloader {
 				}
 			}
 
-			return downloadedCliJar.toAbsolutePath().toString();
+			final String absoluteDownloadedCliPath = downloadedCliJar
+					.toAbsolutePath().toString();
+
+			if (pLog.isInfoEnabled()) {
+				pLog.info(messages.getMessage(DOWNLOADER_INFO_USED_CLI_JAR,
+						absoluteDownloadedCliPath));
+			}
+
+			return absoluteDownloadedCliPath;
 		} catch (final IOException | KeyManagementException
 				| NoSuchAlgorithmException | KeyStoreException
 				| CertificateException e) {

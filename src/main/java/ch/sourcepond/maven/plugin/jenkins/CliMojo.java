@@ -44,7 +44,7 @@ public class CliMojo extends AbstractMojo {
 	/**
 	 * Specifies where the downloaded jenkins-cli.jar should be stored.
 	 */
-	@Parameter(defaultValue = "${basedir}/jenkinscli", required = true)
+	@Parameter(defaultValue = "${user.home}/.m2/jenkinscli", required = true)
 	private File jenkinscliDirectory;
 
 	/**

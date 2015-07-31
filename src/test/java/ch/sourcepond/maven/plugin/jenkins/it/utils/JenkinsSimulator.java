@@ -78,7 +78,7 @@ public abstract class JenkinsSimulator extends Simulator {
 	public void setup(final Log pLog, final CliMojo mojo) throws Exception {
 		isTrue(Files.isRegularFile(war),
 				war
-						+ " does not exist! Run this project with Maven to downlad jenkins.war.");
+						+ " does not exist! Run this project with Maven to download jenkins.war.");
 		createDirectories(jenkinsHome);
 
 		final List<String> processCommand = new LinkedList<>();
