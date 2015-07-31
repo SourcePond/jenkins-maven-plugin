@@ -2,8 +2,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<description>This is a test project</description>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>ch.sourcepond</groupId>
-	<artifactId>ch.sourcepond.example</artifactId>
+	<groupId>ch.sourcepond.example</groupId>
+	<artifactId>create-job</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
 	<properties>

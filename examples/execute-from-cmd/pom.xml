@@ -1,0 +1,43 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<description>This is a test project</description>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>ch.sourcepond.example</groupId>
+	<artifactId>execute-from-cmd</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+
+	<scm>
+		<connection>ssh://[YOUR GIT-HOST]/opt/git/${project.artifactId}.git</connection>
+		<developerConnection>${project.scm.connection}</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
+	<ciManagement>
+		<url>http://[YOUR JENKINS HOST]:8080/[YOUR JENKINS PATH]</url>
+	</ciManagement>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>ch.sourcepond.maven.plugins</groupId>
+					<artifactId>jenkins-maven-plugin</artifactId>
+					<version>1.0.0-SNAPSHOT</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>ch.sourcepond.maven.plugins</groupId>
+				<artifactId>jenkins-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<!-- Special Maven executionId which allows to run the plugin from 
+							the command line without without defining a lifecycle phase. -->
+						<id>default-cli</id>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

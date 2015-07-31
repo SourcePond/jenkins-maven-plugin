@@ -55,6 +55,30 @@ The configuration described above can also be done through properties. Propertie
 ## Examples
 You can find the full source code of the examples below in the *examples* directory.
 
+### Show help for create-job (command line)
+To show the help message for Jenkins command "create-job" from the command line add following snipped to your pom.xml:
+```
+<plugin>
+	<groupId>ch.sourcepond.maven.plugins</groupId>
+	<artifactId>jenkins-maven-plugin</artifactId>
+	<executions>
+		<execution>
+			<!-- Special Maven executionId which allows to run the plugin from the 
+				command line without without defining a lifecycle phase. -->
+			<id>default-cli</id>
+		</execution>
+	</executions>
+</plugin>
+```
+And execute following command in your project folder (where the pom.xml is located):
+```
+mvn jenkins:cli -Djenkins.command="help create-job"
+```
+You can also define your Jenkins baseUrl like this:
+```
+mvn jenkins:cli -Djenkins.baseURL=http://example.com/jenkins:8080/jenkins -Djenkins.command="help create-job"
+```
+
 ### Create a new job on Jenkins (examples/create-job)
 ```
 <plugin>

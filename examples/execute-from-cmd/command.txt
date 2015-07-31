@@ -1,0 +1,1 @@
+mvn jenkins:cli -Djenkins.command="help create-job"
