@@ -76,7 +76,7 @@ mvn jenkins:cli -Djenkins.command="help create-job"
 ```
 You can also define your Jenkins baseUrl like this:
 ```
-mvn jenkins:cli -Djenkins.baseURL=http://[HOST]:[PORT]/[JENKINS PATH] -Djenkins.command="help create-job"
+mvn jenkins:cli -Djenkins.baseURL=http://[HOST]:[PORT]/[JENKINS PATH] -Djenkins.command=[CMD]
 ```
 
 ### Create a new job on Jenkins (examples/create-job)
