@@ -46,9 +46,9 @@ public class ConfigBuilderImplTest extends ConfigBuilderImplBaseTest {
 	 * 
 	 */
 	@Test
-	public void verifySetGetWorkDirectory() throws Exception {
-		assertSame(impl, impl.setWorkDirectory(workDirectory));
-		assertSame(workDirectory, impl.getBaseConfig().getWorkDirectory());
+	public void verifySetGetJenkinscliDirectory() throws Exception {
+		assertSame(impl, impl.setJenkinscliDirectory(jenkinscliDirectory));
+		assertSame(jenkinscliDirectory, impl.getBaseConfig().getJenkinscliDirectory());
 	}
 
 	/**
@@ -70,13 +70,13 @@ public class ConfigBuilderImplTest extends ConfigBuilderImplBaseTest {
 				"any");
 		final BasicFileAttributes attrs = mock(BasicFileAttributes.class);
 		when(
-				provider.readAttributes(workDirectory,
+				provider.readAttributes(jenkinscliDirectory,
 						BasicFileAttributes.class, NOFOLLOW_LINKS)).thenReturn(
 				attrs);
-		doThrow(expected).when(provider).createDirectory(workDirectory);
+		doThrow(expected).when(provider).createDirectory(jenkinscliDirectory);
 
 		try {
-			impl.setWorkDirectory(workDirectory);
+			impl.setJenkinscliDirectory(jenkinscliDirectory);
 			fail("Exception expected");
 		} catch (final MojoExecutionException e) {
 			assertSame(expected, e.getCause());

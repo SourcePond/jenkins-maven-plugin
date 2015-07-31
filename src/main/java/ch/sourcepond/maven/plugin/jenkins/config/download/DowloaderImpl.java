@@ -81,7 +81,7 @@ final class DowloaderImpl implements Downloader {
 				final HttpEntity entity = response.getEntity();
 
 				if (entity != null) {
-					final Path jar = pConfig.getWorkDirectory().resolve(
+					final Path jar = pConfig.getJenkinscliDirectory().resolve(
 							JAR_NAME);
 
 					try (final InputStream in = entity.getContent()) {

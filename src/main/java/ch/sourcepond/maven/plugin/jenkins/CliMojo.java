@@ -42,10 +42,10 @@ import ch.sourcepond.maven.plugin.jenkins.proxy.ProxyFinder;
 public class CliMojo extends AbstractMojo {
 
 	/**
-	 * Specifies where downloaded artifacts should be stored.
+	 * Specifies where the downloaded jenkins-cli.jar should be stored.
 	 */
-	@Parameter(defaultValue = "${project.build.directory}/jenkins", required = true)
-	private File workDirectory;
+	@Parameter(defaultValue = "${basedir}/jenkinscli", required = true)
+	private File jenkinscliDirectory;
 
 	/**
 	 * Specifies a custom jenkins-cli.jar to be used by this plugin. If set,
@@ -206,7 +206,7 @@ public class CliMojo extends AbstractMojo {
 				getLog(),
 				cbf.newBuilder().setSettings(settings)
 						.setProxy(pf.findProxy(proxyId, settings))
-						.setWorkDirectory(workDirectory.toPath())
+						.setJenkinscliDirectory(jenkinscliDirectory.toPath())
 						.setCustomJenkinsCliJar(customJenkinsCliJar)
 						.setBaseUrl(baseUrl, cliJar).setCommand(command)
 						.setStdin(stdin).setStdout(stdout).setAppend(append)
@@ -218,13 +218,14 @@ public class CliMojo extends AbstractMojo {
 	}
 
 	/**
-	 * Sets the work directory, see {@link #workDirectory}.
+	 * Sets the download directory for jenkins-cli.jar, see
+	 * {@link #jenkinscliDirectory}.
 	 * 
-	 * @param pWorkDirectory
-	 *            Work directory, must not be {@code null}.
+	 * @param pJenkinscliDirectory
+	 *            Download directory, must not be {@code null}.
 	 */
-	public void setWorkDirectory(final File pWorkDirectory) {
-		workDirectory = pWorkDirectory;
+	public void setJenkinscliDirectory(final File pJenkinscliDirectory) {
+		jenkinscliDirectory = pJenkinscliDirectory;
 	}
 
 	/**

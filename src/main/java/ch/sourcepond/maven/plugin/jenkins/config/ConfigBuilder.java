@@ -40,16 +40,17 @@ public interface ConfigBuilder {
 	ConfigBuilder setSettings(Settings pSettings);
 
 	/**
-	 * Sets the work directory, see {@link Config#getWorkDirectory()}.
+	 * Sets the download directory of jenkins-cli.jar, see
+	 * {@link Config#getJenkinscliDirectory()}.
 	 * 
-	 * @param pWorkDirectory
-	 *            Work-directory, must not be {@code null}
+	 * @param pJenkinscliDirectory
+	 *            Download directory, must not be {@code null}
 	 * @return This builder, never {@code null}
 	 * @throws MojoExecutionException
 	 *             Thrown, if the directory specified does not exist and could
 	 *             not be created.
 	 */
-	ConfigBuilder setWorkDirectory(Path pWorkDirectory)
+	ConfigBuilder setJenkinscliDirectory(Path pJenkinscliDirectory)
 			throws MojoExecutionException;
 
 	/**

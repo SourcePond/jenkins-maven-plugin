@@ -26,7 +26,7 @@ public interface Downloader {
 
 	/**
 	 * Downloads the Jenkins CLI jar ({@link Config#getCliJarUri()}) and stores
-	 * it in the work directory ( {@link Config#getWorkDirectory()}).
+	 * it in the work directory ( {@link Config#getJenkinscliDirectory()}).
 	 * 
 	 * @param pConfig
 	 *            The config object, must not be {@code null}

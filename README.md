@@ -17,7 +17,7 @@ The table below gives an overview about the parameters which can be specified.
 
 | Name | Description |
 | ---------------------- | ----------- |
-| **workDirectory** *(required)* | Specifies where downloaded artifacts should be stored. Defaults to *${project.build.directory}/jenkins* |
+| **jenkinscliDirectory** *(required)* | Specifies where the downloaded jenkins-cli.jar should be stored.. Defaults to *${basedir}/jenkinscli* |
 | **baseUrl** *(required)* | Specifies the URL where the Jenkins instance used by the plugin is available. Defaults to *${project.ciManagement.url}* |
 | **cliJar** *(required)* | Specifies the relative path to baseUrl where the CLI-jar (necessary to run the plugin) can be downloaded. Defaults to *jnlpJars/jenkins-cli.jar* |
 | **command** *(required)* | Specifies the Jenkins command including all its options and arguments to be executed through the CLI. |

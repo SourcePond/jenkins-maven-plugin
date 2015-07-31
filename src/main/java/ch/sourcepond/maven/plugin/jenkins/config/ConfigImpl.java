@@ -39,7 +39,7 @@ final class ConfigImpl implements Config, Cloneable {
 	static final String HTTPS = "https";
 	static final int MIN_TRUSTSTORE_PWD_LENGTH = 6;
 	private final Messages messages;
-	private Path workDirectory;
+	private Path jenkinscliDirectory;
 	private URI baseUri;
 	private URI cliJarUri;
 	private boolean noKeyAuth;
@@ -87,8 +87,8 @@ final class ConfigImpl implements Config, Cloneable {
 	 * @see ch.sourcepond.maven.plugin.jenkins.config.Config#getWorkDirectory()
 	 */
 	@Override
-	public Path getWorkDirectory() {
-		return workDirectory;
+	public Path getJenkinscliDirectory() {
+		return jenkinscliDirectory;
 	}
 
 	/*
@@ -312,10 +312,10 @@ final class ConfigImpl implements Config, Cloneable {
 	}
 
 	/**
-	 * @param pWorkDirectory
+	 * @param pJenkinscliDirectory
 	 */
-	void setWorkDirectory(final Path pWorkDirectory) {
-		workDirectory = pWorkDirectory;
+	void setJenkinscliDirectory(final Path pJenkinscliDirectory) {
+		jenkinscliDirectory = pJenkinscliDirectory;
 	}
 
 	/**

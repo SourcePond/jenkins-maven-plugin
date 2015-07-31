@@ -72,7 +72,7 @@ public class DowloaderImplTest {
 	private final byte[] testData = new byte[8192];
 	private final FileSystem fs = mock(FileSystem.class);
 	private final FileSystemProvider provider = mock(FileSystemProvider.class);
-	private final Path workDirectory = mock(Path.class);
+	private final Path jenkinscliDirectory = mock(Path.class);
 	private final Path jar = mock(Path.class);
 	private final TestInputStream source = new TestInputStream(testData);
 	private final OutputStream sink = mock(OutputStream.class);
@@ -101,11 +101,11 @@ public class DowloaderImplTest {
 		when(response.getStatusLine()).thenReturn(statusLine);
 		when(response.getEntity()).thenReturn(entity);
 		when(statusLine.getStatusCode()).thenReturn(SC_OK);
-		when(config.getWorkDirectory()).thenReturn(workDirectory);
+		when(config.getJenkinscliDirectory()).thenReturn(jenkinscliDirectory);
 		when(entity.getContent()).thenReturn(source);
 
-		when(workDirectory.getFileSystem()).thenReturn(fs);
-		when(workDirectory.resolve(JAR_NAME)).thenReturn(jar);
+		when(jenkinscliDirectory.getFileSystem()).thenReturn(fs);
+		when(jenkinscliDirectory.resolve(JAR_NAME)).thenReturn(jar);
 		when(jar.getFileSystem()).thenReturn(fs);
 		when(jar.toAbsolutePath()).thenReturn(jar);
 		when(fs.provider()).thenReturn(provider);

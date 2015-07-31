@@ -51,7 +51,7 @@ public class ConfigBuilderImplBuildTest extends ConfigBuilderImplBaseTest {
 		super.setup();
 		baseUrl = new URL("http://jenkins.org");
 		impl.setBaseUrl(baseUrl, CLI_JAR).setCommand(COMMAND)
-				.setSettings(settings).setWorkDirectory(workDirectory);
+				.setSettings(settings).setJenkinscliDirectory(jenkinscliDirectory);
 	}
 
 	/**
@@ -131,8 +131,8 @@ public class ConfigBuilderImplBuildTest extends ConfigBuilderImplBaseTest {
 	 * @throws MojoExecutionException
 	 */
 	@Test(expected = AssertionError.class)
-	public void checkWorkDirectoryAssert() throws MojoExecutionException {
-		impl.getBaseConfig().setWorkDirectory(null);
+	public void checkJenkinscliDirectoryAssert() throws MojoExecutionException {
+		impl.getBaseConfig().setJenkinscliDirectory(null);
 		impl.build(log);
 	}
 }

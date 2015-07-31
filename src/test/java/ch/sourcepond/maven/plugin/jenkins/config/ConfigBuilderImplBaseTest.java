@@ -31,7 +31,7 @@ import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 public class ConfigBuilderImplBaseTest {
 	protected final FileSystem fs = mock(FileSystem.class);
 	protected final FileSystemProvider provider = mock(FileSystemProvider.class);
-	protected final Path workDirectory = mock(Path.class);
+	protected final Path jenkinscliDirectory = mock(Path.class);
 	protected final Messages messages = mock(Messages.class);
 	protected final Downloader downloader = mock(Downloader.class);
 	protected final ConfigBuilderImpl impl = new ConfigBuilderImpl(messages,
@@ -43,6 +43,6 @@ public class ConfigBuilderImplBaseTest {
 	@Before
 	public void setup() throws Exception {
 		when(fs.provider()).thenReturn(provider);
-		when(workDirectory.getFileSystem()).thenReturn(fs);
+		when(jenkinscliDirectory.getFileSystem()).thenReturn(fs);
 	}
 }

@@ -78,9 +78,9 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 	 * (java.io.File)
 	 */
 	@Override
-	public ConfigBuilder setWorkDirectory(final Path pWorkDirectory)
+	public ConfigBuilder setJenkinscliDirectory(final Path pWorkDirectory)
 			throws MojoExecutionException {
-		config.setWorkDirectory(pWorkDirectory);
+		config.setJenkinscliDirectory(pWorkDirectory);
 		try {
 			createDirectories(pWorkDirectory);
 		} catch (final IOException e) {
@@ -175,7 +175,7 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 		assert getBaseConfig().getCliJarUri() != null : "cliJarUri is null";
 		assert !isBlank(getBaseConfig().getCommand()) : "command is null";
 		assert getBaseConfig().getSettings() != null : "settings is null";
-		assert getBaseConfig().getWorkDirectory() != null : "workDirectory is null";
+		assert getBaseConfig().getJenkinscliDirectory() != null : "jenkinscliDirectory is null";
 
 		// If a local, custom jenkins-cli.jar has been defined, bypass any
 		// dowload...

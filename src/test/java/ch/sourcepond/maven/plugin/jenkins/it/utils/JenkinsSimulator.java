@@ -99,7 +99,7 @@ public abstract class JenkinsSimulator extends Simulator {
 		mojo.setBaseUrl(new URL(getProcotol(), LOCALHOST, getPort(), BASE_PATH));
 
 		mojo.setLog(pLog);
-		mojo.setWorkDirectory(TARGET.toFile());
+		mojo.setJenkinscliDirectory(TARGET.toFile());
 		mojo.setCommand("help create-job");
 		mojo.setCliJar(CLI_JAR_PATH);
 	}

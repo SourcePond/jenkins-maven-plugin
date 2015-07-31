@@ -47,12 +47,12 @@ public interface Config {
 	Settings getSettings();
 
 	/**
-	 * Returns the work-directory specified through mojo parameter
-	 * <em>workDirectory</em>.
+	 * Returns the download directory of jenkins-cli.jar specified through mojo
+	 * parameter <em>jenkinscliDirectory</em>.
 	 * 
 	 * @return Work-directory, never {@code null}
 	 */
-	Path getWorkDirectory();
+	Path getJenkinscliDirectory();
 
 	/**
 	 * Returns the custom jenkins-cli.jar to be used by this plugin; specified

@@ -48,7 +48,7 @@ public class CliMojoTest {
 	private final ProxyFinder finder = mock(ProxyFinder.class);
 	private final Proxy proxy = mock(Proxy.class);
 	private final Settings settings = mock(Settings.class);
-	private final File workDirectory = new File("workDirectory");
+	private final File jenkinscliDirectory = new File("jenkinscliDirectory");
 	private final File privateKey = new File("privateKey");
 	private final File stdin = new File("stdin");
 	private final File stdout = new File("stdout");
@@ -65,7 +65,7 @@ public class CliMojoTest {
 	public void setup() throws Exception {
 		impl.setLog(log);
 		baseUrl = new URL("http://baseurl.org");
-		impl.setWorkDirectory(workDirectory);
+		impl.setJenkinscliDirectory(jenkinscliDirectory);
 		impl.setBaseUrl(baseUrl);
 		impl.setCliJar(CLI_JAR);
 		impl.setNoKeyAuth(true);
@@ -84,8 +84,8 @@ public class CliMojoTest {
 		when(cbf.newBuilder()).thenReturn(builder);
 		when(builder.setSettings(settings)).thenReturn(builder);
 		when(builder.setProxy(proxy)).thenReturn(builder);
-		when(builder.setWorkDirectory(workDirectory.toPath())).thenReturn(
-				builder);
+		when(builder.setJenkinscliDirectory(jenkinscliDirectory.toPath()))
+				.thenReturn(builder);
 		when(builder.setBaseUrl(baseUrl, CLI_JAR)).thenReturn(builder);
 		when(builder.setCommand(COMMAND)).thenReturn(builder);
 		when(builder.setStdin(stdin)).thenReturn(builder);
