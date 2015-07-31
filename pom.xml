@@ -14,7 +14,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.sourcepond.maven.plugins</groupId>
 	<artifactId>jenkins-maven-plugin</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 	<name>Jenkins Maven Plugin</name>
 	<inceptionYear>2015</inceptionYear>
@@ -496,7 +496,7 @@
 	<scm>
 		<connection>${git.baseurl}/${project.artifactId}.git</connection>
 		<developerConnection>${git.baseurl}/${project.artifactId}.git</developerConnection>
-		<tag>jenkins-maven-plugin-1.0.0</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<licenses>
