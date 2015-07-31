@@ -60,7 +60,7 @@ public interface Config {
 	 * 
 	 * @return Custom jenkins-cli.jar or {@code null}
 	 */
-	Path getCustomJenkinsCliJarOrNull();
+	File getCustomJenkinsCliJarOrNull();
 
 	/**
 	 * Returns the base URL specified through mojo parameter <em>baseUrl</em>.

@@ -177,7 +177,15 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 		assert getBaseConfig().getSettings() != null : "settings is null";
 		assert getBaseConfig().getWorkDirectory() != null : "workDirectory is null";
 
-		setDownloadedCliJar(downloader.downloadCliJar(config));
+		// If a local, custom jenkins-cli.jar has been defined, bypass any
+		// dowload...
+		if (getBaseConfig().getCustomJenkinsCliJarOrNull() != null) {
+			setDownloadedCliJar(getBaseConfig().getCustomJenkinsCliJarOrNull()
+					.getAbsolutePath());
+		} else { // ...otherwise dowload jenkins-cli.jar from target Jenkins
+					// instance.
+			setDownloadedCliJar(downloader.downloadCliJar(getBaseConfig()));
+		}
 		getBaseConfig().validate(pLog);
 
 		return (Config) config.clone();
@@ -286,9 +294,7 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 	 */
 	@Override
 	public ConfigBuilder setCustomJenkinsCliJar(final File pCustomJenkinsCliJar) {
-		if (pCustomJenkinsCliJar != null) {
-			config.setCustomJenkinsCliJarOrNull(pCustomJenkinsCliJar.toPath());
-		}
+		config.setCustomJenkinsCliJarOrNull(pCustomJenkinsCliJar);
 		return this;
 	}
 }

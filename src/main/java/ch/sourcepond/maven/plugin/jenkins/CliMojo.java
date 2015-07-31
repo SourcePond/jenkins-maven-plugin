@@ -48,7 +48,7 @@ public class CliMojo extends AbstractMojo {
 	private File workDirectory;
 
 	/**
-	 * Specifies the jenkins-cli.jar to be used by this plugin. If set,
+	 * Specifies a custom jenkins-cli.jar to be used by this plugin. If set,
 	 * downloading jenkins-cli.jar from the Jenkins instance specified with
 	 * <em>baseUrl</em> will completely be bypassed.
 	 */

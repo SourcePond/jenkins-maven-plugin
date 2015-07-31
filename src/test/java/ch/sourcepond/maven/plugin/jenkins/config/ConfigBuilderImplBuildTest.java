@@ -13,10 +13,15 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.config;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.net.URL;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -31,6 +36,8 @@ import org.junit.Test;
 public class ConfigBuilderImplBuildTest extends ConfigBuilderImplBaseTest {
 	private static final String CLI_JAR = "cliJar";
 	private static final String COMMAND = "command";
+	private static final String ANY_PATH = "anyPath";
+	private static final File ANY_FILE = new File(ANY_PATH);
 	private final Log log = mock(Log.class);
 	private final Settings settings = mock(Settings.class);
 	private URL baseUrl;
@@ -45,6 +52,30 @@ public class ConfigBuilderImplBuildTest extends ConfigBuilderImplBaseTest {
 		baseUrl = new URL("http://jenkins.org");
 		impl.setBaseUrl(baseUrl, CLI_JAR).setCommand(COMMAND)
 				.setSettings(settings).setWorkDirectory(workDirectory);
+	}
+
+	/**
+	 * @throws MojoExecutionException
+	 */
+	@Test
+	public void verifyUseCustomJenkinsCliJar() throws MojoExecutionException {
+		impl.getBaseConfig().setCustomJenkinsCliJarOrNull(ANY_FILE);
+		final Config config = impl.build(log);
+		verify(downloader, never()).downloadCliJar(impl.getBaseConfig());
+		assertEquals(ANY_FILE.getAbsolutePath(), config.getDownloadedCliJar());
+	}
+
+	/**
+	 * @throws MojoExecutionException
+	 */
+	@Test
+	public void verifyUseDownloadedJenkinsCliJar()
+			throws MojoExecutionException {
+		when(downloader.downloadCliJar(impl.getBaseConfig())).thenReturn(
+				ANY_PATH);
+		final Config config = impl.build(log);
+		verify(downloader).downloadCliJar(impl.getBaseConfig());
+		assertEquals(ANY_FILE.getPath(), config.getDownloadedCliJar());
 	}
 
 	/**

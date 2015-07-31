@@ -54,7 +54,7 @@ final class ConfigImpl implements Config, Cloneable {
 	private String trustStorePassword;
 	private Path stdout;
 	private boolean appending;
-	private Path customJenkinsCliJarOrNull;
+	private File customJenkinsCliJarOrNull;
 
 	/**
 	 * Creates a new instance of this class.
@@ -99,7 +99,7 @@ final class ConfigImpl implements Config, Cloneable {
 	 * ()
 	 */
 	@Override
-	public Path getCustomJenkinsCliJarOrNull() {
+	public File getCustomJenkinsCliJarOrNull() {
 		return customJenkinsCliJarOrNull;
 	}
 
@@ -321,7 +321,7 @@ final class ConfigImpl implements Config, Cloneable {
 	/**
 	 * @param pCustomJenkinsCliJar
 	 */
-	void setCustomJenkinsCliJarOrNull(final Path pCustomJenkinsCliJar) {
+	void setCustomJenkinsCliJarOrNull(final File pCustomJenkinsCliJar) {
 		customJenkinsCliJarOrNull = pCustomJenkinsCliJar;
 	}
 

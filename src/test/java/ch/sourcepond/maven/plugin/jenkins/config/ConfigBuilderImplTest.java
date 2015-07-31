@@ -57,7 +57,7 @@ public class ConfigBuilderImplTest extends ConfigBuilderImplBaseTest {
 	@Test
 	public void verifySetGetCustomJenkinsCliJar() throws Exception {
 		assertSame(impl, impl.setCustomJenkinsCliJar(ANY_FILE));
-		assertSame(ANY_FILE.toPath(), impl.getBaseConfig()
+		assertSame(ANY_FILE, impl.getBaseConfig()
 				.getCustomJenkinsCliJarOrNull());
 	}
 
