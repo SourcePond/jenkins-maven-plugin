@@ -33,7 +33,7 @@
 				<executions>
 					<execution>
 						<!-- Special Maven executionId which allows to run the plugin from 
-							the command line without without defining a lifecycle phase. -->
+							the command line without defining a lifecycle phase. -->
 						<id>default-cli</id>
 					</execution>
 				</executions>

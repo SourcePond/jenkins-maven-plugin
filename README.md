@@ -64,7 +64,7 @@ To show the help message for Jenkins command "create-job" from the command line 
 	<executions>
 		<execution>
 			<!-- Special Maven executionId which allows to run the plugin from the 
-				command line without without defining a lifecycle phase. -->
+				command line without defining a lifecycle phase. -->
 			<id>default-cli</id>
 		</execution>
 	</executions>
