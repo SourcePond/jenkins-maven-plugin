@@ -184,7 +184,8 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 					.getAbsolutePath());
 		} else { // ...otherwise dowload jenkins-cli.jar from target Jenkins
 					// instance.
-			setDownloadedCliJar(downloader.downloadCliJar(getBaseConfig()));
+			setDownloadedCliJar(downloader
+					.downloadCliJar(pLog, getBaseConfig()));
 		}
 		getBaseConfig().validate(pLog);
 

@@ -51,7 +51,8 @@ public class ConfigBuilderImplBuildTest extends ConfigBuilderImplBaseTest {
 		super.setup();
 		baseUrl = new URL("http://jenkins.org");
 		impl.setBaseUrl(baseUrl, CLI_JAR).setCommand(COMMAND)
-				.setSettings(settings).setJenkinscliDirectory(jenkinscliDirectory);
+				.setSettings(settings)
+				.setJenkinscliDirectory(jenkinscliDirectory);
 	}
 
 	/**
@@ -61,7 +62,7 @@ public class ConfigBuilderImplBuildTest extends ConfigBuilderImplBaseTest {
 	public void verifyUseCustomJenkinsCliJar() throws MojoExecutionException {
 		impl.getBaseConfig().setCustomJenkinsCliJarOrNull(ANY_FILE);
 		final Config config = impl.build(log);
-		verify(downloader, never()).downloadCliJar(impl.getBaseConfig());
+		verify(downloader, never()).downloadCliJar(log, impl.getBaseConfig());
 		assertEquals(ANY_FILE.getAbsolutePath(), config.getDownloadedCliJar());
 	}
 
@@ -71,10 +72,10 @@ public class ConfigBuilderImplBuildTest extends ConfigBuilderImplBaseTest {
 	@Test
 	public void verifyUseDownloadedJenkinsCliJar()
 			throws MojoExecutionException {
-		when(downloader.downloadCliJar(impl.getBaseConfig())).thenReturn(
+		when(downloader.downloadCliJar(log, impl.getBaseConfig())).thenReturn(
 				ANY_PATH);
 		final Config config = impl.build(log);
-		verify(downloader).downloadCliJar(impl.getBaseConfig());
+		verify(downloader).downloadCliJar(log, impl.getBaseConfig());
 		assertEquals(ANY_FILE.getPath(), config.getDownloadedCliJar());
 	}
 

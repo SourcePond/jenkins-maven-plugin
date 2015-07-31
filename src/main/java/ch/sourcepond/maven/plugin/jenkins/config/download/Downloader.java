@@ -14,6 +14,7 @@ limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.config.download;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
 
@@ -28,6 +29,8 @@ public interface Downloader {
 	 * Downloads the Jenkins CLI jar ({@link Config#getCliJarUri()}) and stores
 	 * it in the work directory ( {@link Config#getJenkinscliDirectory()}).
 	 * 
+	 * @param pLog
+	 *            The Maven log, must not be {@code null}
 	 * @param pConfig
 	 *            The config object, must not be {@code null}
 	 * @return Absolute path to the jar file, never {@code null}.
@@ -35,5 +38,6 @@ public interface Downloader {
 	 *             Thrown, if the JAR could not be downloaded or stored in the
 	 *             work directory.
 	 */
-	String downloadCliJar(Config pConfig) throws MojoExecutionException;
+	String downloadCliJar(Log pLog, Config pConfig)
+			throws MojoExecutionException;
 }
