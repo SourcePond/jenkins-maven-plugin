@@ -55,7 +55,7 @@ The configuration described above can also be done through properties. Propertie
 ## Examples
 You can find the full source code of the examples below in the *examples* directory.
 
-### Show help for create-job (command line)
+### Show help for create-job (examples/execute-from-cmd)
 To show the help message for Jenkins command "create-job" from the command line add following snipped to your pom.xml:
 ```
 <plugin>
