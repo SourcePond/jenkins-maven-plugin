@@ -32,7 +32,8 @@ The table below gives an overview about the parameters which can be specified.
 | **trustStore** | Specifies the trust-store to be used by the CLI if it should connect to an SSL secured Jenkins instance. This parameter will be passed as "-Djavax.net.ssl.trustStore" option to the JVM which runs the CLI. If specified, a password must be set with configuration element *trustStorePassword*. |
 | **trustStorePassword** | Specifies the password for the trust-store to be used by the CLI trustStore. This parameter will be passed as "-Djavax.net.ssl.trustStorePassword" option to the JVM which runs the CLI. According to keytool the password must be at least 6 characters. |
 
-The configuration above can also be done through properties. Properties can be defined in the pom.xml, settings.xml or can be passed as command line arguments. Following table shows which property for which configuration element can be used:
+## Properties
+The configuration described above can also be done through properties. Properties can be defined through the pom.xml, settings.xml, or, can be passed as command line arguments. Following table shows which configuration element corresponds to which property:
 
 | Configuration element | Property |
 | ---------------------- | ----------- |
