@@ -65,7 +65,7 @@ public class VerifyPropertiesOnParameterAnnotationsTest {
 	 * @param pPropertyName
 	 * @throws Exception
 	 */
-	private void verifyPropertyInjection(final String pFieldName,
+	private void verifyFieldToPropertyMapping(final String pFieldName,
 			final String pPropertyName) throws Exception {
 		Field propertyField = null;
 		for (final Field current : INSTANCE_FIELDS) {
@@ -88,21 +88,23 @@ public class VerifyPropertiesOnParameterAnnotationsTest {
 	 */
 	@Test
 	public void verifyPropertyToFieldMapping() throws Exception {
-		verifyPropertyInjection("jenkinscliDirectory", "jenkins.cliDirectory");
-		verifyPropertyInjection("baseUrl", "jenkins.baseURL");
-		verifyPropertyInjection("cliJar", "jenkins.cliJar");
-		verifyPropertyInjection("command", "jenkins.command");
-		verifyPropertyInjection("customJenkinsCliJar", "jenkins.customCliJar");
-		verifyPropertyInjection("stdin", "jenkins.stdin");
-		verifyPropertyInjection("stdout", "jenkins.stdout");
-		verifyPropertyInjection("append", "jenkins.append");
-		verifyPropertyInjection("proxyId", "jenkins.proxyId");
-		verifyPropertyInjection("noKeyAuth", "jenkins.noKeyAuth");
-		verifyPropertyInjection("privateKey", "jenkins.privateKey");
-		verifyPropertyInjection("noCertificateCheck",
+		verifyFieldToPropertyMapping("jenkinscliDirectory",
+				"jenkins.cliDirectory");
+		verifyFieldToPropertyMapping("baseUrl", "jenkins.baseURL");
+		verifyFieldToPropertyMapping("cliJar", "jenkins.cliJar");
+		verifyFieldToPropertyMapping("command", "jenkins.command");
+		verifyFieldToPropertyMapping("customJenkinsCliJar",
+				"jenkins.customCliJar");
+		verifyFieldToPropertyMapping("stdin", "jenkins.stdin");
+		verifyFieldToPropertyMapping("stdout", "jenkins.stdout");
+		verifyFieldToPropertyMapping("append", "jenkins.append");
+		verifyFieldToPropertyMapping("proxyId", "jenkins.proxyId");
+		verifyFieldToPropertyMapping("noKeyAuth", "jenkins.noKeyAuth");
+		verifyFieldToPropertyMapping("privateKey", "jenkins.privateKey");
+		verifyFieldToPropertyMapping("noCertificateCheck",
 				"jenkins.noCertificateCheck");
-		verifyPropertyInjection("trustStore", "jenkins.trustStore");
-		verifyPropertyInjection("trustStorePassword",
+		verifyFieldToPropertyMapping("trustStore", "jenkins.trustStore");
+		verifyFieldToPropertyMapping("trustStorePassword",
 				"jenkins.trustStorePassword");
 	}
 
