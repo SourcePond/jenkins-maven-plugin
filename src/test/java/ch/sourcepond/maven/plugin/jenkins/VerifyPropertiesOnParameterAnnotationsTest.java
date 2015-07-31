@@ -18,6 +18,7 @@ import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -57,6 +58,52 @@ public class VerifyPropertiesOnParameterAnnotationsTest {
 		} catch (final NotFoundException e) {
 			throw new ExceptionInInitializerError(e);
 		}
+	}
+
+	/**
+	 * @param pFieldName
+	 * @param pPropertyName
+	 * @throws Exception
+	 */
+	private void verifyPropertyInjection(final String pFieldName,
+			final String pPropertyName) throws Exception {
+		Field propertyField = null;
+		for (final Field current : INSTANCE_FIELDS) {
+			if (!isExcluded(current)) {
+				final Parameter param = getAnnotation(current);
+				if (pPropertyName.equals(param.property())) {
+					propertyField = current;
+					break;
+				}
+			}
+		}
+		assertNotNull("No field found with property " + pPropertyName,
+				propertyField);
+		final Field field = CliMojo.class.getDeclaredField(pFieldName);
+		assertEquals(propertyField, field);
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	@Test
+	public void verifyPropertyToFieldMapping() throws Exception {
+		verifyPropertyInjection("jenkinscliDirectory", "jenkins.cliDirectory");
+		verifyPropertyInjection("baseUrl", "jenkins.baseURL");
+		verifyPropertyInjection("cliJar", "jenkins.cliJar");
+		verifyPropertyInjection("command", "jenkins.command");
+		verifyPropertyInjection("customJenkinsCliJar", "jenkins.customCliJar");
+		verifyPropertyInjection("stdin", "jenkins.stdin");
+		verifyPropertyInjection("stdout", "jenkins.stdout");
+		verifyPropertyInjection("append", "jenkins.append");
+		verifyPropertyInjection("proxyId", "jenkins.proxyId");
+		verifyPropertyInjection("noKeyAuth", "jenkins.noKeyAuth");
+		verifyPropertyInjection("privateKey", "jenkins.privateKey");
+		verifyPropertyInjection("noCertificateCheck",
+				"jenkins.noCertificateCheck");
+		verifyPropertyInjection("trustStore", "jenkins.trustStore");
+		verifyPropertyInjection("trustStorePassword",
+				"jenkins.trustStorePassword");
 	}
 
 	/**
