@@ -277,4 +277,18 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 		config.setTrustStorePassword(pPassword);
 		return this;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#
+	 * setCustomJenkinsCliJar(java.io.File)
+	 */
+	@Override
+	public ConfigBuilder setCustomJenkinsCliJar(final File pCustomJenkinsCliJar) {
+		if (pCustomJenkinsCliJar != null) {
+			config.setCustomJenkinsCliJarOrNull(pCustomJenkinsCliJar.toPath());
+		}
+		return this;
+	}
 }

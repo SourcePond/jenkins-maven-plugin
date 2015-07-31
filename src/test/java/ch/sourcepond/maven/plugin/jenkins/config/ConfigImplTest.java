@@ -72,6 +72,8 @@ public class ConfigImplTest {
 		impl.setTrustStore(new File("anyTrustStore"));
 		impl.setTrustStorePassword("anyTrustStorePassword");
 		impl.setWorkDirectory(mock(Path.class));
+		impl.setCustomJenkinsCliJarOrNull(new File("anyCustomJenkinsCliJar")
+				.toPath());
 
 		final ConfigImpl clone = (ConfigImpl) impl.clone();
 		assertNotSame(impl, clone);

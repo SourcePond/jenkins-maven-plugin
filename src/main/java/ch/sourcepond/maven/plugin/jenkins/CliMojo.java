@@ -48,6 +48,14 @@ public class CliMojo extends AbstractMojo {
 	private File workDirectory;
 
 	/**
+	 * Specifies the jenkins-cli.jar to be used by this plugin. If set,
+	 * downloading jenkins-cli.jar from the Jenkins instance specified with
+	 * <em>baseUrl</em> will completely be bypassed.
+	 */
+	@Parameter
+	private File customJenkinsCliJar;
+
+	/**
 	 * Specifies the URL where the Jenkins instance (which shall be used by this
 	 * plugin) is available.
 	 */
@@ -199,6 +207,7 @@ public class CliMojo extends AbstractMojo {
 				cbf.newBuilder().setSettings(settings)
 						.setProxy(pf.findProxy(proxyId, settings))
 						.setWorkDirectory(workDirectory.toPath())
+						.setCustomJenkinsCliJar(customJenkinsCliJar)
 						.setBaseUrl(baseUrl, cliJar).setCommand(command)
 						.setStdin(stdin).setStdout(stdout).setAppend(append)
 						.setNoKeyAuth(noKeyAuth)
@@ -355,5 +364,12 @@ public class CliMojo extends AbstractMojo {
 	 */
 	public void setAppend(final boolean pAppend) {
 		append = pAppend;
+	}
+
+	/**
+	 * @param customJenkinsCliJar2
+	 */
+	public void setCustomJenkinsCliJar(final File pCustomJenkinsCliJar) {
+		customJenkinsCliJar = pCustomJenkinsCliJar;
 	}
 }

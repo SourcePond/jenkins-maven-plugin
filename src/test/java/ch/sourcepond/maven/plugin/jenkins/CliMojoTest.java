@@ -53,6 +53,7 @@ public class CliMojoTest {
 	private final File stdin = new File("stdin");
 	private final File stdout = new File("stdout");
 	private final File trustStore = new File("trustStore");
+	private final File customJenkinsCliJar = new File("customJenkinsCliJar");
 	private final Config config = mock(Config.class);
 	private final CliMojo impl = new CliMojo(cbf, procFacade, finder);
 	private URL baseUrl;
@@ -78,6 +79,7 @@ public class CliMojoTest {
 		impl.setProxyId(PROXY_ID);
 		impl.setTrustStore(trustStore);
 		impl.setTrustStorePassword(PASSWORD);
+		impl.setCustomJenkinsCliJar(customJenkinsCliJar);
 		when(finder.findProxy(PROXY_ID, settings)).thenReturn(proxy);
 		when(cbf.newBuilder()).thenReturn(builder);
 		when(builder.setSettings(settings)).thenReturn(builder);
@@ -94,6 +96,8 @@ public class CliMojoTest {
 		when(builder.setPrivateKey(privateKey)).thenReturn(builder);
 		when(builder.setTrustStore(trustStore)).thenReturn(builder);
 		when(builder.setTrustStorePassword(PASSWORD)).thenReturn(builder);
+		when(builder.setCustomJenkinsCliJar(customJenkinsCliJar)).thenReturn(
+				builder);
 		when(builder.build(log)).thenReturn(config);
 	}
 

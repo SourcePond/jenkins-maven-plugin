@@ -53,6 +53,16 @@ public interface ConfigBuilder {
 			throws MojoExecutionException;
 
 	/**
+	 * Set the custom jenkins-cli.jar to be used by this plugin, see
+	 * {@link Config#getCustomJenkinsCliJarOrNull()}.
+	 * 
+	 * @param pCustomJenkinsCliJar
+	 *            Custom jenkins-cli.jar or {@code null}
+	 * @return This builder, never {@code null}
+	 */
+	ConfigBuilder setCustomJenkinsCliJar(File pCustomJenkinsCliJar);
+
+	/**
 	 * Sets the base {@link URI} where the Jenkins instance to be used is
 	 * available (see {@link Config#getBaseUri()}). Furthermore, initializes the
 	 * {@link URI} where the Jenkins CLI jar can be downloaded (see

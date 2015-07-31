@@ -55,6 +55,16 @@ public class ConfigBuilderImplTest extends ConfigBuilderImplBaseTest {
 	 * 
 	 */
 	@Test
+	public void verifySetGetCustomJenkinsCliJar() throws Exception {
+		assertSame(impl, impl.setCustomJenkinsCliJar(ANY_FILE));
+		assertSame(ANY_FILE.toPath(), impl.getBaseConfig()
+				.getCustomJenkinsCliJarOrNull());
+	}
+
+	/**
+	 * 
+	 */
+	@Test
 	public void verifySetGetWorkDirectoryIoException() throws Exception {
 		final FileAlreadyExistsException expected = new FileAlreadyExistsException(
 				"any");

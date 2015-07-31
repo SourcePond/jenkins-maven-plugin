@@ -55,6 +55,14 @@ public interface Config {
 	Path getWorkDirectory();
 
 	/**
+	 * Returns the custom jenkins-cli.jar to be used by this plugin; specified
+	 * through mojo parameter <em>customJenkinsCliJar</em>.
+	 * 
+	 * @return Custom jenkins-cli.jar or {@code null}
+	 */
+	Path getCustomJenkinsCliJarOrNull();
+
+	/**
 	 * Returns the base URL specified through mojo parameter <em>baseUrl</em>.
 	 * 
 	 * @return Base URL, never {@code null}

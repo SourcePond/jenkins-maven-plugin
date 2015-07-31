@@ -54,6 +54,7 @@ final class ConfigImpl implements Config, Cloneable {
 	private String trustStorePassword;
 	private Path stdout;
 	private boolean appending;
+	private Path customJenkinsCliJarOrNull;
 
 	/**
 	 * Creates a new instance of this class.
@@ -88,6 +89,18 @@ final class ConfigImpl implements Config, Cloneable {
 	@Override
 	public Path getWorkDirectory() {
 		return workDirectory;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.Config#getCustomJenkinsCliJarOrNull
+	 * ()
+	 */
+	@Override
+	public Path getCustomJenkinsCliJarOrNull() {
+		return customJenkinsCliJarOrNull;
 	}
 
 	/*
@@ -303,6 +316,13 @@ final class ConfigImpl implements Config, Cloneable {
 	 */
 	void setWorkDirectory(final Path pWorkDirectory) {
 		workDirectory = pWorkDirectory;
+	}
+
+	/**
+	 * @param pCustomJenkinsCliJar
+	 */
+	void setCustomJenkinsCliJarOrNull(final Path pCustomJenkinsCliJar) {
+		customJenkinsCliJarOrNull = pCustomJenkinsCliJar;
 	}
 
 	/*
