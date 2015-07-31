@@ -37,6 +37,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.spi.FileSystemProvider;
 
 import org.apache.http.Header;
@@ -83,7 +84,10 @@ public class DownloaderImplTest {
 	private final FileSystem fs = mock(FileSystem.class);
 	private final FileSystemProvider provider = mock(FileSystemProvider.class);
 	private final Path jenkinscliDirectory = mock(Path.class);
+	private final Path versionDirectory = mock(Path.class);
+	private final BasicFileAttributes versionDirectoryAttrs = mock(BasicFileAttributes.class);
 	private final Path jar = mock(Path.class);
+	private final BasicFileAttributes jarAttrs = mock(BasicFileAttributes.class);
 	private final TestInputStream source = new TestInputStream(testData);
 	private final OutputStream sink = mock(OutputStream.class);
 	private final HttpClientFacade facade = mock(HttpClientFacade.class);
@@ -134,7 +138,17 @@ public class DownloaderImplTest {
 		when(entity.getContent()).thenReturn(source);
 
 		when(jenkinscliDirectory.getFileSystem()).thenReturn(fs);
-		when(jenkinscliDirectory.resolve(JAR_NAME)).thenReturn(jar);
+		when(jenkinscliDirectory.resolve(JENKINS_VERSION)).thenReturn(
+				versionDirectory);
+		when(versionDirectoryAttrs.isDirectory()).thenReturn(true);
+		when(
+				provider.readAttributes(versionDirectory,
+						BasicFileAttributes.class)).thenReturn(
+				versionDirectoryAttrs);
+		when(versionDirectory.getFileSystem()).thenReturn(fs);
+		when(versionDirectory.resolve(JAR_NAME)).thenReturn(jar);
+		when(provider.readAttributes(jar, BasicFileAttributes.class))
+				.thenReturn(jarAttrs);
 		when(jar.getFileSystem()).thenReturn(fs);
 		when(jar.toAbsolutePath()).thenReturn(jar);
 		when(fs.provider()).thenReturn(provider);
@@ -156,14 +170,13 @@ public class DownloaderImplTest {
 	 * 
 	 */
 	@Test
-	public void verifyDoNotLogVersionIfLogLevelNotInfo()
-			throws MojoExecutionException {
-		when(log.isInfoEnabled()).thenReturn(false);
+	public void verifyLogVersionIfInfoEnabled() throws MojoExecutionException {
+		when(log.isInfoEnabled()).thenReturn(true);
 		when(
 				messages.getMessage(DOWNLOADER_INFO_VERSION_FOUND,
 						JENKINS_VERSION)).thenReturn(ANY_STRING);
 		impl.downloadCliJar(log, config);
-		verify(log, never()).info(ANY_STRING);
+		verify(log).info(ANY_STRING);
 	}
 
 	/**
@@ -186,11 +199,21 @@ public class DownloaderImplTest {
 	}
 
 	/**
+	 * @throws MojoExecutionException
+	 */
+	@Test
+	public void verifyCreateVersionDirectory() throws Exception {
+		when(versionDirectoryAttrs.isDirectory()).thenReturn(false);
+		impl.downloadCliJar(log, config);
+		verify(provider).createDirectory(versionDirectory);
+	}
+
+	/**
 	 * @throws Exception
 	 */
 	@Test
 	public void verifyDownloadCliJar() throws Exception {
-		impl.downloadCliJar(log, config);
+		assertEquals(jar.toString(), impl.downloadCliJar(log, config));
 		final InOrder order = Mockito.inOrder(sink, source.closeVerifier,
 				config, downloadResponse, client);
 		order.verify(sink).write(aryEq(testData), Mockito.eq(0),
@@ -198,6 +221,23 @@ public class DownloaderImplTest {
 		order.verify(sink).close();
 		order.verify(source.closeVerifier).close();
 		order.verify(downloadResponse).close();
+		order.verify(client).close();
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	@Test
+	public void verifyDownloadCliJarAlreadyExisting() throws Exception {
+		when(jarAttrs.isRegularFile()).thenReturn(true);
+		assertEquals(jar.toString(), impl.downloadCliJar(log, config));
+		final InOrder order = Mockito.inOrder(sink, source.closeVerifier,
+				config, downloadResponse, client);
+		order.verify(sink, never()).write(aryEq(testData), Mockito.eq(0),
+				Mockito.eq(testData.length));
+		order.verify(sink, never()).close();
+		order.verify(source.closeVerifier, never()).close();
+		order.verify(downloadResponse, never()).close();
 		order.verify(client).close();
 	}
 

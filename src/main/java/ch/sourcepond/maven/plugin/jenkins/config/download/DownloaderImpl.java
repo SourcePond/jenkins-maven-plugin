@@ -14,7 +14,9 @@ limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.config.download;
 
 import static java.nio.file.Files.copy;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static java.nio.file.Files.createDirectories;
+import static java.nio.file.Files.isDirectory;
+import static java.nio.file.Files.isRegularFile;
 import static org.apache.commons.lang3.Validate.isTrue;
 
 import java.io.IOException;
@@ -61,7 +63,8 @@ final class DownloaderImpl implements Downloader {
 	 * @param pFs
 	 */
 	@Inject
-	DownloaderImpl(final Messages pMessages, final HttpClientFacade pClientFacade) {
+	DownloaderImpl(final Messages pMessages,
+			final HttpClientFacade pClientFacade) {
 		messages = pMessages;
 		clientFacade = pClientFacade;
 	}
@@ -102,6 +105,22 @@ final class DownloaderImpl implements Downloader {
 		}
 	}
 
+	/**
+	 * @param pJenkinscliDirectory
+	 * @param pJenkinsVersion
+	 * @return
+	 * @throws IOException
+	 */
+	private Path getDownloadedCliJar(final Path pJenkinscliDirectory,
+			final String pJenkinsVersion) throws IOException {
+		final Path downloadDirectory = pJenkinscliDirectory
+				.resolve(pJenkinsVersion);
+		if (!isDirectory(downloadDirectory)) {
+			createDirectories(downloadDirectory);
+		}
+		return downloadDirectory.resolve(JAR_NAME);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -116,39 +135,40 @@ final class DownloaderImpl implements Downloader {
 			final String jenkinsVersion = determineJenkinsVersion(pLog, client,
 					pConfig);
 
-			final HttpUriRequest request = clientFacade.newGet(pConfig
-					.getCliJarUri());
-			try {
+			final Path downloadedCliJar = getDownloadedCliJar(
+					pConfig.getJenkinscliDirectory(), jenkinsVersion);
 
-				try (final CloseableHttpResponse response = client
-						.execute(request)) {
-					final StatusLine statusLine = response.getStatusLine();
+			if (!isRegularFile(downloadedCliJar)) {
+				final HttpUriRequest request = clientFacade.newGet(pConfig
+						.getCliJarUri());
+				try {
 
-					if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
-						throw new MojoExecutionException(statusLine + ": "
-								+ pConfig.getCliJarUri());
-					}
+					try (final CloseableHttpResponse response = client
+							.execute(request)) {
+						final StatusLine statusLine = response.getStatusLine();
 
-					final HttpEntity entity = response.getEntity();
-
-					if (entity != null) {
-						final Path jar = pConfig.getJenkinscliDirectory()
-								.resolve(JAR_NAME);
-
-						try (final InputStream in = entity.getContent()) {
-							copy(in, jar, REPLACE_EXISTING);
+						if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
+							throw new MojoExecutionException(statusLine + ": "
+									+ pConfig.getCliJarUri());
 						}
 
-						return jar.toAbsolutePath().toString();
-					} else {
-						throw new MojoExecutionException(pConfig.getCliJarUri()
-								+ " not found");
-					}
-				}
-			} finally {
-				request.abort();
+						final HttpEntity entity = response.getEntity();
 
+						if (entity != null) {
+							try (final InputStream in = entity.getContent()) {
+								copy(in, downloadedCliJar);
+							}
+						} else {
+							throw new MojoExecutionException(
+									pConfig.getCliJarUri() + " not found");
+						}
+					}
+				} finally {
+					request.abort();
+				}
 			}
+
+			return downloadedCliJar.toAbsolutePath().toString();
 		} catch (final IOException | KeyManagementException
 				| NoSuchAlgorithmException | KeyStoreException
 				| CertificateException e) {
