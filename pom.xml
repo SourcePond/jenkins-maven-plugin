@@ -71,9 +71,12 @@
 		<!-- Configuration for SCM, Build-Server and remote Maven Repository -->
 		<jenkins.baseurl>https://sourcepond.ci.cloudbees.com</jenkins.baseurl>
 		<deployment.baseurl>https://oss.sonatype.org</deployment.baseurl>
-		<git.baseurl>scm:git:https://github.com/SourcePond</git.baseurl>
+		<git.url>https://github.com/SourcePond/${project.artifactId}</git.url>
+		<git.protocol.url>scm:git:${git.url}.git</git.protocol.url>
 		<project.scm.id>github</project.scm.id>
 	</properties>
+	
+	<url>${git.url}</url>
 
 	<dependencyManagement>
 		<dependencies>
@@ -495,8 +498,9 @@
 	</profiles>
 
 	<scm>
-		<connection>${git.baseurl}/${project.artifactId}.git</connection>
-		<developerConnection>${git.baseurl}/${project.artifactId}.git</developerConnection>
+		<url>${git.url}</url>
+		<connection>${git.protocol.url}</connection>
+		<developerConnection>${git.protocol.url}</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
 
