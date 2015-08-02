@@ -40,7 +40,9 @@ public class HttpsNoCertificateCheckITCase extends HttpsITCase {
 	 */
 	@Override
 	protected void specifyExpectedStdout(final List<String> pLines) {
-		pLines.add("Skipping HTTPS certificate checks altogether. Note that this is not secure at all.");
 		super.specifyExpectedStdout(pLines);
+		pLines.add(
+				2,
+				"Skipping HTTPS certificate checks altogether. Note that this is not secure at all.");
 	}
 }
