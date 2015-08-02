@@ -32,7 +32,7 @@ The table below gives an overview about the parameters which can be specified.
 | **trustStorePassword** | Specifies the password for the trust-store to be used by the CLI trustStore. This parameter will be passed as "-Djavax.net.ssl.trustStorePassword" option to the JVM which runs the CLI. According to keytool the password must be at least 6 characters. |
 
 ## Properties
-The configuration described above can also be done through properties. Properties can be defined through the pom.xml, settings.xml, or, can be passed as command line arguments. Following table shows which configuration element corresponds to which property:
+The configuration described above can also be done through properties. Properties can be defined within the pom.xml, settings.xml, or, can be passed as command line arguments. Following table shows which configuration element corresponds to which property:
 
 | Configuration element | Property |
 | ---------------------- | ----------- |
