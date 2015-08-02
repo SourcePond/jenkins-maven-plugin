@@ -1,13 +1,28 @@
 # Quick Overview
 The Jenkins Maven Plugin allows to use the Jenkins CLI (command line interface) from within a Maven build. It allows the execution of any command supported by the CLI, see https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+CLI for further information. Therefore, it downloads the current jenkins-cli.jar from the url specified and uses that artifact for interacting with the Jenkins server. The architecture of the plugin follows the UNIX philosophy "do one thing and do it well": it does not provide any logic for specific tasks, for instance creating job configuration files. This can be done with another, more appropriate plugin and its result can then be specified as stdin to the Jenkins Maven Plugin (have a look at "Create a new job on Jenkins" in the examples section of this document).
 
+## What's new
+
+### 1.0.2
+- Changed configuration property name from "jenkins.baseURL" to "jenkins.baseUrl"
+- Improved configuration validation
+- Improved exception translations
+- Improved integration tests
+
+### 1.0.1
+- Added missing information to pom.xml to pass OSSRH quality checks.
+
+### 1.0.0 (not in Maven Central)
+- First public release
+
+
 ## Installation
 The plugin is available in [Maven Central Repository](http://search.maven.org/#artifactdetails|ch.sourcepond.maven.plugins|jenkins-maven-plugin|1.0.1|maven-plugin). To use it in your project, add following plugin definition to the build part of your pom.xml:
 ```
 <plugin>
 	<groupId>ch.sourcepond.maven.plugins</groupId>
 	<artifactId>jenkins-maven-plugin</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 </plugin>
 ```
 
@@ -37,7 +52,7 @@ The configuration described above can also be done through properties. Propertie
 | Configuration element | Property |
 | ---------------------- | ----------- |
 | **jenkinscliDirectory** | jenkins.cliDirectory |
-| **baseUrl** | jenkins.baseURL |
+| **baseUrl** | jenkins.baseUrl |
 | **cliJar** | jenkins.cliJar |
 | **command** | jenkins.command |
 | **customJenkinsCliJar** | jenkins.customCliJar |

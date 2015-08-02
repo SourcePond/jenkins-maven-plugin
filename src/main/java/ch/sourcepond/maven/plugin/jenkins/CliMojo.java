@@ -45,7 +45,7 @@ public class CliMojo extends AbstractMojo {
 			+ "cliDirectory";
 	static final String PROPERTY_CUSTOM_CLI_JAR = JENKINS_PREFIX
 			+ "customCliJar";
-	static final String PROPERTY_BASE_URL = JENKINS_PREFIX + "baseURL";
+	static final String PROPERTY_BASE_URL = JENKINS_PREFIX + "baseUrl";
 	static final String PROPERTY_CLI_JAR = JENKINS_PREFIX + "cliJar";
 	static final String PROPERTY_NO_KEY_AUTH = JENKINS_PREFIX + "noKeyAuth";
 	static final String PROPERTY_PRIVATE_KEY = JENKINS_PREFIX + "privateKey";
