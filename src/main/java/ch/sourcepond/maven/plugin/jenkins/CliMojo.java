@@ -387,7 +387,7 @@ public class CliMojo extends AbstractMojo {
 	}
 
 	/**
-	 * @param customJenkinsCliJar2
+	 * @param pCustomJenkinsCliJar
 	 */
 	public void setCustomJenkinsCliJar(final File pCustomJenkinsCliJar) {
 		customJenkinsCliJar = pCustomJenkinsCliJar;
