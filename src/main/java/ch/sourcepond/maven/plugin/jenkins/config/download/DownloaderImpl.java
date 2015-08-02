@@ -18,6 +18,7 @@ import static java.nio.file.Files.createDirectories;
 import static java.nio.file.Files.isDirectory;
 import static java.nio.file.Files.isRegularFile;
 import static org.apache.commons.lang3.Validate.isTrue;
+import static org.apache.http.HttpStatus.SC_OK;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +34,6 @@ import javax.inject.Singleton;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -53,6 +53,7 @@ import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 final class DownloaderImpl implements Downloader {
 	static final String DOWNLOADER_ERROR_NO_VERSION_HEADER = "downloader.error.noVersionHeader";
 	static final String DOWNLOADER_ERROR_WRONG_STATUS_CODE = "downloader.error.wrongStatusCode";
+	static final String DOWNLOADER_ERROR_ENTITY_IS_NULL = "downloader.error.entityIsNull";
 	static final String DOWNLOADER_INFO_VERSION_FOUND = "downloader.info.versionFound";
 	static final String DOWNLOADER_INFO_USED_CLI_JAR = "downloader.info.usedCliJar";
 	static final String VERSION_HEADER_NAME = "X-Jenkins";
@@ -150,7 +151,7 @@ final class DownloaderImpl implements Downloader {
 							.execute(request)) {
 						final StatusLine statusLine = response.getStatusLine();
 
-						if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
+						if (statusLine.getStatusCode() != SC_OK) {
 							throw new MojoExecutionException(
 									messages.getMessage(
 											DOWNLOADER_ERROR_WRONG_STATUS_CODE,
@@ -166,8 +167,9 @@ final class DownloaderImpl implements Downloader {
 							}
 						} else {
 							throw new MojoExecutionException(
-									pValidatedConfig.getCliJarUri()
-											+ " not found");
+									messages.getMessage(
+											DOWNLOADER_ERROR_ENTITY_IS_NULL,
+											pValidatedConfig.getCliJarUri()));
 						}
 					}
 				} finally {
