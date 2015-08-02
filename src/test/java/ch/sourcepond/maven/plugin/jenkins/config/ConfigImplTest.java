@@ -150,6 +150,7 @@ public class ConfigImplTest {
 
 		impl.setNoCertificateCheck(false);
 		impl.setTrustStore(ANY_TRUSTSTORE);
+		impl.setTrustStorePassword(ANY_PASSWORD);
 		// Should not throw an exception
 		impl.validate(log);
 	}

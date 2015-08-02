@@ -49,7 +49,7 @@ interface HttpClientFacade {
 	 * {@link Config} specified this can be an ordinary HTTP client or a secure
 	 * HTTPS client.
 	 * 
-	 * @param pConfig
+	 * @param pValidatedConfig
 	 *            {@link Config} instance, must not be {@code null}
 	 * @return New client instance, never {@code null}
 	 * @throws MojoExecutionException
@@ -59,7 +59,7 @@ interface HttpClientFacade {
 	 * @throws CertificateException
 	 * @throws IOException
 	 */
-	CloseableHttpClient newClient(Config pConfig)
+	CloseableHttpClient newClient(Config pValidatedConfig)
 			throws MojoExecutionException, KeyManagementException,
 			NoSuchAlgorithmException, KeyStoreException, CertificateException,
 			IOException;

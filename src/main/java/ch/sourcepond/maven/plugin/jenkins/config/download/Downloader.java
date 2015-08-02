@@ -31,13 +31,13 @@ public interface Downloader {
 	 * 
 	 * @param pLog
 	 *            The Maven log, must not be {@code null}
-	 * @param pConfig
+	 * @param pValidatedConfig
 	 *            The config object, must not be {@code null}
 	 * @return Absolute path to the jar file, never {@code null}.
 	 * @throws MojoExecutionException
 	 *             Thrown, if the JAR could not be downloaded or stored in the
 	 *             work directory.
 	 */
-	String downloadCliJar(Log pLog, Config pConfig)
+	String downloadCliJar(Log pLog, Config pValidatedConfig)
 			throws MojoExecutionException;
 }

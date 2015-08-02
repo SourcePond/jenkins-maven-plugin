@@ -130,17 +130,17 @@ final class DownloaderImpl implements Downloader {
 	 * (ch.sourcepond.maven.plugin.jenkins.config.Config)
 	 */
 	@Override
-	public String downloadCliJar(final Log pLog, final Config pConfig)
+	public String downloadCliJar(final Log pLog, final Config pValidatedConfig)
 			throws MojoExecutionException {
-		try (final CloseableHttpClient client = clientFacade.newClient(pConfig)) {
+		try (final CloseableHttpClient client = clientFacade.newClient(pValidatedConfig)) {
 			final String jenkinsVersion = determineJenkinsVersion(pLog, client,
-					pConfig);
+					pValidatedConfig);
 
 			final Path downloadedCliJar = getDownloadedCliJar(
-					pConfig.getJenkinscliDirectory(), jenkinsVersion);
+					pValidatedConfig.getJenkinscliDirectory(), jenkinsVersion);
 
 			if (!isRegularFile(downloadedCliJar)) {
-				final HttpUriRequest request = clientFacade.newGet(pConfig
+				final HttpUriRequest request = clientFacade.newGet(pValidatedConfig
 						.getCliJarUri());
 				try {
 
@@ -150,7 +150,7 @@ final class DownloaderImpl implements Downloader {
 
 						if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
 							throw new MojoExecutionException(statusLine + ": "
-									+ pConfig.getCliJarUri());
+									+ pValidatedConfig.getCliJarUri());
 						}
 
 						final HttpEntity entity = response.getEntity();
@@ -161,7 +161,7 @@ final class DownloaderImpl implements Downloader {
 							}
 						} else {
 							throw new MojoExecutionException(
-									pConfig.getCliJarUri() + " not found");
+									pValidatedConfig.getCliJarUri() + " not found");
 						}
 					}
 				} finally {

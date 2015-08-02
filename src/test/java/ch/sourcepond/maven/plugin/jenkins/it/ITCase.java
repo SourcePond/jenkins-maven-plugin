@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.it;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,6 +47,9 @@ public abstract class ITCase {
 	}
 
 	protected void specifyExpectedStdout(final List<String> pLines) {
+		pLines.add("Detected Jenkins v. 1.609.1");
+		pLines.add("Using following CLI-jar: "
+				+ new File("target/1.609.1/jenkins-cli.jar").getAbsolutePath());
 		pLines.add("java -jar jenkins-cli.jar create-job NAME");
 		pLines.add("Creates a new job by reading stdin as a configuration XML file.");
 		pLines.add(" NAME : Name of the job to create");

@@ -177,6 +177,8 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 		assert getBaseConfig().getSettings() != null : "settings is null";
 		assert getBaseConfig().getJenkinscliDirectory() != null : "jenkinscliDirectory is null";
 
+		getBaseConfig().validate(pLog);
+
 		// If a local, custom jenkins-cli.jar has been defined, bypass any
 		// dowload...
 		if (getBaseConfig().getCustomJenkinsCliJarOrNull() != null) {
@@ -187,7 +189,6 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 			setDownloadedCliJar(downloader
 					.downloadCliJar(pLog, getBaseConfig()));
 		}
-		getBaseConfig().validate(pLog);
 
 		return (Config) config.clone();
 	}

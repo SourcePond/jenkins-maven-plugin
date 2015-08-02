@@ -26,7 +26,6 @@ import javax.net.ssl.SSLContext;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -103,24 +102,5 @@ public class HttpClientFacadeImplTest {
 		when(config.getBaseUri()).thenReturn(httpUri);
 		when(sslFactory.newClient(null)).thenReturn(client);
 		assertSame(client, impl.newClient(config));
-	}
-
-	/**
-	 * @throws Exception
-	 */
-	@Test(expected = MojoExecutionException.class)
-	public void verifyTrustStoreNotSpecified() throws Exception {
-		when(config.getTrustStorePasswordOrNull()).thenReturn(
-				TRUST_STORE_PASSWORD);
-		impl.newClient(config);
-	}
-
-	/**
-	 * @throws Exception
-	 */
-	@Test(expected = MojoExecutionException.class)
-	public void verifyTrustStorePasswordNotSpecified() throws Exception {
-		when(config.getTrustStoreOrNull()).thenReturn(TRUST_STORE);
-		impl.newClient(config);
 	}
 }
