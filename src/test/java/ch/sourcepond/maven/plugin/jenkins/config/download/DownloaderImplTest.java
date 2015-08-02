@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.config.download;
 
+import static ch.sourcepond.maven.plugin.jenkins.config.download.DownloaderImpl.DOWNLOADER_ERROR_WRONG_STATUS_CODE;
 import static ch.sourcepond.maven.plugin.jenkins.config.download.DownloaderImpl.DOWNLOADER_INFO_VERSION_FOUND;
 import static ch.sourcepond.maven.plugin.jenkins.config.download.DownloaderImpl.JAR_NAME;
 import static ch.sourcepond.maven.plugin.jenkins.config.download.DownloaderImpl.VERSION_HEADER_NAME;
@@ -244,11 +245,19 @@ public class DownloaderImplTest {
 	/**
 	 * @throws Exception
 	 */
-	@Test(expected = MojoExecutionException.class)
+	@Test
 	public void verifyDownloadCliJarInvalidStatus() throws Exception {
+		when(
+				messages.getMessage(DOWNLOADER_ERROR_WRONG_STATUS_CODE,
+						downloadStatusLine, cliJarUri)).thenReturn(ANY_STRING);
 		when(downloadStatusLine.getStatusCode()).thenReturn(
 				SC_SERVICE_UNAVAILABLE);
-		impl.downloadCliJar(log, config);
+		try {
+			impl.downloadCliJar(log, config);
+			fail("Exception expected");
+		} catch (final MojoExecutionException expected) {
+			assertEquals(ANY_STRING, expected.getMessage());
+		}
 	}
 
 	/**

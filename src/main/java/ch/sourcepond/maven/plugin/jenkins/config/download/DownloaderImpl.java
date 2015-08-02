@@ -52,6 +52,7 @@ import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 @Singleton
 final class DownloaderImpl implements Downloader {
 	static final String DOWNLOADER_ERROR_NO_VERSION_HEADER = "downloader.error.noVersionHeader";
+	static final String DOWNLOADER_ERROR_WRONG_STATUS_CODE = "downloader.error.wrongStatusCode";
 	static final String DOWNLOADER_INFO_VERSION_FOUND = "downloader.info.versionFound";
 	static final String DOWNLOADER_INFO_USED_CLI_JAR = "downloader.info.usedCliJar";
 	static final String VERSION_HEADER_NAME = "X-Jenkins";
@@ -132,7 +133,8 @@ final class DownloaderImpl implements Downloader {
 	@Override
 	public String downloadCliJar(final Log pLog, final Config pValidatedConfig)
 			throws MojoExecutionException {
-		try (final CloseableHttpClient client = clientFacade.newClient(pValidatedConfig)) {
+		try (final CloseableHttpClient client = clientFacade
+				.newClient(pValidatedConfig)) {
 			final String jenkinsVersion = determineJenkinsVersion(pLog, client,
 					pValidatedConfig);
 
@@ -140,8 +142,8 @@ final class DownloaderImpl implements Downloader {
 					pValidatedConfig.getJenkinscliDirectory(), jenkinsVersion);
 
 			if (!isRegularFile(downloadedCliJar)) {
-				final HttpUriRequest request = clientFacade.newGet(pValidatedConfig
-						.getCliJarUri());
+				final HttpUriRequest request = clientFacade
+						.newGet(pValidatedConfig.getCliJarUri());
 				try {
 
 					try (final CloseableHttpResponse response = client
@@ -149,8 +151,11 @@ final class DownloaderImpl implements Downloader {
 						final StatusLine statusLine = response.getStatusLine();
 
 						if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
-							throw new MojoExecutionException(statusLine + ": "
-									+ pValidatedConfig.getCliJarUri());
+							throw new MojoExecutionException(
+									messages.getMessage(
+											DOWNLOADER_ERROR_WRONG_STATUS_CODE,
+											statusLine,
+											pValidatedConfig.getCliJarUri()));
 						}
 
 						final HttpEntity entity = response.getEntity();
@@ -161,7 +166,8 @@ final class DownloaderImpl implements Downloader {
 							}
 						} else {
 							throw new MojoExecutionException(
-									pValidatedConfig.getCliJarUri() + " not found");
+									pValidatedConfig.getCliJarUri()
+											+ " not found");
 						}
 					}
 				} finally {
