@@ -13,6 +13,20 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins;
 
+import static ch.sourcepond.maven.plugin.jenkins.CliMojo.PROPERTY_APPEND;
+import static ch.sourcepond.maven.plugin.jenkins.CliMojo.PROPERTY_BASE_URL;
+import static ch.sourcepond.maven.plugin.jenkins.CliMojo.PROPERTY_CLI_DIRECTORY;
+import static ch.sourcepond.maven.plugin.jenkins.CliMojo.PROPERTY_CLI_JAR;
+import static ch.sourcepond.maven.plugin.jenkins.CliMojo.PROPERTY_COMMAND;
+import static ch.sourcepond.maven.plugin.jenkins.CliMojo.PROPERTY_CUSTOM_CLI_JAR;
+import static ch.sourcepond.maven.plugin.jenkins.CliMojo.PROPERTY_NO_CERTIFICATE_CHECK;
+import static ch.sourcepond.maven.plugin.jenkins.CliMojo.PROPERTY_NO_KEY_AUTH;
+import static ch.sourcepond.maven.plugin.jenkins.CliMojo.PROPERTY_PRIVATE_KEY;
+import static ch.sourcepond.maven.plugin.jenkins.CliMojo.PROPERTY_PROXY_ID;
+import static ch.sourcepond.maven.plugin.jenkins.CliMojo.PROPERTY_STDIN;
+import static ch.sourcepond.maven.plugin.jenkins.CliMojo.PROPERTY_STDOUT;
+import static ch.sourcepond.maven.plugin.jenkins.CliMojo.PROPERTY_TRUST_STORE;
+import static ch.sourcepond.maven.plugin.jenkins.CliMojo.PROPERTY_TRUST_STORE_PASSWORD;
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.asList;
@@ -89,23 +103,23 @@ public class VerifyPropertiesOnParameterAnnotationsTest {
 	@Test
 	public void verifyPropertyToFieldMapping() throws Exception {
 		verifyFieldToPropertyMapping("jenkinscliDirectory",
-				"jenkins.cliDirectory");
-		verifyFieldToPropertyMapping("baseUrl", "jenkins.baseURL");
-		verifyFieldToPropertyMapping("cliJar", "jenkins.cliJar");
-		verifyFieldToPropertyMapping("command", "jenkins.command");
+				PROPERTY_CLI_DIRECTORY);
+		verifyFieldToPropertyMapping("baseUrl", PROPERTY_BASE_URL);
+		verifyFieldToPropertyMapping("cliJar", PROPERTY_CLI_JAR);
+		verifyFieldToPropertyMapping("command", PROPERTY_COMMAND);
 		verifyFieldToPropertyMapping("customJenkinsCliJar",
-				"jenkins.customCliJar");
-		verifyFieldToPropertyMapping("stdin", "jenkins.stdin");
-		verifyFieldToPropertyMapping("stdout", "jenkins.stdout");
-		verifyFieldToPropertyMapping("append", "jenkins.append");
-		verifyFieldToPropertyMapping("proxyId", "jenkins.proxyId");
-		verifyFieldToPropertyMapping("noKeyAuth", "jenkins.noKeyAuth");
-		verifyFieldToPropertyMapping("privateKey", "jenkins.privateKey");
+				PROPERTY_CUSTOM_CLI_JAR);
+		verifyFieldToPropertyMapping("stdin", PROPERTY_STDIN);
+		verifyFieldToPropertyMapping("stdout", PROPERTY_STDOUT);
+		verifyFieldToPropertyMapping("append", PROPERTY_APPEND);
+		verifyFieldToPropertyMapping("proxyId", PROPERTY_PROXY_ID);
+		verifyFieldToPropertyMapping("noKeyAuth", PROPERTY_NO_KEY_AUTH);
+		verifyFieldToPropertyMapping("privateKey", PROPERTY_PRIVATE_KEY);
 		verifyFieldToPropertyMapping("noCertificateCheck",
-				"jenkins.noCertificateCheck");
-		verifyFieldToPropertyMapping("trustStore", "jenkins.trustStore");
+				PROPERTY_NO_CERTIFICATE_CHECK);
+		verifyFieldToPropertyMapping("trustStore", PROPERTY_TRUST_STORE);
 		verifyFieldToPropertyMapping("trustStorePassword",
-				"jenkins.trustStorePassword");
+				PROPERTY_TRUST_STORE_PASSWORD);
 	}
 
 	/**
