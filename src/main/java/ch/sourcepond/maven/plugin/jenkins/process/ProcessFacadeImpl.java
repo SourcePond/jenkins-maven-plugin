@@ -27,6 +27,7 @@ import org.zeroturnaround.exec.InvalidExitValueException;
 import org.zeroturnaround.exec.ProcessExecutor;
 
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
+import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 import ch.sourcepond.maven.plugin.jenkins.process.cmd.CommandFactory;
 
 /**
@@ -35,6 +36,8 @@ import ch.sourcepond.maven.plugin.jenkins.process.cmd.CommandFactory;
 @Named
 @Singleton
 final class ProcessFacadeImpl implements ProcessFacade {
+	static final String PROCESS_ERROR_EXITVALUE = "process.error.exitValue";
+	private final Messages messages;
 	private final CommandFactory cmdFactory;
 	private final ProcessExecutorFactory procExecFactory;
 
@@ -42,8 +45,10 @@ final class ProcessFacadeImpl implements ProcessFacade {
 	 * @param pRedirectOutputStreamFactory
 	 */
 	@Inject
-	public ProcessFacadeImpl(final CommandFactory pCmdFactory,
+	public ProcessFacadeImpl(final Messages pMessages,
+			final CommandFactory pCmdFactory,
 			final ProcessExecutorFactory pProcExecFactory) {
+		messages = pMessages;
 		cmdFactory = pCmdFactory;
 		procExecFactory = pProcExecFactory;
 	}
@@ -71,8 +76,8 @@ final class ProcessFacadeImpl implements ProcessFacade {
 				for (final String token : command) {
 					builder.append(token).append(" ");
 				}
-				builder.append(" [exit value: ").append(exitValue).append("]");
-				throw new MojoExecutionException(builder.toString());
+				throw new MojoExecutionException(messages.getMessage(
+						PROCESS_ERROR_EXITVALUE, exitValue, builder.toString()));
 			}
 		} catch (InvalidExitValueException | IOException | InterruptedException
 				| TimeoutException e) {

@@ -13,9 +13,10 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.process;
 
+import static ch.sourcepond.maven.plugin.jenkins.process.ProcessFacadeImpl.PROCESS_ERROR_EXITVALUE;
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -34,12 +35,14 @@ import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
 
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
+import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 import ch.sourcepond.maven.plugin.jenkins.process.cmd.CommandFactory;
 
 /**
  *
  */
 public class ProcessFacadeImplTest {
+	private static final String ANY_MESSAGE = "anyMessage";
 	private static final String ANY_COMMAND = "anyCommand";
 	private static final int ERROR_CODE = 221038;
 	private final Log log = mock(Log.class);
@@ -48,9 +51,10 @@ public class ProcessFacadeImplTest {
 	private final ProcessExecutorFactory procExecFactory = mock(ProcessExecutorFactory.class);
 	private final Config config = mock(Config.class);
 	private final CommandFactory cmdFactory = mock(CommandFactory.class);
+	private final Messages messages = mock(Messages.class);
 	private final List<String> command = asList(ANY_COMMAND);
-	private final ProcessFacadeImpl impl = new ProcessFacadeImpl(cmdFactory,
-			procExecFactory);
+	private final ProcessFacadeImpl impl = new ProcessFacadeImpl(messages,
+			cmdFactory, procExecFactory);
 
 	/**
 	 * @throws URISyntaxException
@@ -95,12 +99,14 @@ public class ProcessFacadeImplTest {
 	@Test
 	public void verifyErrorReturnCode() throws Exception {
 		when(result.getExitValue()).thenReturn(ERROR_CODE);
+		when(
+				messages.getMessage(PROCESS_ERROR_EXITVALUE, ERROR_CODE,
+						ANY_COMMAND + " ")).thenReturn(ANY_MESSAGE);
 		try {
 			impl.execute(log, config);
 			fail("Exception expected");
 		} catch (final MojoExecutionException e) {
-			assertTrue(e.getMessage().contains(ANY_COMMAND));
-			assertTrue(e.getMessage().contains(String.valueOf(ERROR_CODE)));
+			assertEquals(ANY_MESSAGE, e.getMessage());
 		}
 	}
 }
