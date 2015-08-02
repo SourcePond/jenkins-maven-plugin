@@ -15,6 +15,7 @@ package ch.sourcepond.maven.plugin.jenkins.config;
 
 import static ch.sourcepond.maven.plugin.jenkins.config.ConfigImpl.CONFIG_VALIDATION_ERROR_NO_KEY_AUTH_AND_PRIVATE_KEY_SET;
 import static ch.sourcepond.maven.plugin.jenkins.config.ConfigImpl.CONFIG_VALIDATION_ERROR_NO_TRUSTSTORE_PASSWORD_SPECIFIED;
+import static ch.sourcepond.maven.plugin.jenkins.config.ConfigImpl.CONFIG_VALIDATION_ERROR_SECURE_BUT_NO_TRUSTSTORE_SPECIFIED;
 import static ch.sourcepond.maven.plugin.jenkins.config.ConfigImpl.CONFIG_VALIDATION_ERROR_TRUSTSTORE_PASSWORD_TOO_SHORT;
 import static ch.sourcepond.maven.plugin.jenkins.config.ConfigImpl.CONFIG_VALIDATION_WARN_TRUSTSTORE_PASSWORD_NOT_NECESSARY;
 import static ch.sourcepond.maven.plugin.jenkins.config.ConfigImpl.MIN_TRUSTSTORE_PWD_LENGTH;
@@ -35,6 +36,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
+import org.junit.Before;
 import org.junit.Test;
 
 import ch.sourcepond.maven.plugin.jenkins.message.Messages;
@@ -51,6 +53,16 @@ public class ConfigImplTest {
 	private final Log log = mock(Log.class);
 	private final Messages messages = mock(Messages.class);
 	private final ConfigImpl impl = new ConfigImpl(messages);
+	private URI baseUri;
+
+	/**
+	 * @throws Exception
+	 */
+	@Before
+	public void setup() throws Exception {
+		baseUri = new URI("http://baseUri");
+		impl.setBaseUri(baseUri);
+	}
 
 	/**
 	 * 
@@ -110,6 +122,35 @@ public class ConfigImplTest {
 		// Should not cause an exception
 		impl.setNoKeyAuth(true);
 		impl.setPrivateKey(null);
+		impl.validate(log);
+	}
+
+	/**
+	 * @throws MojoExecutionException
+	 */
+	@Test
+	public void verifySecureButNoTrustStoreSpecified() throws Exception {
+		when(
+				messages.getMessage(CONFIG_VALIDATION_ERROR_SECURE_BUT_NO_TRUSTSTORE_SPECIFIED))
+				.thenReturn(ANY_MESSAGE);
+		impl.setBaseUri(new URI("https://secure.jenkins.org"));
+		impl.setNoCertificateCheck(false);
+		impl.setTrustStore(null);
+
+		try {
+			impl.validate(log);
+			fail("Exception expected");
+		} catch (final MojoExecutionException expected) {
+			assertEquals(ANY_MESSAGE, expected.getMessage());
+		}
+
+		impl.setNoCertificateCheck(true);
+		// Should not throw an exception
+		impl.validate(log);
+
+		impl.setNoCertificateCheck(false);
+		impl.setTrustStore(ANY_TRUSTSTORE);
+		// Should not throw an exception
 		impl.validate(log);
 	}
 

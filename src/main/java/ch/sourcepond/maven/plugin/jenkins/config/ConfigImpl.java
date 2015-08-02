@@ -33,6 +33,7 @@ import ch.sourcepond.maven.plugin.jenkins.message.Messages;
  */
 final class ConfigImpl implements Config, Cloneable {
 	static final String CONFIG_VALIDATION_ERROR_NO_KEY_AUTH_AND_PRIVATE_KEY_SET = "config.validation.error.noKeyAuthAndPrivateKeySet";
+	static final String CONFIG_VALIDATION_ERROR_SECURE_BUT_NO_TRUSTSTORE_SPECIFIED = "config.validation.error.secureButNoTruststoreSpecified";
 	static final String CONFIG_VALIDATION_ERROR_NO_TRUSTSTORE_PASSWORD_SPECIFIED = "config.validation.error.noTruststorePasswordSpecified";
 	static final String CONFIG_VALIDATION_ERROR_TRUSTSTORE_PASSWORD_TOO_SHORT = "config.validation.error.truststorePasswordTooShort";
 	static final String CONFIG_VALIDATION_WARN_TRUSTSTORE_PASSWORD_NOT_NECESSARY = "config.validation.warn.truststorePasswordNotNecessary";
@@ -344,6 +345,14 @@ final class ConfigImpl implements Config, Cloneable {
 			throw new MojoExecutionException(messages.getMessage(
 					CONFIG_VALIDATION_ERROR_NO_KEY_AUTH_AND_PRIVATE_KEY_SET,
 					getPrivateKeyOrNull()));
+		}
+
+		// If a secure base-uri has been set, there must be a trust-store if
+		// certificate check is not disabled.
+		if (isSecure() && !isNoCertificateCheck()
+				&& getTrustStoreOrNull() == null) {
+			throw new MojoExecutionException(
+					messages.getMessage(CONFIG_VALIDATION_ERROR_SECURE_BUT_NO_TRUSTSTORE_SPECIFIED));
 		}
 
 		// If a trust-store has been specified, insure that a password is set
