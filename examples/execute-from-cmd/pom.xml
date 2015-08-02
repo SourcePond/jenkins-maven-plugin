@@ -22,7 +22,7 @@
 				<plugin>
 					<groupId>ch.sourcepond.maven.plugins</groupId>
 					<artifactId>jenkins-maven-plugin</artifactId>
-					<version>1.0.0-SNAPSHOT</version>
+					<version>1.0.1</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
