@@ -17,7 +17,7 @@ The Jenkins Maven Plugin allows to use the Jenkins CLI (command line interface) 
 
 
 ## Installation
-The plugin is available in [Maven Central Repository](http://search.maven.org/#artifactdetails|ch.sourcepond.maven.plugins|jenkins-maven-plugin|1.0.1|maven-plugin). To use it in your project, add following plugin definition to the build part of your pom.xml:
+The plugin is available in [Maven Central Repository](http://search.maven.org/#artifactdetails|ch.sourcepond.maven.plugins|jenkins-maven-plugin|1.0.2|maven-plugin). To use it in your project, add following plugin definition to the build part of your pom.xml:
 ```
 <plugin>
 	<groupId>ch.sourcepond.maven.plugins</groupId>
@@ -90,7 +90,7 @@ mvn jenkins:cli -Djenkins.command="help create-job"
 ```
 You can also define your Jenkins baseURL like this:
 ```
-mvn jenkins:cli -Djenkins.baseURL=http://[HOST]:[PORT]/[JENKINS PATH] -Djenkins.command=[CMD]
+mvn jenkins:cli -Djenkins.baseUrl=http://[HOST]:[PORT]/[JENKINS PATH] -Djenkins.command=[CMD]
 ```
 
 ### Create a new job on Jenkins (examples/create-job)
