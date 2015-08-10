@@ -52,6 +52,8 @@ public class CliMojoTest {
 	private final File privateKey = new File("privateKey");
 	private final File stdin = new File("stdin");
 	private final File stdout = new File("stdout");
+	private final File stdinXslt = new File("stdinXslt");
+	private final File stdoutXslt = new File("stdoutXslt");
 	private final File trustStore = new File("trustStore");
 	private final File customJenkinsCliJar = new File("customJenkinsCliJar");
 	private final Config config = mock(Config.class);
@@ -74,6 +76,8 @@ public class CliMojoTest {
 		impl.setCommand(COMMAND);
 		impl.setStdin(stdin);
 		impl.setStdout(stdout);
+		impl.setStdinXslt(stdinXslt);
+		impl.setStdoutXslt(stdoutXslt);
 		impl.setAppend(true);
 		impl.setSettings(settings);
 		impl.setProxyId(PROXY_ID);
@@ -90,6 +94,8 @@ public class CliMojoTest {
 		when(builder.setCommand(COMMAND)).thenReturn(builder);
 		when(builder.setStdin(stdin)).thenReturn(builder);
 		when(builder.setStdout(stdout)).thenReturn(builder);
+		when(builder.setStdinXslt(stdinXslt)).thenReturn(builder);
+		when(builder.setStdoutXslt(stdoutXslt)).thenReturn(builder);
 		when(builder.setAppend(true)).thenReturn(builder);
 		when(builder.setNoKeyAuth(true)).thenReturn(builder);
 		when(builder.setNoCertificateCheck(true)).thenReturn(builder);

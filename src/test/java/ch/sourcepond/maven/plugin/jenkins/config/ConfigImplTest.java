@@ -218,4 +218,52 @@ public class ConfigImplTest {
 		impl.validate(log);
 		verifyNoMoreInteractions(log);
 	}
+
+	/**
+	 * @throws MojoExecutionException
+	 */
+	@Test
+	public void verifyStdinXsltNotAppliable() throws MojoExecutionException {
+		when(
+				messages.getMessage(
+						ConfigImpl.CONFIG_VALIDATION_WARN_XSLT_NOT_APPLIABLE,
+						ConfigImpl.STDIN_XSLT_FIELD, ConfigImpl.STDIN_FIELD))
+				.thenReturn(ANY_MESSAGE);
+		impl.setStdin(null);
+		impl.setStdinXslt(mock(Path.class));
+		impl.validate(log);
+		verify(log).warn(ANY_MESSAGE);
+
+		impl.setStdin(mock(Path.class));
+		impl.validate(log);
+		verifyNoMoreInteractions(log);
+
+		impl.setStdinXslt(null);
+		impl.validate(log);
+		verifyNoMoreInteractions(log);
+	}
+
+	/**
+	 * @throws MojoExecutionException
+	 */
+	@Test
+	public void verifyStdoutXsltNotAppliable() throws MojoExecutionException {
+		when(
+				messages.getMessage(
+						ConfigImpl.CONFIG_VALIDATION_WARN_XSLT_NOT_APPLIABLE,
+						ConfigImpl.STDOUT_XSLT_FIELD, ConfigImpl.STDOUT_FIELD))
+				.thenReturn(ANY_MESSAGE);
+		impl.setStdout(null);
+		impl.setStdoutXslt(mock(Path.class));
+		impl.validate(log);
+		verify(log).warn(ANY_MESSAGE);
+
+		impl.setStdout(mock(Path.class));
+		impl.validate(log);
+		verifyNoMoreInteractions(log);
+
+		impl.setStdoutXslt(null);
+		impl.validate(log);
+		verifyNoMoreInteractions(log);
+	}
 }

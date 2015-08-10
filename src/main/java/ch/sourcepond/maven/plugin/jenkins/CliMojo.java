@@ -55,6 +55,8 @@ public class CliMojo extends AbstractMojo {
 	static final String PROPERTY_STDIN = JENKINS_PREFIX + "stdin";
 	static final String PROPERTY_STDOUT = JENKINS_PREFIX + "stdout";
 	static final String PROPERTY_APPEND = JENKINS_PREFIX + "append";
+	static final String PROPERTY_STDOUT_XSLT = JENKINS_PREFIX + "stdoutXslt";
+	static final String PROPERTY_STDIN_XSLT = JENKINS_PREFIX + "stdinXslt";
 	static final String PROPERTY_PROXY_ID = JENKINS_PREFIX + "proxyId";
 	static final String PROPERTY_TRUST_STORE = JENKINS_PREFIX + "trustStore";
 	static final String PROPERTY_TRUST_STORE_PASSWORD = JENKINS_PREFIX
@@ -155,6 +157,25 @@ public class CliMojo extends AbstractMojo {
 	private boolean append;
 
 	/**
+	 * Specifies the XSTL file to be applied on the file specified by
+	 * {@link #stdout} before it's actually written. This is useful for instance
+	 * to transform a template job configuration into an actual one. If
+	 * {@link #stdout} is not specified, this setting has no effect.
+	 */
+	@Parameter(property = PROPERTY_STDOUT_XSLT)
+	private File stdoutXslt;
+
+	/**
+	 * Specifies the XSTL file to be applied on the file specified by
+	 * {@link #stdin} before it's actually passed to the CLI command. This is
+	 * useful for instance to transform a template job configuration into an
+	 * actual one. If {@link #stdin} is not specified, this setting has no
+	 * effect.
+	 */
+	@Parameter(property = PROPERTY_STDIN_XSLT)
+	private File stdinXslt;
+
+	/**
 	 * Specifies the settings-id of the <a
 	 * href="https://maven.apache.org/guides/mini/guide-proxies.html"
 	 * >proxy-server</a> which the CLI should use to connect to the Jenkins
@@ -228,8 +249,9 @@ public class CliMojo extends AbstractMojo {
 						.setJenkinscliDirectory(jenkinscliDirectory.toPath())
 						.setCustomJenkinsCliJar(customJenkinsCliJar)
 						.setBaseUrl(baseUrl, cliJar).setCommand(command)
-						.setStdin(stdin).setStdout(stdout).setAppend(append)
-						.setNoKeyAuth(noKeyAuth)
+						.setStdin(stdin).setStdinXslt(stdinXslt)
+						.setStdout(stdout).setStdoutXslt(stdoutXslt)
+						.setAppend(append).setNoKeyAuth(noKeyAuth)
 						.setNoCertificateCheck(noCertificateCheck)
 						.setPrivateKey(privateKey).setTrustStore(trustStore)
 						.setTrustStorePassword(trustStorePassword)
@@ -321,6 +343,16 @@ public class CliMojo extends AbstractMojo {
 	}
 
 	/**
+	 * Sets the XSLT to transform the standard input, see {@link #stdinXslt}.
+	 * 
+	 * @param pStdinXsltOrNull
+	 *            XSLT file or {@code null}
+	 */
+	public void setStdinXslt(final File pStdinXsltOrNull) {
+		stdinXslt = pStdinXsltOrNull;
+	}
+
+	/**
 	 * @param pSettings
 	 */
 	// TODO: This method is only used by tests; find a better solution and
@@ -377,6 +409,16 @@ public class CliMojo extends AbstractMojo {
 	 */
 	public void setStdout(final File pStdout) {
 		stdout = pStdout;
+	}
+
+	/**
+	 * Sets the XSLT to transform the standard out, see {@link #stdoutXslt}.
+	 * 
+	 * @param pStdoutXsltOrNull
+	 *            XSLT file or {@code null}
+	 */
+	public void setStdoutXslt(final File pStdoutXsltOrNull) {
+		stdoutXslt = pStdoutXsltOrNull;
 	}
 
 	/**

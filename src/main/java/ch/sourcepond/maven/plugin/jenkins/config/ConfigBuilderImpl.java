@@ -299,4 +299,34 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 		config.setCustomJenkinsCliJarOrNull(pCustomJenkinsCliJar);
 		return this;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setStdinXslt(
+	 * java.io.File)
+	 */
+	@Override
+	public ConfigBuilder setStdinXslt(final File pStdinXslt) {
+		if (pStdinXslt != null) {
+			config.setStdinXslt(pStdinXslt.toPath());
+		}
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setStdoutXslt
+	 * (java.io.File)
+	 */
+	@Override
+	public ConfigBuilder setStdoutXslt(final File pStdoutXslt) {
+		if (pStdoutXslt != null) {
+			config.setStdoutXslt(pStdoutXslt.toPath());
+		}
+		return this;
+	}
 }

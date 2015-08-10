@@ -119,12 +119,28 @@ public interface Config {
 	Path getStdinOrNull();
 
 	/**
+	 * Returns the XSLT file to be applied on the stdin; specified through mojo
+	 * parameter <em>stdinXslt</em>.
+	 * 
+	 * @return Path to XSLT or {@code null}
+	 */
+	Path getStdinXsltOrNull();
+
+	/**
 	 * Returns the file to be used as stdout by the CLI; specified through mojo
 	 * parameter <em>stdout</em>.
 	 * 
 	 * @return Path to stdout or {@code null}
 	 */
 	Path getStdoutOrNull();
+
+	/**
+	 * Returns the XSLT file to be applied on the stdout; specified through mojo
+	 * parameter <em>stdoutXslt</em>.
+	 * 
+	 * @return Path to XSLT or {@code null}
+	 */
+	Path getStdoutXsltOrNull();
 
 	/**
 	 * Returns whether the standard output of the CLI should be appended to the

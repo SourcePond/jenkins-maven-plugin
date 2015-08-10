@@ -37,7 +37,12 @@ final class ConfigImpl implements Config, Cloneable {
 	static final String CONFIG_VALIDATION_ERROR_NO_TRUSTSTORE_PASSWORD_SPECIFIED = "config.validation.error.noTruststorePasswordSpecified";
 	static final String CONFIG_VALIDATION_ERROR_TRUSTSTORE_PASSWORD_TOO_SHORT = "config.validation.error.truststorePasswordTooShort";
 	static final String CONFIG_VALIDATION_WARN_TRUSTSTORE_PASSWORD_NOT_NECESSARY = "config.validation.warn.truststorePasswordNotNecessary";
+	static final String CONFIG_VALIDATION_WARN_XSLT_NOT_APPLIABLE = "config.validation.warn.xsltNotAppliable";
 	static final String HTTPS = "https";
+	static final String STDIN_FIELD = "stdin";
+	static final String STDIN_XSLT_FIELD = "stdinXslt";
+	static final String STDOUT_FIELD = "stdout";
+	static final String STDOUT_XSLT_FIELD = "stdoutXslt";
 	static final int MIN_TRUSTSTORE_PWD_LENGTH = 6;
 	private final Messages messages;
 	private Path jenkinscliDirectory;
@@ -49,11 +54,13 @@ final class ConfigImpl implements Config, Cloneable {
 	private Proxy proxy;
 	private String dowloadedCliJar;
 	private Path stdin;
+	private Path stdinXslt;
 	private Settings settings;
 	private boolean noCertificateCheck;
 	private File trustStore;
 	private String trustStorePassword;
 	private Path stdout;
+	private Path stdoutXslt;
 	private boolean appending;
 	private File customJenkinsCliJarOrNull;
 
@@ -377,5 +384,62 @@ final class ConfigImpl implements Config, Cloneable {
 			pLog.warn(messages
 					.getMessage(CONFIG_VALIDATION_WARN_TRUSTSTORE_PASSWORD_NOT_NECESSARY));
 		}
+
+		warnIfXsltCannotBeApplied(pLog, stdin, stdinXslt, STDIN_XSLT_FIELD,
+				STDIN_FIELD);
+		warnIfXsltCannotBeApplied(pLog, stdout, stdoutXslt, STDOUT_XSLT_FIELD,
+				STDOUT_FIELD);
+	}
+
+	/**
+	 * @param pMessageKey
+	 * @param pLog
+	 * @param pSourceOrNull
+	 * @param pXsltOrNull
+	 */
+	private void warnIfXsltCannotBeApplied(final Log pLog,
+			final Path pSourceOrNull, final Path pXsltOrNull,
+			final String pXsltFieldName, final String pSourceFieldName) {
+		if (pSourceOrNull == null && pXsltOrNull != null) {
+			pLog.warn(messages.getMessage(
+					CONFIG_VALIDATION_WARN_XSLT_NOT_APPLIABLE, pXsltFieldName,
+					pSourceFieldName));
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.Config#getStdinXsltOrNull()
+	 */
+	@Override
+	public Path getStdinXsltOrNull() {
+		return stdinXslt;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.Config#getStdoutXsltOrNull()
+	 */
+	@Override
+	public Path getStdoutXsltOrNull() {
+		return stdoutXslt;
+	}
+
+	/**
+	 * @param pStdinXslt
+	 */
+	void setStdinXslt(final Path pStdinXslt) {
+		stdinXslt = pStdinXslt;
+	}
+
+	/**
+	 * @param pStdoutXslt
+	 */
+	public void setStdoutXslt(final Path pStdoutXslt) {
+		stdoutXslt = pStdoutXslt;
 	}
 }

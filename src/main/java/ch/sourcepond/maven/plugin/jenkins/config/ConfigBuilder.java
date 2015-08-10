@@ -134,7 +134,17 @@ public interface ConfigBuilder {
 	ConfigBuilder setStdin(File pStdin);
 
 	/**
-	 * Sets the {@link File} where to redirect the standard out, see
+	 * Sets the XSLT {@link File} to be used to transform the standard input,
+	 * see {@link Config#getStdinXsltOrNull()}.
+	 * 
+	 * @param pStdinXslt
+	 *            {@link File} or {@code null}
+	 * @return This builder, never {@code null}
+	 */
+	ConfigBuilder setStdinXslt(File pStdinXslt);
+
+	/**
+	 * Sets the {@link File} where to redirect the standard output, see
 	 * {@link Config#getStdoutOrNull()}.
 	 * 
 	 * @param pStdout
@@ -142,6 +152,16 @@ public interface ConfigBuilder {
 	 * @return This builder, never {@code null}
 	 */
 	ConfigBuilder setStdout(File pStdout);
+
+	/**
+	 * Sets the XSLT {@link File} to be used to transform the standard output,
+	 * see {@link Config#getStdoutXsltOrNull()}.
+	 * 
+	 * @param pStdoutXslt
+	 *            {@link File} or {@code null}
+	 * @return This builder, never {@code null}
+	 */
+	ConfigBuilder setStdoutXslt(File pStdoutXslt);
 
 	/**
 	 * Sets whether the standard output shall be appended to the file specified

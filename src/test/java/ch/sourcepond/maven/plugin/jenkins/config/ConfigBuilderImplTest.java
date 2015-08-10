@@ -48,7 +48,8 @@ public class ConfigBuilderImplTest extends ConfigBuilderImplBaseTest {
 	@Test
 	public void verifySetGetJenkinscliDirectory() throws Exception {
 		assertSame(impl, impl.setJenkinscliDirectory(jenkinscliDirectory));
-		assertSame(jenkinscliDirectory, impl.getBaseConfig().getJenkinscliDirectory());
+		assertSame(jenkinscliDirectory, impl.getBaseConfig()
+				.getJenkinscliDirectory());
 	}
 
 	/**
@@ -167,6 +168,26 @@ public class ConfigBuilderImplTest extends ConfigBuilderImplBaseTest {
 	public void verifySetGetStdout() {
 		assertSame(impl, impl.setStdout(ANY_FILE));
 		assertEquals(ANY_FILE, impl.getBaseConfig().getStdoutOrNull().toFile());
+	}
+
+	/**
+	 * 
+	 */
+	@Test
+	public void verifySetGetStdinXslt() {
+		assertSame(impl, impl.setStdinXslt(ANY_FILE));
+		assertEquals(ANY_FILE, impl.getBaseConfig().getStdinXsltOrNull()
+				.toFile());
+	}
+
+	/**
+	 * 
+	 */
+	@Test
+	public void verifySetGetStdoutXslt() {
+		assertSame(impl, impl.setStdoutXslt(ANY_FILE));
+		assertEquals(ANY_FILE, impl.getBaseConfig().getStdoutXsltOrNull()
+				.toFile());
 	}
 
 	/**
