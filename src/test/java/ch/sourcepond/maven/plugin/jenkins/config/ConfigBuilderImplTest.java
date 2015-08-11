@@ -179,8 +179,7 @@ public class ConfigBuilderImplTest extends ConfigBuilderImplBaseTest {
 	@Test
 	public void verifySetGetStdinXslt() {
 		assertSame(impl, impl.setStdinXslt(ANY_FILE));
-		assertEquals(ANY_FILE, impl.getBaseConfig().getStdinXsltOrNull()
-				.toFile());
+		assertEquals(ANY_FILE, impl.getBaseConfig().getStdinXsltOrNull());
 	}
 
 	/**
@@ -189,8 +188,7 @@ public class ConfigBuilderImplTest extends ConfigBuilderImplBaseTest {
 	@Test
 	public void verifySetGetStdoutXslt() {
 		assertSame(impl, impl.setStdoutXslt(ANY_FILE));
-		assertEquals(ANY_FILE, impl.getBaseConfig().getStdoutXsltOrNull()
-				.toFile());
+		assertEquals(ANY_FILE, impl.getBaseConfig().getStdoutXsltOrNull());
 	}
 
 	/**

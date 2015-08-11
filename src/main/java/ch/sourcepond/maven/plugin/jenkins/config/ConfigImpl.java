@@ -58,14 +58,14 @@ final class ConfigImpl implements Config, Cloneable {
 	private Proxy proxy;
 	private String dowloadedCliJar;
 	private Path stdin;
-	private Path stdinXslt;
+	private File stdinXslt;
 	private Map<String, String> stdinParams;
 	private Settings settings;
 	private boolean noCertificateCheck;
 	private File trustStore;
 	private String trustStorePassword;
 	private Path stdout;
-	private Path stdoutXslt;
+	private File stdoutXslt;
 	private Map<String, String> stdoutParams;
 	private boolean appending;
 	private File customJenkinsCliJarOrNull;
@@ -425,7 +425,7 @@ final class ConfigImpl implements Config, Cloneable {
 	 * ch.sourcepond.maven.plugin.jenkins.config.Config#getStdinXsltOrNull()
 	 */
 	@Override
-	public Path getStdinXsltOrNull() {
+	public File getStdinXsltOrNull() {
 		return stdinXslt;
 	}
 
@@ -436,21 +436,21 @@ final class ConfigImpl implements Config, Cloneable {
 	 * ch.sourcepond.maven.plugin.jenkins.config.Config#getStdoutXsltOrNull()
 	 */
 	@Override
-	public Path getStdoutXsltOrNull() {
+	public File getStdoutXsltOrNull() {
 		return stdoutXslt;
 	}
 
 	/**
 	 * @param pStdinXslt
 	 */
-	void setStdinXslt(final Path pStdinXslt) {
+	void setStdinXslt(final File pStdinXslt) {
 		stdinXslt = pStdinXslt;
 	}
 
 	/**
 	 * @param pStdoutXslt
 	 */
-	public void setStdoutXslt(final Path pStdoutXslt) {
+	public void setStdoutXslt(final File pStdoutXslt) {
 		stdoutXslt = pStdoutXslt;
 	}
 

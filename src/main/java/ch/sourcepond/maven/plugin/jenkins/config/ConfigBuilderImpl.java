@@ -310,9 +310,7 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 	 */
 	@Override
 	public ConfigBuilder setStdinXslt(final File pStdinXslt) {
-		if (pStdinXslt != null) {
-			config.setStdinXslt(pStdinXslt.toPath());
-		}
+		config.setStdinXslt(pStdinXslt);
 		return this;
 	}
 
@@ -325,9 +323,7 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 	 */
 	@Override
 	public ConfigBuilder setStdoutXslt(final File pStdoutXslt) {
-		if (pStdoutXslt != null) {
-			config.setStdoutXslt(pStdoutXslt.toPath());
-		}
+		config.setStdoutXslt(pStdoutXslt);
 		return this;
 	}
 

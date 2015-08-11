@@ -51,6 +51,7 @@ public class ConfigImplTest {
 	private static final String ANY_PRIVATE_KEY = "anyPrivateKey";
 	private static final String ANY_PASSWORD = "anyPassword";
 	private static final File ANY_TRUSTSTORE = new File("file:///anyFile");
+	private static final File ANY_XSLT = new File("file:///anyXslt");
 	private final Log log = mock(Log.class);
 	private final Messages messages = mock(Messages.class);
 	private final ConfigImpl impl = new ConfigImpl(messages);
@@ -231,7 +232,7 @@ public class ConfigImplTest {
 						ConfigImpl.STDIN_XSLT_FIELD, ConfigImpl.STDIN_FIELD))
 				.thenReturn(ANY_MESSAGE);
 		impl.setStdin(null);
-		impl.setStdinXslt(mock(Path.class));
+		impl.setStdinXslt(ANY_XSLT);
 		impl.validate(log);
 		verify(log).warn(ANY_MESSAGE);
 
@@ -260,7 +261,7 @@ public class ConfigImplTest {
 		impl.validate(log);
 		verify(log).warn(ANY_MESSAGE);
 
-		impl.setStdinXslt(mock(Path.class));
+		impl.setStdinXslt(ANY_XSLT);
 		impl.validate(log);
 		verifyNoMoreInteractions(log);
 
@@ -286,7 +287,7 @@ public class ConfigImplTest {
 		impl.validate(log);
 		verify(log).warn(ANY_MESSAGE);
 
-		impl.setStdoutXslt(mock(Path.class));
+		impl.setStdoutXslt(ANY_XSLT);
 		impl.validate(log);
 		verifyNoMoreInteractions(log);
 
@@ -307,7 +308,7 @@ public class ConfigImplTest {
 						ConfigImpl.STDOUT_XSLT_FIELD, ConfigImpl.STDOUT_FIELD))
 				.thenReturn(ANY_MESSAGE);
 		impl.setStdout(null);
-		impl.setStdoutXslt(mock(Path.class));
+		impl.setStdoutXslt(ANY_XSLT);
 		impl.validate(log);
 		verify(log).warn(ANY_MESSAGE);
 
