@@ -16,6 +16,7 @@ package ch.sourcepond.maven.plugin.jenkins.config;
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.Map;
 
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
@@ -127,6 +128,15 @@ public interface Config {
 	Path getStdinXsltOrNull();
 
 	/**
+	 * Returns the custom parameters which should be passed to the XSLT
+	 * specified by {@link #getStdinXsltOrNull()}. If no parameters have been
+	 * specified, {@code null} will be returned.
+	 * 
+	 * @return Stdin parameters or {@code null}
+	 */
+	Map<String, String> getStdinParamsOrNull();
+
+	/**
 	 * Returns the file to be used as stdout by the CLI; specified through mojo
 	 * parameter <em>stdout</em>.
 	 * 
@@ -141,6 +151,15 @@ public interface Config {
 	 * @return Path to XSLT or {@code null}
 	 */
 	Path getStdoutXsltOrNull();
+
+	/**
+	 * Returns the custom parameters which should be passed to the XSLT
+	 * specified by {@link #getStdoutXsltOrNull()}. If no parameters have been
+	 * specified, {@code null} will be returned.
+	 * 
+	 * @return Stdout parameters or {@code null}
+	 */
+	Map<String, String> getStdoutParamsOrNull();
 
 	/**
 	 * Returns whether the standard output of the CLI should be appended to the

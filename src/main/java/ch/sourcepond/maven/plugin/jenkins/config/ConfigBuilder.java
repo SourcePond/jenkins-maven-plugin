@@ -18,6 +18,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -144,6 +145,16 @@ public interface ConfigBuilder {
 	ConfigBuilder setStdinXslt(File pStdinXslt);
 
 	/**
+	 * Sets the custom parameters which should be passed to the XSLT specified
+	 * by {@link #setStdinXslt(File)}. See {@link Config#getStdinParamsOrNull()}
+	 * 
+	 * @param pStdinParams
+	 *            Parameters or {@code null}
+	 * @return This builder, never {@code null}
+	 */
+	ConfigBuilder setStdinParams(Map<String, String> pStdinParams);
+
+	/**
 	 * Sets the {@link File} where to redirect the standard output, see
 	 * {@link Config#getStdoutOrNull()}.
 	 * 
@@ -162,6 +173,16 @@ public interface ConfigBuilder {
 	 * @return This builder, never {@code null}
 	 */
 	ConfigBuilder setStdoutXslt(File pStdoutXslt);
+
+	/**
+	 * Sets the custom parameters which should be passed to the XSLT specified
+	 * by {@link #setStdoutXslt(File)}. See {@link Config#getStdoutParamsOrNull()}
+	 * 
+	 * @param pStdoutParams
+	 *            Parameters or {@code null}
+	 * @return This builder, never {@code null}
+	 */
+	ConfigBuilder setStdoutParams(Map<String, String> pStdoutParams);
 
 	/**
 	 * Sets whether the standard output shall be appended to the file specified

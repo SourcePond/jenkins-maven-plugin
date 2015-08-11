@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -327,6 +328,32 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 		if (pStdoutXslt != null) {
 			config.setStdoutXslt(pStdoutXslt.toPath());
 		}
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setStdinParams
+	 * (java.util.Map)
+	 */
+	@Override
+	public ConfigBuilder setStdinParams(final Map<String, String> pStdinParams) {
+		config.setStdinParams(pStdinParams);
+		return this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setStdoutParams
+	 * (java.util.Map)
+	 */
+	@Override
+	public ConfigBuilder setStdoutParams(final Map<String, String> pStdoutParams) {
+		config.setStdoutParams(pStdoutParams);
 		return this;
 	}
 }

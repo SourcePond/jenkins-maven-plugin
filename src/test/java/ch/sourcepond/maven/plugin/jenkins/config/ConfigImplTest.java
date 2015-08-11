@@ -31,6 +31,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.HashMap;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -239,6 +240,58 @@ public class ConfigImplTest {
 		verifyNoMoreInteractions(log);
 
 		impl.setStdinXslt(null);
+		impl.validate(log);
+		verifyNoMoreInteractions(log);
+	}
+
+	/**
+	 * @throws MojoExecutionException
+	 */
+	@Test
+	public void verifyStdinParamsNotAppliable() throws MojoExecutionException {
+		impl.setStdin(mock(Path.class));
+		when(
+				messages.getMessage(
+						ConfigImpl.CONFIG_VALIDATION_WARN_PARAMS_NOT_APPLIABLE,
+						ConfigImpl.STDIN_PARAMS_FIELD,
+						ConfigImpl.STDIN_XSLT_FIELD)).thenReturn(ANY_MESSAGE);
+		impl.setStdinParams(new HashMap<String, String>());
+		impl.setStdinXslt(null);
+		impl.validate(log);
+		verify(log).warn(ANY_MESSAGE);
+
+		impl.setStdinXslt(mock(Path.class));
+		impl.validate(log);
+		verifyNoMoreInteractions(log);
+
+		impl.setStdinXslt(null);
+		impl.setStdinParams(null);
+		impl.validate(log);
+		verifyNoMoreInteractions(log);
+	}
+
+	/**
+	 * @throws MojoExecutionException
+	 */
+	@Test
+	public void verifyStdoutParamsNotAppliable() throws MojoExecutionException {
+		impl.setStdout(mock(Path.class));
+		when(
+				messages.getMessage(
+						ConfigImpl.CONFIG_VALIDATION_WARN_PARAMS_NOT_APPLIABLE,
+						ConfigImpl.STDOUT_PARAMS_FIELD,
+						ConfigImpl.STDOUT_XSLT_FIELD)).thenReturn(ANY_MESSAGE);
+		impl.setStdoutParams(new HashMap<String, String>());
+		impl.setStdoutXslt(null);
+		impl.validate(log);
+		verify(log).warn(ANY_MESSAGE);
+
+		impl.setStdoutXslt(mock(Path.class));
+		impl.validate(log);
+		verifyNoMoreInteractions(log);
+
+		impl.setStdoutXslt(null);
+		impl.setStdoutParams(null);
 		impl.validate(log);
 		verifyNoMoreInteractions(log);
 	}

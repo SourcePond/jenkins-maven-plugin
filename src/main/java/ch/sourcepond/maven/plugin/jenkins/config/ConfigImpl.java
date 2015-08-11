@@ -18,6 +18,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -38,11 +39,14 @@ final class ConfigImpl implements Config, Cloneable {
 	static final String CONFIG_VALIDATION_ERROR_TRUSTSTORE_PASSWORD_TOO_SHORT = "config.validation.error.truststorePasswordTooShort";
 	static final String CONFIG_VALIDATION_WARN_TRUSTSTORE_PASSWORD_NOT_NECESSARY = "config.validation.warn.truststorePasswordNotNecessary";
 	static final String CONFIG_VALIDATION_WARN_XSLT_NOT_APPLIABLE = "config.validation.warn.xsltNotAppliable";
+	static final String CONFIG_VALIDATION_WARN_PARAMS_NOT_APPLIABLE = "config.validation.warn.paramsNotApplicable";
 	static final String HTTPS = "https";
 	static final String STDIN_FIELD = "stdin";
 	static final String STDIN_XSLT_FIELD = "stdinXslt";
+	static final String STDIN_PARAMS_FIELD = "stdinParams";
 	static final String STDOUT_FIELD = "stdout";
 	static final String STDOUT_XSLT_FIELD = "stdoutXslt";
+	static final String STDOUT_PARAMS_FIELD = "stdoutParams";
 	static final int MIN_TRUSTSTORE_PWD_LENGTH = 6;
 	private final Messages messages;
 	private Path jenkinscliDirectory;
@@ -55,12 +59,14 @@ final class ConfigImpl implements Config, Cloneable {
 	private String dowloadedCliJar;
 	private Path stdin;
 	private Path stdinXslt;
+	private Map<String, String> stdinParams;
 	private Settings settings;
 	private boolean noCertificateCheck;
 	private File trustStore;
 	private String trustStorePassword;
 	private Path stdout;
 	private Path stdoutXslt;
+	private Map<String, String> stdoutParams;
 	private boolean appending;
 	private File customJenkinsCliJarOrNull;
 
@@ -385,25 +391,30 @@ final class ConfigImpl implements Config, Cloneable {
 					.getMessage(CONFIG_VALIDATION_WARN_TRUSTSTORE_PASSWORD_NOT_NECESSARY));
 		}
 
-		warnIfXsltCannotBeApplied(pLog, stdin, stdinXslt, STDIN_XSLT_FIELD,
-				STDIN_FIELD);
-		warnIfXsltCannotBeApplied(pLog, stdout, stdoutXslt, STDOUT_XSLT_FIELD,
-				STDOUT_FIELD);
+		warnFieldCannotBeApplied(CONFIG_VALIDATION_WARN_XSLT_NOT_APPLIABLE,
+				pLog, stdin, stdinXslt, STDIN_FIELD, STDIN_XSLT_FIELD);
+		warnFieldCannotBeApplied(CONFIG_VALIDATION_WARN_XSLT_NOT_APPLIABLE,
+				pLog, stdout, stdoutXslt, STDOUT_FIELD, STDOUT_XSLT_FIELD);
+		warnFieldCannotBeApplied(CONFIG_VALIDATION_WARN_PARAMS_NOT_APPLIABLE,
+				pLog, stdinXslt, stdinParams, STDIN_XSLT_FIELD,
+				STDIN_PARAMS_FIELD);
+		warnFieldCannotBeApplied(CONFIG_VALIDATION_WARN_PARAMS_NOT_APPLIABLE,
+				pLog, stdoutXslt, stdoutParams, STDOUT_XSLT_FIELD,
+				STDOUT_PARAMS_FIELD);
 	}
 
 	/**
-	 * @param pMessageKey
 	 * @param pLog
-	 * @param pSourceOrNull
-	 * @param pXsltOrNull
+	 * @param pRequired
+	 * @param pDependant
+	 * @param pMessageKey
 	 */
-	private void warnIfXsltCannotBeApplied(final Log pLog,
-			final Path pSourceOrNull, final Path pXsltOrNull,
-			final String pXsltFieldName, final String pSourceFieldName) {
-		if (pSourceOrNull == null && pXsltOrNull != null) {
-			pLog.warn(messages.getMessage(
-					CONFIG_VALIDATION_WARN_XSLT_NOT_APPLIABLE, pXsltFieldName,
-					pSourceFieldName));
+	private void warnFieldCannotBeApplied(final String pMessageKey,
+			final Log pLog, final Object pRequired, final Object pDependant,
+			final String pRequiredFieldName, final String pDependantFieldName) {
+		if (pRequired == null && pDependant != null) {
+			pLog.warn(messages.getMessage(pMessageKey, pDependantFieldName,
+					pRequiredFieldName));
 		}
 	}
 
@@ -441,5 +452,39 @@ final class ConfigImpl implements Config, Cloneable {
 	 */
 	public void setStdoutXslt(final Path pStdoutXslt) {
 		stdoutXslt = pStdoutXslt;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see ch.sourcepond.maven.plugin.jenkins.config.Config#getStdinParams()
+	 */
+	@Override
+	public Map<String, String> getStdinParamsOrNull() {
+		return stdinParams;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see ch.sourcepond.maven.plugin.jenkins.config.Config#getStdoutParams()
+	 */
+	@Override
+	public Map<String, String> getStdoutParamsOrNull() {
+		return stdoutParams;
+	}
+
+	/**
+	 * @param pStdoutParams
+	 */
+	void setStdinParams(final Map<String, String> pStdinParams) {
+		stdinParams = pStdinParams;
+	}
+
+	/**
+	 * @param pStdoutParams
+	 */
+	void setStdoutParams(final Map<String, String> pStdoutParams) {
+		stdoutParams = pStdoutParams;
 	}
 }

@@ -29,6 +29,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.settings.Proxy;
@@ -40,6 +42,7 @@ import org.junit.Test;
  */
 public class ConfigBuilderImplTest extends ConfigBuilderImplBaseTest {
 	private static final String ANY_STRING = "anyString";
+	private static final Map<String, String> ANY_PARAMS = new HashMap<>();
 	private static final File ANY_FILE = new File(ANY_STRING);
 
 	/**
@@ -188,6 +191,42 @@ public class ConfigBuilderImplTest extends ConfigBuilderImplBaseTest {
 		assertSame(impl, impl.setStdoutXslt(ANY_FILE));
 		assertEquals(ANY_FILE, impl.getBaseConfig().getStdoutXsltOrNull()
 				.toFile());
+	}
+
+	/**
+	 * 
+	 */
+	@Test
+	public void verifySetGetStdinParametersNullParameters() {
+		assertSame(impl, impl.setStdinParams(null));
+		assertNull(impl.getBaseConfig().getStdinParamsOrNull());
+	}
+
+	/**
+	 * 
+	 */
+	@Test
+	public void verifySetGetStdinParameters() {
+		assertSame(impl, impl.setStdinParams(ANY_PARAMS));
+		assertEquals(ANY_PARAMS, impl.getBaseConfig().getStdinParamsOrNull());
+	}
+
+	/**
+	 * 
+	 */
+	@Test
+	public void verifySetGetStdoutParametersNullParameters() {
+		assertSame(impl, impl.setStdoutParams(null));
+		assertNull(impl.getBaseConfig().getStdoutParamsOrNull());
+	}
+
+	/**
+	 * 
+	 */
+	@Test
+	public void verifySetGetStdoutParameters() {
+		assertSame(impl, impl.setStdoutParams(ANY_PARAMS));
+		assertEquals(ANY_PARAMS, impl.getBaseConfig().getStdoutParamsOrNull());
 	}
 
 	/**

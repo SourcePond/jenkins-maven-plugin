@@ -20,6 +20,8 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.settings.Proxy;
@@ -54,6 +56,8 @@ public class CliMojoTest {
 	private final File stdout = new File("stdout");
 	private final File stdinXslt = new File("stdinXslt");
 	private final File stdoutXslt = new File("stdoutXslt");
+	private final Map<String, String> stdinParams = new HashMap<>();
+	private final Map<String, String> stdoutParams = new HashMap<>();
 	private final File trustStore = new File("trustStore");
 	private final File customJenkinsCliJar = new File("customJenkinsCliJar");
 	private final Config config = mock(Config.class);
@@ -78,6 +82,8 @@ public class CliMojoTest {
 		impl.setStdout(stdout);
 		impl.setStdinXslt(stdinXslt);
 		impl.setStdoutXslt(stdoutXslt);
+		impl.setStdinParams(stdinParams);
+		impl.setStdoutParams(stdoutParams);
 		impl.setAppend(true);
 		impl.setSettings(settings);
 		impl.setProxyId(PROXY_ID);
@@ -96,6 +102,8 @@ public class CliMojoTest {
 		when(builder.setStdout(stdout)).thenReturn(builder);
 		when(builder.setStdinXslt(stdinXslt)).thenReturn(builder);
 		when(builder.setStdoutXslt(stdoutXslt)).thenReturn(builder);
+		when(builder.setStdoutParams(stdoutParams)).thenReturn(builder);
+		when(builder.setStdinParams(stdinParams)).thenReturn(builder);
 		when(builder.setAppend(true)).thenReturn(builder);
 		when(builder.setNoKeyAuth(true)).thenReturn(builder);
 		when(builder.setNoCertificateCheck(true)).thenReturn(builder);

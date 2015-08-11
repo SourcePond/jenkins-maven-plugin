@@ -17,6 +17,7 @@ import static org.apache.maven.plugins.annotations.LifecyclePhase.VERIFY;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -166,6 +167,14 @@ public class CliMojo extends AbstractMojo {
 	private File stdoutXslt;
 
 	/**
+	 * Specifies custom parameters which will be passed to the XSLT specified
+	 * through {@link #stdoutXslt}. If {@link #stdoutXslt} is not specified,
+	 * this settings has no effect.
+	 */
+	@Parameter
+	private Map<String, String> stdoutParams;
+
+	/**
 	 * Specifies the XSTL file to be applied on the file specified by
 	 * {@link #stdin} before it's actually passed to the CLI command. This is
 	 * useful for instance to transform a template job configuration into an
@@ -174,6 +183,14 @@ public class CliMojo extends AbstractMojo {
 	 */
 	@Parameter(property = PROPERTY_STDIN_XSLT)
 	private File stdinXslt;
+
+	/**
+	 * Specifies custom parameters which will be passed to the XSLT specified
+	 * through {@link #stdinXslt}. If {@link #stdinXslt} is not specified, this
+	 * settings has no effect.
+	 */
+	@Parameter
+	private Map<String, String> stdinParams;
 
 	/**
 	 * Specifies the settings-id of the <a
@@ -250,8 +267,10 @@ public class CliMojo extends AbstractMojo {
 						.setCustomJenkinsCliJar(customJenkinsCliJar)
 						.setBaseUrl(baseUrl, cliJar).setCommand(command)
 						.setStdin(stdin).setStdinXslt(stdinXslt)
-						.setStdout(stdout).setStdoutXslt(stdoutXslt)
-						.setAppend(append).setNoKeyAuth(noKeyAuth)
+						.setStdinParams(stdinParams).setStdout(stdout)
+						.setStdoutXslt(stdoutXslt)
+						.setStdoutParams(stdoutParams).setAppend(append)
+						.setNoKeyAuth(noKeyAuth)
 						.setNoCertificateCheck(noCertificateCheck)
 						.setPrivateKey(privateKey).setTrustStore(trustStore)
 						.setTrustStorePassword(trustStorePassword)
@@ -433,5 +452,19 @@ public class CliMojo extends AbstractMojo {
 	 */
 	public void setCustomJenkinsCliJar(final File pCustomJenkinsCliJar) {
 		customJenkinsCliJar = pCustomJenkinsCliJar;
+	}
+
+	/**
+	 * @param pStdinParams
+	 */
+	public void setStdinParams(final Map<String, String> pStdinParams) {
+		stdinParams = pStdinParams;
+	}
+
+	/**
+	 * @param pStdinParams
+	 */
+	public void setStdoutParams(final Map<String, String> pStdoutParams) {
+		stdoutParams = pStdoutParams;
 	}
 }
