@@ -24,24 +24,32 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.nio.file.spi.FileSystemProvider;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.maven.plugin.logging.Log;
 import org.junit.Before;
 import org.junit.Test;
 
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
+import ch.sourcepond.maven.plugin.jenkins.process.xslt.XsltTransformer;
 
 /**
  *
  */
 public class RedirectStreamFactoryImplTest {
 	private static final String TEST_LINE = "testline";
+	private static final File STDIN_XSLT = new File("file:///stdinXslt.xsl");
+	private static final File STDOUT_XSLT = new File("file:///stdoutXslt.xsl");
+	private static final Map<String, String> STDIN_PARAMS = new HashMap<>();
+	private static final Map<String, String> STDOUT_PARAMS = new HashMap<>();
 	private final Log log = mock(Log.class);
 	private final Path stdinPath = mock(Path.class);
 	private final Path stdoutPath = mock(Path.class);
@@ -49,8 +57,12 @@ public class RedirectStreamFactoryImplTest {
 	private final FileSystemProvider provider = mock(FileSystemProvider.class);
 	private final InputStream stdin = mock(InputStream.class);
 	private final OutputStream stdout = mock(OutputStream.class);
+	private final InputStream wrappedStdin = mock(InputStream.class);
+	private final OutputStream wrappedStdout = mock(OutputStream.class);
 	private final Config config = mock(Config.class);
-	private final RedirectStreamFactoryImpl impl = new RedirectStreamFactoryImpl();
+	private final XsltTransformer transformer = mock(XsltTransformer.class);
+	private final RedirectStreamFactoryImpl impl = new RedirectStreamFactoryImpl(
+			transformer);
 
 	/**
 	 * 
@@ -62,6 +74,10 @@ public class RedirectStreamFactoryImplTest {
 		when(fs.provider()).thenReturn(provider);
 		when(provider.newInputStream(stdinPath)).thenReturn(stdin);
 		when(config.getStdinOrNull()).thenReturn(stdinPath);
+		when(config.getStdinXsltOrNull()).thenReturn(STDIN_XSLT);
+		when(config.getStdoutXsltOrNull()).thenReturn(STDOUT_XSLT);
+		when(config.getStdinParamsOrNull()).thenReturn(STDIN_PARAMS);
+		when(config.getStdoutParamsOrNull()).thenReturn(STDOUT_PARAMS);
 	}
 
 	/**
@@ -80,7 +96,9 @@ public class RedirectStreamFactoryImplTest {
 	 */
 	@Test
 	public void verifyOpenStdin() throws Exception {
-		assertSame(stdin, impl.newStdin(config));
+		when(transformer.wrapIfNecessary(STDIN_XSLT, stdin, STDIN_PARAMS))
+				.thenReturn(wrappedStdin);
+		assertSame(wrappedStdin, impl.newStdin(config));
 	}
 
 	/**
@@ -114,9 +132,11 @@ public class RedirectStreamFactoryImplTest {
 	 */
 	@Test
 	public void verifyStdoutTruncateMode() throws Exception {
+		when(transformer.wrapIfNecessary(STDOUT_XSLT, stdout, STDOUT_PARAMS))
+				.thenReturn(wrappedStdout);
 		when(config.getStdoutOrNull()).thenReturn(stdoutPath);
 		when(provider.newOutputStream(stdoutPath)).thenReturn(stdout);
-		assertSame(stdout, impl.newStdout(config));
+		assertSame(wrappedStdout, impl.newStdout(config));
 	}
 
 	/**
@@ -124,10 +144,12 @@ public class RedirectStreamFactoryImplTest {
 	 */
 	@Test
 	public void verifyStdoutAppendMode() throws Exception {
+		when(transformer.wrapIfNecessary(STDOUT_XSLT, stdout, STDOUT_PARAMS))
+				.thenReturn(wrappedStdout);
 		when(config.isAppending()).thenReturn(true);
 		when(config.getStdoutOrNull()).thenReturn(stdoutPath);
 		when(provider.newOutputStream(stdoutPath, APPEND)).thenReturn(stdout);
-		assertSame(stdout, impl.newStdout(config));
+		assertSame(wrappedStdout, impl.newStdout(config));
 	}
 
 	/**

@@ -27,6 +27,8 @@ import org.apache.maven.plugin.logging.Log;
 import org.junit.Before;
 import org.junit.Test;
 
+import ch.sourcepond.maven.plugin.jenkins.process.xslt.XsltTransformer;
+
 /**
  *
  */
@@ -34,7 +36,9 @@ public class CloseStreamsListenerTest {
 	private final Log log = mock(Log.class);
 	private final OutputStream stdout = mock(OutputStream.class);
 	private final InputStream stdin = mock(InputStream.class);
-	private final RedirectStreamFactoryImpl factory = new RedirectStreamFactoryImpl();
+	private final XsltTransformer transformer = mock(XsltTransformer.class);
+	private final RedirectStreamFactoryImpl factory = new RedirectStreamFactoryImpl(
+			transformer);
 	private final CloseStreamsListener impl = factory.newListener(log);
 
 	/**

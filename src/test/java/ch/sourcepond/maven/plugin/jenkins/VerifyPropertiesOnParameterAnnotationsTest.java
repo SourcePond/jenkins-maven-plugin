@@ -53,7 +53,8 @@ import org.junit.Test;
  *
  */
 public class VerifyPropertiesOnParameterAnnotationsTest {
-	private static final List<String> EXCLUDED_FIELDS = asList("settings");
+	private static final List<String> EXCLUDED_FIELDS = asList("settings",
+			"stdinParams", "stdoutParams");
 	private static final List<Field> INSTANCE_FIELDS;
 	private static final CtClass CLI_MOJO_CT_CLASS;
 

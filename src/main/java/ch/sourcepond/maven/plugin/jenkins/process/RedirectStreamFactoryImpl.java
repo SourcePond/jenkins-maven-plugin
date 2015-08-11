@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -31,6 +32,7 @@ import org.apache.commons.io.input.NullInputStream;
 import org.apache.maven.plugin.logging.Log;
 
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
+import ch.sourcepond.maven.plugin.jenkins.process.xslt.XsltTransformer;
 
 /**
  *
@@ -38,6 +40,15 @@ import ch.sourcepond.maven.plugin.jenkins.config.Config;
 @Named
 @Singleton
 final class RedirectStreamFactoryImpl implements RedirectStreamFactory {
+	private final XsltTransformer wrapperFactory;
+
+	/**
+	 * @param pWrapperFactory
+	 */
+	@Inject
+	RedirectStreamFactoryImpl(final XsltTransformer pWrapperFactory) {
+		wrapperFactory = pWrapperFactory;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -59,13 +70,16 @@ final class RedirectStreamFactoryImpl implements RedirectStreamFactory {
 	 */
 	@Override
 	public OutputStream newStdout(final Config pConfig) throws IOException {
-		final OutputStream out;
+		OutputStream out;
 		if (pConfig.getStdoutOrNull() != null) {
 			if (pConfig.isAppending()) {
 				out = newOutputStream(pConfig.getStdoutOrNull(), APPEND);
 			} else {
 				out = newOutputStream(pConfig.getStdoutOrNull());
 			}
+
+			out = wrapperFactory.wrapIfNecessary(pConfig.getStdoutXsltOrNull(),
+					out, pConfig.getStdoutParamsOrNull());
 		} else {
 			out = NULL_OUTPUT_STREAM;
 		}
@@ -84,7 +98,9 @@ final class RedirectStreamFactoryImpl implements RedirectStreamFactory {
 		final Path stdinPath = pConfig.getStdinOrNull();
 		final InputStream stdin;
 		if (stdinPath != null) {
-			stdin = newInputStream(stdinPath);
+			stdin = wrapperFactory.wrapIfNecessary(
+					pConfig.getStdinXsltOrNull(), newInputStream(stdinPath),
+					pConfig.getStdinParamsOrNull());
 		} else {
 			stdin = new NullInputStream(0);
 		}
