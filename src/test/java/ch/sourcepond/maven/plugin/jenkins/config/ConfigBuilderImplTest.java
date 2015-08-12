@@ -195,36 +195,38 @@ public class ConfigBuilderImplTest extends ConfigBuilderImplBaseTest {
 	 * 
 	 */
 	@Test
-	public void verifySetGetStdinParametersNullParameters() {
-		assertSame(impl, impl.setStdinParams(null));
-		assertNull(impl.getBaseConfig().getStdinParamsOrNull());
+	public void verifySetGetStdinXsltParamsNullParameters() {
+		assertSame(impl, impl.setStdinXsltParams(null));
+		assertNull(impl.getBaseConfig().getStdinXsltParamsOrNull());
 	}
 
 	/**
 	 * 
 	 */
 	@Test
-	public void verifySetGetStdinParameters() {
-		assertSame(impl, impl.setStdinParams(ANY_PARAMS));
-		assertEquals(ANY_PARAMS, impl.getBaseConfig().getStdinParamsOrNull());
+	public void verifySetGetStdinXsltParams() {
+		assertSame(impl, impl.setStdinXsltParams(ANY_PARAMS));
+		assertEquals(ANY_PARAMS, impl.getBaseConfig()
+				.getStdinXsltParamsOrNull());
 	}
 
 	/**
 	 * 
 	 */
 	@Test
-	public void verifySetGetStdoutParametersNullParameters() {
-		assertSame(impl, impl.setStdoutParams(null));
-		assertNull(impl.getBaseConfig().getStdoutParamsOrNull());
+	public void verifySetGetStdoutXsltParamsNullParameters() {
+		assertSame(impl, impl.setStdoutXsltParams(null));
+		assertNull(impl.getBaseConfig().getStdoutXsltParamsOrNull());
 	}
 
 	/**
 	 * 
 	 */
 	@Test
-	public void verifySetGetStdoutParameters() {
-		assertSame(impl, impl.setStdoutParams(ANY_PARAMS));
-		assertEquals(ANY_PARAMS, impl.getBaseConfig().getStdoutParamsOrNull());
+	public void verifySetGetStdoutXsltParams() {
+		assertSame(impl, impl.setStdoutXsltParams(ANY_PARAMS));
+		assertEquals(ANY_PARAMS, impl.getBaseConfig()
+				.getStdoutXsltParamsOrNull());
 	}
 
 	/**

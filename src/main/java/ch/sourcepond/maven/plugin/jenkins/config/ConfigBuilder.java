@@ -146,13 +146,14 @@ public interface ConfigBuilder {
 
 	/**
 	 * Sets the custom parameters which should be passed to the XSLT specified
-	 * by {@link #setStdinXslt(File)}. See {@link Config#getStdinParamsOrNull()}
+	 * by {@link #setStdinXslt(File)}. See
+	 * {@link Config#getStdinXsltParamsOrNull()}
 	 * 
-	 * @param pStdinParams
+	 * @param pStdinXsltParams
 	 *            Parameters or {@code null}
 	 * @return This builder, never {@code null}
 	 */
-	ConfigBuilder setStdinParams(Map<String, String> pStdinParams);
+	ConfigBuilder setStdinXsltParams(Map<String, String> pStdinXsltParams);
 
 	/**
 	 * Sets the {@link File} where to redirect the standard output, see
@@ -176,13 +177,14 @@ public interface ConfigBuilder {
 
 	/**
 	 * Sets the custom parameters which should be passed to the XSLT specified
-	 * by {@link #setStdoutXslt(File)}. See {@link Config#getStdoutParamsOrNull()}
+	 * by {@link #setStdoutXslt(File)}. See
+	 * {@link Config#getStdoutXsltParamsOrNull()}
 	 * 
-	 * @param pStdoutParams
+	 * @param pStdoutXsltParams
 	 *            Parameters or {@code null}
 	 * @return This builder, never {@code null}
 	 */
-	ConfigBuilder setStdoutParams(Map<String, String> pStdoutParams);
+	ConfigBuilder setStdoutXsltParams(Map<String, String> pStdoutXsltParams);
 
 	/**
 	 * Sets whether the standard output shall be appended to the file specified

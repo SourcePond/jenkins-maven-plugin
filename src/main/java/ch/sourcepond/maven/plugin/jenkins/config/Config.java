@@ -130,11 +130,12 @@ public interface Config {
 	/**
 	 * Returns the custom parameters which should be passed to the XSLT
 	 * specified by {@link #getStdinXsltOrNull()}. If no parameters have been
-	 * specified, {@code null} will be returned.
+	 * specified, {@code null} will be returned. Specified through mojo
+	 * parameter <em>stdinXsltParams</em>.
 	 * 
 	 * @return Stdin parameters or {@code null}
 	 */
-	Map<String, String> getStdinParamsOrNull();
+	Map<String, String> getStdinXsltParamsOrNull();
 
 	/**
 	 * Returns the file to be used as stdout by the CLI; specified through mojo
@@ -155,11 +156,12 @@ public interface Config {
 	/**
 	 * Returns the custom parameters which should be passed to the XSLT
 	 * specified by {@link #getStdoutXsltOrNull()}. If no parameters have been
-	 * specified, {@code null} will be returned.
+	 * specified, {@code null} will be returned. Specified through mojo
+	 * parameter <em>stdoutXsltParams</em>.
 	 * 
 	 * @return Stdout parameters or {@code null}
 	 */
-	Map<String, String> getStdoutParamsOrNull();
+	Map<String, String> getStdoutXsltParamsOrNull();
 
 	/**
 	 * Returns whether the standard output of the CLI should be appended to the

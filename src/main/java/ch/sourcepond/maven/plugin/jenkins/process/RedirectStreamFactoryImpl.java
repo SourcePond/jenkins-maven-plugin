@@ -79,7 +79,7 @@ final class RedirectStreamFactoryImpl implements RedirectStreamFactory {
 			}
 
 			out = wrapperFactory.wrapIfNecessary(pConfig.getStdoutXsltOrNull(),
-					out, pConfig.getStdoutParamsOrNull());
+					out, pConfig.getStdoutXsltParamsOrNull());
 		} else {
 			out = NULL_OUTPUT_STREAM;
 		}
@@ -100,7 +100,7 @@ final class RedirectStreamFactoryImpl implements RedirectStreamFactory {
 		if (stdinPath != null) {
 			stdin = wrapperFactory.wrapIfNecessary(
 					pConfig.getStdinXsltOrNull(), newInputStream(stdinPath),
-					pConfig.getStdinParamsOrNull());
+					pConfig.getStdinXsltParamsOrNull());
 		} else {
 			stdin = new NullInputStream(0);
 		}

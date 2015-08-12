@@ -335,8 +335,8 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 	 * (java.util.Map)
 	 */
 	@Override
-	public ConfigBuilder setStdinParams(final Map<String, String> pStdinParams) {
-		config.setStdinParams(pStdinParams);
+	public ConfigBuilder setStdinXsltParams(final Map<String, String> pStdinParams) {
+		config.setStdinXsltParams(pStdinParams);
 		return this;
 	}
 
@@ -348,8 +348,8 @@ final class ConfigBuilderImpl implements ConfigBuilder {
 	 * (java.util.Map)
 	 */
 	@Override
-	public ConfigBuilder setStdoutParams(final Map<String, String> pStdoutParams) {
-		config.setStdoutParams(pStdoutParams);
+	public ConfigBuilder setStdoutXsltParams(final Map<String, String> pStdoutParams) {
+		config.setStdoutXsltParams(pStdoutParams);
 		return this;
 	}
 }

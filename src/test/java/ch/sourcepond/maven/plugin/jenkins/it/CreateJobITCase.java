@@ -82,7 +82,7 @@ public class CreateJobITCase extends ITCase {
 		params.put(CREDENTIALS_ID_KEY, CREDENTIALS_ID_VALUE);
 		params.put(GROUP_ID_KEY, GROUP_ID_VALUE);
 		params.put(ARTIFACT_ID_KEY, ARTIFACT_ID_VALUE);
-		mojo.setStdinParams(params);
+		mojo.setStdinXsltParams(params);
 		mojo.setCommand("create-job " + JOB_NAME);
 	}
 
@@ -98,7 +98,7 @@ public class CreateJobITCase extends ITCase {
 		mojo.setStdout(stdout.toFile());
 		mojo.setStdin(null);
 		mojo.setStdinXslt(null);
-		mojo.setStdoutParams(null);
+		mojo.setStdoutXsltParams(null);
 		mojo.setCommand("get-job " + JOB_NAME);
 		mojo.execute();
 

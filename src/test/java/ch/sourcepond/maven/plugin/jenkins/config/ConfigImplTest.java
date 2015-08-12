@@ -249,14 +249,15 @@ public class ConfigImplTest {
 	 * @throws MojoExecutionException
 	 */
 	@Test
-	public void verifyStdinParamsNotAppliable() throws MojoExecutionException {
+	public void verifyStdinXsltParamsNotAppliable()
+			throws MojoExecutionException {
 		impl.setStdin(mock(Path.class));
 		when(
 				messages.getMessage(
 						ConfigImpl.CONFIG_VALIDATION_WARN_PARAMS_NOT_APPLIABLE,
 						ConfigImpl.STDIN_PARAMS_FIELD,
 						ConfigImpl.STDIN_XSLT_FIELD)).thenReturn(ANY_MESSAGE);
-		impl.setStdinParams(new HashMap<String, String>());
+		impl.setStdinXsltParams(new HashMap<String, String>());
 		impl.setStdinXslt(null);
 		impl.validate(log);
 		verify(log).warn(ANY_MESSAGE);
@@ -266,7 +267,7 @@ public class ConfigImplTest {
 		verifyNoMoreInteractions(log);
 
 		impl.setStdinXslt(null);
-		impl.setStdinParams(null);
+		impl.setStdinXsltParams(null);
 		impl.validate(log);
 		verifyNoMoreInteractions(log);
 	}
@@ -275,14 +276,15 @@ public class ConfigImplTest {
 	 * @throws MojoExecutionException
 	 */
 	@Test
-	public void verifyStdoutParamsNotAppliable() throws MojoExecutionException {
+	public void verifyStdoutXsltParamsNotAppliable()
+			throws MojoExecutionException {
 		impl.setStdout(mock(Path.class));
 		when(
 				messages.getMessage(
 						ConfigImpl.CONFIG_VALIDATION_WARN_PARAMS_NOT_APPLIABLE,
 						ConfigImpl.STDOUT_PARAMS_FIELD,
 						ConfigImpl.STDOUT_XSLT_FIELD)).thenReturn(ANY_MESSAGE);
-		impl.setStdoutParams(new HashMap<String, String>());
+		impl.setStdoutXsltParams(new HashMap<String, String>());
 		impl.setStdoutXslt(null);
 		impl.validate(log);
 		verify(log).warn(ANY_MESSAGE);
@@ -292,7 +294,7 @@ public class ConfigImplTest {
 		verifyNoMoreInteractions(log);
 
 		impl.setStdoutXslt(null);
-		impl.setStdoutParams(null);
+		impl.setStdoutXsltParams(null);
 		impl.validate(log);
 		verifyNoMoreInteractions(log);
 	}

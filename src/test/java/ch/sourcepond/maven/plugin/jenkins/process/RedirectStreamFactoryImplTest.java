@@ -76,8 +76,8 @@ public class RedirectStreamFactoryImplTest {
 		when(config.getStdinOrNull()).thenReturn(stdinPath);
 		when(config.getStdinXsltOrNull()).thenReturn(STDIN_XSLT);
 		when(config.getStdoutXsltOrNull()).thenReturn(STDOUT_XSLT);
-		when(config.getStdinParamsOrNull()).thenReturn(STDIN_PARAMS);
-		when(config.getStdoutParamsOrNull()).thenReturn(STDOUT_PARAMS);
+		when(config.getStdinXsltParamsOrNull()).thenReturn(STDIN_PARAMS);
+		when(config.getStdoutXsltParamsOrNull()).thenReturn(STDOUT_PARAMS);
 	}
 
 	/**

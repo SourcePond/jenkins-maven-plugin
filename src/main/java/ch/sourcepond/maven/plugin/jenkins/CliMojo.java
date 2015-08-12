@@ -172,7 +172,7 @@ public class CliMojo extends AbstractMojo {
 	 * this settings has no effect.
 	 */
 	@Parameter
-	private Map<String, String> stdoutParams;
+	private Map<String, String> stdoutXsltParams;
 
 	/**
 	 * Specifies the XSTL file to be applied on the file specified by
@@ -190,7 +190,7 @@ public class CliMojo extends AbstractMojo {
 	 * settings has no effect.
 	 */
 	@Parameter
-	private Map<String, String> stdinParams;
+	private Map<String, String> stdinXsltParams;
 
 	/**
 	 * Specifies the settings-id of the <a
@@ -267,9 +267,9 @@ public class CliMojo extends AbstractMojo {
 						.setCustomJenkinsCliJar(customJenkinsCliJar)
 						.setBaseUrl(baseUrl, cliJar).setCommand(command)
 						.setStdin(stdin).setStdinXslt(stdinXslt)
-						.setStdinParams(stdinParams).setStdout(stdout)
+						.setStdinXsltParams(stdinXsltParams).setStdout(stdout)
 						.setStdoutXslt(stdoutXslt)
-						.setStdoutParams(stdoutParams).setAppend(append)
+						.setStdoutXsltParams(stdoutXsltParams).setAppend(append)
 						.setNoKeyAuth(noKeyAuth)
 						.setNoCertificateCheck(noCertificateCheck)
 						.setPrivateKey(privateKey).setTrustStore(trustStore)
@@ -455,16 +455,16 @@ public class CliMojo extends AbstractMojo {
 	}
 
 	/**
-	 * @param pStdinParams
+	 * @param pStdinXsltParams
 	 */
-	public void setStdinParams(final Map<String, String> pStdinParams) {
-		stdinParams = pStdinParams;
+	public void setStdinXsltParams(final Map<String, String> pStdinXsltParams) {
+		stdinXsltParams = pStdinXsltParams;
 	}
 
 	/**
 	 * @param pStdinParams
 	 */
-	public void setStdoutParams(final Map<String, String> pStdoutParams) {
-		stdoutParams = pStdoutParams;
+	public void setStdoutXsltParams(final Map<String, String> pStdoutXsltParams) {
+		stdoutXsltParams = pStdoutXsltParams;
 	}
 }

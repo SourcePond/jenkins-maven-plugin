@@ -43,10 +43,10 @@ final class ConfigImpl implements Config, Cloneable {
 	static final String HTTPS = "https";
 	static final String STDIN_FIELD = "stdin";
 	static final String STDIN_XSLT_FIELD = "stdinXslt";
-	static final String STDIN_PARAMS_FIELD = "stdinParams";
+	static final String STDIN_PARAMS_FIELD = "stdinXsltParams";
 	static final String STDOUT_FIELD = "stdout";
 	static final String STDOUT_XSLT_FIELD = "stdoutXslt";
-	static final String STDOUT_PARAMS_FIELD = "stdoutParams";
+	static final String STDOUT_PARAMS_FIELD = "stdoutXsltParams";
 	static final int MIN_TRUSTSTORE_PWD_LENGTH = 6;
 	private final Messages messages;
 	private Path jenkinscliDirectory;
@@ -59,14 +59,14 @@ final class ConfigImpl implements Config, Cloneable {
 	private String dowloadedCliJar;
 	private Path stdin;
 	private File stdinXslt;
-	private Map<String, String> stdinParams;
+	private Map<String, String> stdinXsltParams;
 	private Settings settings;
 	private boolean noCertificateCheck;
 	private File trustStore;
 	private String trustStorePassword;
 	private Path stdout;
 	private File stdoutXslt;
-	private Map<String, String> stdoutParams;
+	private Map<String, String> stdoutXsltParams;
 	private boolean appending;
 	private File customJenkinsCliJarOrNull;
 
@@ -396,10 +396,10 @@ final class ConfigImpl implements Config, Cloneable {
 		warnFieldCannotBeApplied(CONFIG_VALIDATION_WARN_XSLT_NOT_APPLIABLE,
 				pLog, stdout, stdoutXslt, STDOUT_FIELD, STDOUT_XSLT_FIELD);
 		warnFieldCannotBeApplied(CONFIG_VALIDATION_WARN_PARAMS_NOT_APPLIABLE,
-				pLog, stdinXslt, stdinParams, STDIN_XSLT_FIELD,
+				pLog, stdinXslt, stdinXsltParams, STDIN_XSLT_FIELD,
 				STDIN_PARAMS_FIELD);
 		warnFieldCannotBeApplied(CONFIG_VALIDATION_WARN_PARAMS_NOT_APPLIABLE,
-				pLog, stdoutXslt, stdoutParams, STDOUT_XSLT_FIELD,
+				pLog, stdoutXslt, stdoutXsltParams, STDOUT_XSLT_FIELD,
 				STDOUT_PARAMS_FIELD);
 	}
 
@@ -450,7 +450,7 @@ final class ConfigImpl implements Config, Cloneable {
 	/**
 	 * @param pStdoutXslt
 	 */
-	public void setStdoutXslt(final File pStdoutXslt) {
+	void setStdoutXslt(final File pStdoutXslt) {
 		stdoutXslt = pStdoutXslt;
 	}
 
@@ -460,8 +460,8 @@ final class ConfigImpl implements Config, Cloneable {
 	 * @see ch.sourcepond.maven.plugin.jenkins.config.Config#getStdinParams()
 	 */
 	@Override
-	public Map<String, String> getStdinParamsOrNull() {
-		return stdinParams;
+	public Map<String, String> getStdinXsltParamsOrNull() {
+		return stdinXsltParams;
 	}
 
 	/*
@@ -470,21 +470,21 @@ final class ConfigImpl implements Config, Cloneable {
 	 * @see ch.sourcepond.maven.plugin.jenkins.config.Config#getStdoutParams()
 	 */
 	@Override
-	public Map<String, String> getStdoutParamsOrNull() {
-		return stdoutParams;
+	public Map<String, String> getStdoutXsltParamsOrNull() {
+		return stdoutXsltParams;
 	}
 
 	/**
 	 * @param pStdoutParams
 	 */
-	void setStdinParams(final Map<String, String> pStdinParams) {
-		stdinParams = pStdinParams;
+	void setStdinXsltParams(final Map<String, String> pStdinXsltParams) {
+		stdinXsltParams = pStdinXsltParams;
 	}
 
 	/**
-	 * @param pStdoutParams
+	 * @param pStdoutXsltParams
 	 */
-	void setStdoutParams(final Map<String, String> pStdoutParams) {
-		stdoutParams = pStdoutParams;
+	void setStdoutXsltParams(final Map<String, String> pStdoutXsltParams) {
+		stdoutXsltParams = pStdoutXsltParams;
 	}
 }
