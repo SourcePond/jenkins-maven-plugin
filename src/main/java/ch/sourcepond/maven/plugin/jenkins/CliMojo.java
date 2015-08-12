@@ -339,7 +339,8 @@ public class CliMojo extends AbstractMojo {
 
 		File xslt = pCustomXslt;
 		if (pCoords != null) {
-			xslt = rsf.newResolver(pCoords).resolveXslt();
+			xslt = rsf.newResolver(getLog(), repoSystem, repoSession,
+					remoteRepos).resolveXslt(pCoords);
 		}
 
 		return xslt;
@@ -352,14 +353,6 @@ public class CliMojo extends AbstractMojo {
 	 */
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		// TODO: Find better solution; is it possible to inject @Parameter on
-		// non-mojo objects?
-		rsf.setLog(getLog());
-		rsf.setRemoteRepos(remoteRepos);
-		rsf.setRepoSession(repoSession);
-		rsf.setRepoSystem(repoSystem);
-		// END TODO
-
 		proc.execute(
 				getLog(),
 				cbf.newBuilder()
@@ -594,5 +587,26 @@ public class CliMojo extends AbstractMojo {
 	 */
 	public void setStdoutXsltParams(final Map<String, String> pStdoutXsltParams) {
 		stdoutXsltParams = pStdoutXsltParams;
+	}
+
+	/**
+	 * @param pRepoSystem
+	 */
+	public void setRepoSystem(final RepositorySystem pRepoSystem) {
+		repoSystem = pRepoSystem;
+	}
+
+	/**
+	 * @param pRepoSession
+	 */
+	public void setRepoSession(final RepositorySystemSession pRepoSession) {
+		repoSession = pRepoSession;
+	}
+
+	/**
+	 * @param pRemoteRepos
+	 */
+	public void setRemoteRepos(final List<RemoteRepository> pRemoteRepos) {
+		remoteRepos = pRemoteRepos;
 	}
 }

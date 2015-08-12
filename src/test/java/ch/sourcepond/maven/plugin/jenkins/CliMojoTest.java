@@ -23,13 +23,18 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.RemoteRepository;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -72,6 +77,9 @@ public class CliMojoTest {
 	private final Config config = mock(Config.class);
 	private final ResolverFactory rsf = mock(ResolverFactory.class);
 	private final Resolver resolver = mock(Resolver.class);
+	private final List<RemoteRepository> remoteRepos = new ArrayList<>();
+	private final RepositorySystem repoSystem = mock(RepositorySystem.class);
+	private final RepositorySystemSession repoSession = mock(RepositorySystemSession.class);
 	private final Messages messages = mock(Messages.class);
 	private final CliMojo impl = new CliMojo(messages, cbf, procFacade, finder,
 			rsf);
@@ -103,7 +111,12 @@ public class CliMojoTest {
 		impl.setTrustStore(trustStore);
 		impl.setTrustStorePassword(PASSWORD);
 		impl.setCustomJenkinsCliJar(customJenkinsCliJar);
-		when(rsf.newResolver(ANY_XSLT_COORDS)).thenReturn(resolver);
+		impl.setRepoSystem(repoSystem);
+		impl.setRepoSession(repoSession);
+		impl.setRemoteRepos(remoteRepos);
+
+		when(rsf.newResolver(log, repoSystem, repoSession, remoteRepos))
+				.thenReturn(resolver);
 		when(finder.findProxy(PROXY_ID, settings)).thenReturn(proxy);
 		when(cbf.newBuilder()).thenReturn(builder);
 		when(builder.setSettings(settings)).thenReturn(builder);
@@ -145,7 +158,7 @@ public class CliMojoTest {
 	public void verifyExecuteStdinXsltWithCoords() throws Exception {
 		impl.setStdinXsltFile(null);
 		impl.setStdinXsltCoords(ANY_XSLT_COORDS);
-		when(resolver.resolveXslt()).thenReturn(stdinXslt);
+		when(resolver.resolveXslt(ANY_XSLT_COORDS)).thenReturn(stdinXslt);
 		verifyExecute();
 	}
 
@@ -156,7 +169,7 @@ public class CliMojoTest {
 	public void verifyExecuteStdoutXsltWithCoords() throws Exception {
 		impl.setStdoutXsltFile(null);
 		impl.setStdoutXsltCoords(ANY_XSLT_COORDS);
-		when(resolver.resolveXslt()).thenReturn(stdoutXslt);
+		when(resolver.resolveXslt(ANY_XSLT_COORDS)).thenReturn(stdoutXslt);
 		verifyExecute();
 	}
 

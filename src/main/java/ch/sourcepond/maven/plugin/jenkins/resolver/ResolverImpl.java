@@ -16,9 +16,14 @@ package ch.sourcepond.maven.plugin.jenkins.resolver;
 import static org.apache.commons.lang3.Validate.notNull;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
@@ -28,16 +33,53 @@ import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 /**
  *
  */
-final class ResolverImpl extends ResolverBase implements Resolver {
+final class ResolverImpl implements Resolver {
 	static final String RESOLVER_ERROR_RESOLUTION_FAILED = "resolver.error.resolutionFailed";
-	private String xsltCoords;
+	private final Messages messages;
+	private final ArtifactFactory factory;
+	private Log log;
+	private RepositorySystem repoSystem;
+	private RepositorySystemSession repoSession;
+	private List<RemoteRepository> remoteRepos;
 
 	/**
 	 * @param pMessages
 	 * @param pFactory
 	 */
 	ResolverImpl(final Messages pMessages, final ArtifactFactory pFactory) {
-		super(pMessages, pFactory);
+		messages = pMessages;
+		factory = pFactory;
+	}
+
+	/**
+	 * @param pLog
+	 * @return
+	 */
+	void setLog(final Log pLog) {
+		log = pLog;
+	}
+
+	/**
+	 * @param pRepoSystem
+	 * @return
+	 */
+	void setRepoSystem(final RepositorySystem pRepoSystem) {
+		repoSystem = pRepoSystem;
+	}
+
+	/**
+	 * @param pRepoSession
+	 * @return
+	 */
+	void setRepoSession(final RepositorySystemSession pRepoSession) {
+		repoSession = pRepoSession;
+	}
+
+	/**
+	 * @param pRemoteRepos
+	 */
+	void setRemoteRepos(final List<RemoteRepository> pRemoteRepos) {
+		remoteRepos = pRemoteRepos;
 	}
 
 	/*
@@ -50,22 +92,23 @@ final class ResolverImpl extends ResolverBase implements Resolver {
 	 * java.lang.String)
 	 */
 	@Override
-	public File resolveXslt() throws MojoExecutionException {
-		final Artifact artifact = getFactory().newArtifact(xsltCoords);
-		final ArtifactRequest request = getFactory().newRequest();
+	public File resolveXslt(final String pXsltCoords)
+			throws MojoExecutionException {
+		final Artifact artifact = factory.newArtifact(pXsltCoords);
+		final ArtifactRequest request = factory.newRequest();
 		request.setArtifact(artifact);
-		request.setRepositories(getRemoteRepos());
+		request.setRepositories(remoteRepos);
 
 		try {
-			final ArtifactResult result = getRepoSystem().resolveArtifact(
-					getRepoSession(), request);
+			final ArtifactResult result = repoSystem.resolveArtifact(
+					repoSession, request);
 			final Artifact resolvedArtifact = result.getArtifact();
 			if (resolvedArtifact == null) {
 				for (final Exception e : result.getExceptions()) {
-					getLog().error(e);
+					log.error(e);
 				}
-				throw new MojoExecutionException(getMessages().getMessage(
-						RESOLVER_ERROR_RESOLUTION_FAILED, xsltCoords));
+				throw new MojoExecutionException(messages.getMessage(
+						RESOLVER_ERROR_RESOLUTION_FAILED, pXsltCoords));
 			}
 			final File xsltFile = resolvedArtifact.getFile();
 			notNull(xsltFile,
@@ -75,12 +118,4 @@ final class ResolverImpl extends ResolverBase implements Resolver {
 			throw new MojoExecutionException(e.getMessage(), e);
 		}
 	}
-
-	/**
-	 * @param pXsltCoords
-	 */
-	public void setXsltCoords(final String pXsltCoords) {
-		xsltCoords = pXsltCoords;
-	}
-
 }

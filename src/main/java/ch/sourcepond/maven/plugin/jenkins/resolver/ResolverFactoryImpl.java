@@ -13,9 +13,16 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins.resolver;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import org.apache.maven.plugin.logging.Log;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.RemoteRepository;
 
 import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 
@@ -24,7 +31,9 @@ import ch.sourcepond.maven.plugin.jenkins.message.Messages;
  */
 @Named
 @Singleton
-final class ResolverFactoryImpl extends ResolverBase implements ResolverFactory {
+final class ResolverFactoryImpl implements ResolverFactory {
+	private final Messages messages;
+	private final ArtifactFactory factory;
 
 	/**
 	 * @param pMessages
@@ -32,7 +41,8 @@ final class ResolverFactoryImpl extends ResolverBase implements ResolverFactory 
 	 */
 	@Inject
 	ResolverFactoryImpl(final Messages pMessages, final ArtifactFactory pFactory) {
-		super(pMessages, pFactory);
+		messages = pMessages;
+		factory = pFactory;
 	}
 
 	/*
@@ -43,14 +53,15 @@ final class ResolverFactoryImpl extends ResolverBase implements ResolverFactory 
 	 * (java.lang.String)
 	 */
 	@Override
-	public Resolver newResolver(final String pXsltCoords) {
-		final ResolverImpl resolver = new ResolverImpl(getMessages(),
-				getFactory());
-		resolver.setXsltCoords(pXsltCoords);
-		resolver.setLog(getLog());
-		resolver.setRemoteRepos(getRemoteRepos());
-		resolver.setRepoSession(getRepoSession());
-		resolver.setRepoSystem(getRepoSystem());
+	public Resolver newResolver(final Log pLog,
+			final RepositorySystem pRepoSystem,
+			final RepositorySystemSession pRepoSession,
+			final List<RemoteRepository> pRemoteRepos) {
+		final ResolverImpl resolver = new ResolverImpl(messages, factory);
+		resolver.setLog(pLog);
+		resolver.setRemoteRepos(pRemoteRepos);
+		resolver.setRepoSession(pRepoSession);
+		resolver.setRepoSystem(pRepoSystem);
 		return resolver;
 	}
 

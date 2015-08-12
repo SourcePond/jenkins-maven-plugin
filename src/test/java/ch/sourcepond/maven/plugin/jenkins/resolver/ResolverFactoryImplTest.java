@@ -64,10 +64,6 @@ public class ResolverFactoryImplTest {
 	 */
 	@Before
 	public void setup() throws Exception {
-		impl.setLog(log);
-		impl.setRemoteRepos(remoteRepos);
-		impl.setRepoSession(repoSession);
-		impl.setRepoSystem(repoSystem);
 		when(factory.newArtifact(ANY_COORDS)).thenReturn(artifact);
 		when(factory.newRequest()).thenReturn(request);
 		result.setArtifact(artifact);
@@ -81,8 +77,9 @@ public class ResolverFactoryImplTest {
 	 */
 	@Test
 	public void verifyResolveArtifact() throws Exception {
-		final Resolver resolver = impl.newResolver(ANY_COORDS);
-		assertSame(RESOLVED_FILE, resolver.resolveXslt());
+		final Resolver resolver = impl.newResolver(log, repoSystem,
+				repoSession, remoteRepos);
+		assertSame(RESOLVED_FILE, resolver.resolveXslt(ANY_COORDS));
 	}
 
 	/**
@@ -95,9 +92,10 @@ public class ResolverFactoryImplTest {
 		result.setArtifact(null);
 		when(messages.getMessage(RESOLVER_ERROR_RESOLUTION_FAILED, ANY_COORDS))
 				.thenReturn(ANY_MESSAGE);
-		final Resolver resolver = impl.newResolver(ANY_COORDS);
+		final Resolver resolver = impl.newResolver(log, repoSystem,
+				repoSession, remoteRepos);
 		try {
-			resolver.resolveXslt();
+			resolver.resolveXslt(ANY_COORDS);
 			fail("Exception expected");
 		} catch (final MojoExecutionException e) {
 			assertEquals(ANY_MESSAGE, e.getMessage());
@@ -115,9 +113,10 @@ public class ResolverFactoryImplTest {
 				new ArrayList<ArtifactResult>());
 		doThrow(expected).when(repoSystem)
 				.resolveArtifact(repoSession, request);
-		final Resolver resolver = impl.newResolver(ANY_COORDS);
+		final Resolver resolver = impl.newResolver(log, repoSystem,
+				repoSession, remoteRepos);
 		try {
-			resolver.resolveXslt();
+			resolver.resolveXslt(ANY_COORDS);
 			fail("Exception expected");
 		} catch (final MojoExecutionException e) {
 			assertSame(expected, e.getCause());

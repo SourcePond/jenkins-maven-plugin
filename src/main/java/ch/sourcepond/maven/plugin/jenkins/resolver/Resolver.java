@@ -28,5 +28,5 @@ public interface Resolver {
 	 * @return
 	 * @throws MojoExecutionException
 	 */
-	File resolveXslt() throws MojoExecutionException;
+	File resolveXslt(String pXsltCoords) throws MojoExecutionException;
 }

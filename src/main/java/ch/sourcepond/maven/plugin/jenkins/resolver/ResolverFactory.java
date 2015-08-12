@@ -25,13 +25,14 @@ import org.eclipse.aether.repository.RemoteRepository;
  */
 public interface ResolverFactory {
 
-	void setLog(Log pLog);
-
-	void setRepoSystem(RepositorySystem pRepoSystem);
-
-	void setRepoSession(RepositorySystemSession pRepoSession);
-
-	void setRemoteRepos(List<RemoteRepository> pRemoteRepos);
-
-	Resolver newResolver(String pXsltCoords);
+	/**
+	 * @param pLog
+	 * @param pRepoSystem
+	 * @param pRepoSession
+	 * @param pRemoteRepos
+	 * @return
+	 */
+	Resolver newResolver(Log pLog, RepositorySystem pRepoSystem,
+			RepositorySystemSession pRepoSession,
+			List<RemoteRepository> pRemoteRepos);
 }
