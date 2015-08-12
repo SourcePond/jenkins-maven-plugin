@@ -13,7 +13,10 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 package ch.sourcepond.maven.plugin.jenkins;
 
+import static ch.sourcepond.maven.plugin.jenkins.CliMojo.MOJO_ERROR_AMBIGUOUS_XSLT_CONFIGURATION;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,6 +26,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
@@ -32,8 +36,10 @@ import org.junit.Test;
 import ch.sourcepond.maven.plugin.jenkins.config.Config;
 import ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder;
 import ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilderFactory;
+import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 import ch.sourcepond.maven.plugin.jenkins.process.ProcessFacade;
 import ch.sourcepond.maven.plugin.jenkins.proxy.ProxyFinder;
+import ch.sourcepond.maven.plugin.jenkins.resolver.Resolver;
 import ch.sourcepond.maven.plugin.jenkins.resolver.ResolverFactory;
 
 /**
@@ -44,6 +50,8 @@ public class CliMojoTest {
 	private static final String COMMAND = "anyCommand";
 	private static final String PROXY_ID = "anyProxyId";
 	private static final String PASSWORD = "anyPassword";
+	private static final String ANY_XSLT_COORDS = "anyXsltCoords";
+	private static final String ANY_MESSAGE = "anyMessage";
 	private final Log log = mock(Log.class);
 	private final ConfigBuilderFactory cbf = mock(ConfigBuilderFactory.class);
 	private final ConfigBuilder builder = mock(ConfigBuilder.class);
@@ -63,7 +71,10 @@ public class CliMojoTest {
 	private final File customJenkinsCliJar = new File("customJenkinsCliJar");
 	private final Config config = mock(Config.class);
 	private final ResolverFactory rsf = mock(ResolverFactory.class);
-	private final CliMojo impl = new CliMojo(cbf, procFacade, finder, rsf);
+	private final Resolver resolver = mock(Resolver.class);
+	private final Messages messages = mock(Messages.class);
+	private final CliMojo impl = new CliMojo(messages, cbf, procFacade, finder,
+			rsf);
 	private URL baseUrl;
 
 	/**
@@ -82,8 +93,8 @@ public class CliMojoTest {
 		impl.setCommand(COMMAND);
 		impl.setStdin(stdin);
 		impl.setStdout(stdout);
-		impl.setStdinXslt(stdinXslt);
-		impl.setStdoutXslt(stdoutXslt);
+		impl.setStdinXsltFile(stdinXslt);
+		impl.setStdoutXsltFile(stdoutXslt);
 		impl.setStdinXsltParams(stdinXsltParams);
 		impl.setStdoutXsltParams(stdoutXsltParams);
 		impl.setAppend(true);
@@ -92,6 +103,7 @@ public class CliMojoTest {
 		impl.setTrustStore(trustStore);
 		impl.setTrustStorePassword(PASSWORD);
 		impl.setCustomJenkinsCliJar(customJenkinsCliJar);
+		when(rsf.newResolver(ANY_XSLT_COORDS)).thenReturn(resolver);
 		when(finder.findProxy(PROXY_ID, settings)).thenReturn(proxy);
 		when(cbf.newBuilder()).thenReturn(builder);
 		when(builder.setSettings(settings)).thenReturn(builder);
@@ -124,6 +136,67 @@ public class CliMojoTest {
 	public void verifyExecute() throws Exception {
 		impl.execute();
 		verify(procFacade).execute(log, config);
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	@Test
+	public void verifyExecuteStdinXsltWithCoords() throws Exception {
+		impl.setStdinXsltFile(null);
+		impl.setStdinXsltCoords(ANY_XSLT_COORDS);
+		when(resolver.resolveXslt()).thenReturn(stdinXslt);
+		verifyExecute();
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	@Test
+	public void verifyExecuteStdoutXsltWithCoords() throws Exception {
+		impl.setStdoutXsltFile(null);
+		impl.setStdoutXsltCoords(ANY_XSLT_COORDS);
+		when(resolver.resolveXslt()).thenReturn(stdoutXslt);
+		verifyExecute();
+	}
+
+	/**
+	 * 
+	 */
+	@Test
+	public void verifyExecuteAmbiguousStdinXsltConfiguration() throws Exception {
+		when(
+				messages.getMessage(MOJO_ERROR_AMBIGUOUS_XSLT_CONFIGURATION,
+						CliMojo.STDIN_XSLT_FILE_FIELD_NAME,
+						CliMojo.STDIN_XSLT_COORDS_FIELD_NAME)).thenReturn(
+				ANY_MESSAGE);
+		impl.setStdinXsltCoords(ANY_XSLT_COORDS);
+		try {
+			impl.execute();
+			fail("Exception expected");
+		} catch (final MojoExecutionException e) {
+			assertEquals(ANY_MESSAGE, e.getMessage());
+		}
+	}
+
+	/**
+	 * 
+	 */
+	@Test
+	public void verifyExecuteAmbiguousStdoutXsltConfiguration()
+			throws Exception {
+		when(
+				messages.getMessage(MOJO_ERROR_AMBIGUOUS_XSLT_CONFIGURATION,
+						CliMojo.STDOUT_XSLT_FILE_FIELD_NAME,
+						CliMojo.STDOUT_XSLT_COORDS_FIELD_NAME)).thenReturn(
+				ANY_MESSAGE);
+		impl.setStdoutXsltCoords(ANY_XSLT_COORDS);
+		try {
+			impl.execute();
+			fail("Exception expected");
+		} catch (final MojoExecutionException e) {
+			assertEquals(ANY_MESSAGE, e.getMessage());
+		}
 	}
 
 	/**

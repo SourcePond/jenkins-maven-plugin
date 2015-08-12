@@ -19,6 +19,7 @@ import java.net.MalformedURLException;
 
 import ch.sourcepond.maven.plugin.jenkins.CliMojo;
 import ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilderFactory;
+import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 import ch.sourcepond.maven.plugin.jenkins.process.ProcessFacade;
 import ch.sourcepond.maven.plugin.jenkins.proxy.ProxyFinder;
 import ch.sourcepond.maven.plugin.jenkins.resolver.ResolverFactory;
@@ -27,6 +28,7 @@ import ch.sourcepond.maven.plugin.jenkins.resolver.ResolverFactory;
  *
  */
 public final class MojoFactory {
+	private final Messages messages;
 	private final ConfigBuilderFactory configBuilderFactory;
 	private final ProcessFacade process;
 	private final ProxyFinder proxyFinder;
@@ -36,6 +38,7 @@ public final class MojoFactory {
 	 * 
 	 */
 	public MojoFactory() {
+		messages = getInstance("ch.sourcepond.maven.plugin.jenkins.message.MessageImpl");
 		configBuilderFactory = getInstance("ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilderFactoryImpl");
 		process = getInstance("ch.sourcepond.maven.plugin.jenkins.process.ProcessFacadeImpl");
 		proxyFinder = getInstance("ch.sourcepond.maven.plugin.jenkins.proxy.ProxyFinderImpl");
@@ -63,6 +66,7 @@ public final class MojoFactory {
 	 * @throws MalformedURLException
 	 */
 	public CliMojo newMojo() {
-		return new CliMojo(configBuilderFactory, process, proxyFinder, rsf);
+		return new CliMojo(messages, configBuilderFactory, process,
+				proxyFinder, rsf);
 	}
 }

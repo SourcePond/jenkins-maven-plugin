@@ -35,6 +35,7 @@ import org.eclipse.aether.repository.RemoteRepository;
 
 import ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder;
 import ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilderFactory;
+import ch.sourcepond.maven.plugin.jenkins.message.Messages;
 import ch.sourcepond.maven.plugin.jenkins.process.ProcessFacade;
 import ch.sourcepond.maven.plugin.jenkins.proxy.ProxyFinder;
 import ch.sourcepond.maven.plugin.jenkins.resolver.ResolverFactory;
@@ -47,7 +48,12 @@ import ch.sourcepond.maven.plugin.jenkins.resolver.ResolverFactory;
  */
 @Mojo(name = "cli", defaultPhase = VERIFY)
 public class CliMojo extends AbstractMojo {
+	static final String STDOUT_XSLT_COORDS_FIELD_NAME = "stdoutXsltCoords";
+	static final String STDOUT_XSLT_FILE_FIELD_NAME = "stdoutXsltFile";
+	static final String STDIN_XSLT_COORDS_FIELD_NAME = "stdinXsltCoords";
+	static final String STDIN_XSLT_FILE_FIELD_NAME = "stdinXsltFile";
 	private static final String JENKINS_PREFIX = "jenkins.";
+	static final String MOJO_ERROR_AMBIGUOUS_XSLT_CONFIGURATION = "mojo.error.ambiguousXsltConfiguration";
 	static final String PROPERTY_CLI_DIRECTORY = JENKINS_PREFIX
 			+ "cliDirectory";
 	static final String PROPERTY_CUSTOM_CLI_JAR = JENKINS_PREFIX
@@ -63,9 +69,9 @@ public class CliMojo extends AbstractMojo {
 	static final String PROPERTY_STDOUT = JENKINS_PREFIX + "stdout";
 	static final String PROPERTY_APPEND = JENKINS_PREFIX + "append";
 	static final String PROPERTY_STDOUT_XSLT_FILE = JENKINS_PREFIX
-			+ "stdoutXsltFile";
+			+ STDOUT_XSLT_FILE_FIELD_NAME;
 	static final String PROPERTY_STDIN_XSLT_FILE = JENKINS_PREFIX
-			+ "stdinXsltFile";
+			+ STDIN_XSLT_FILE_FIELD_NAME;
 	static final String PROPERTY_PROXY_ID = JENKINS_PREFIX + "proxyId";
 	static final String PROPERTY_TRUST_STORE = JENKINS_PREFIX + "trustStore";
 	static final String PROPERTY_TRUST_STORE_PASSWORD = JENKINS_PREFIX
@@ -280,6 +286,7 @@ public class CliMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${project.remoteProjectRepositories}", readonly = true)
 	private List<RemoteRepository> remoteRepos;
 
+	private final Messages messages;
 	private final ConfigBuilderFactory cbf;
 	private final ProcessFacade proc;
 	private final ProxyFinder pf;
@@ -288,6 +295,7 @@ public class CliMojo extends AbstractMojo {
 	/**
 	 * Creates a new instance of this class.
 	 * 
+	 * @param pMessages
 	 * @param pCbf
 	 *            Factory for creating a {@link ConfigBuilder} instance, must
 	 *            not be {@code null}
@@ -300,20 +308,41 @@ public class CliMojo extends AbstractMojo {
 	 * @param pResolver
 	 */
 	@Inject
-	public CliMojo(final ConfigBuilderFactory pCbf, final ProcessFacade pProc,
-			final ProxyFinder pPf, final ResolverFactory pRbf) {
+	public CliMojo(final Messages pMessages, final ConfigBuilderFactory pCbf,
+			final ProcessFacade pProc, final ProxyFinder pPf,
+			final ResolverFactory pRbf) {
+		messages = pMessages;
 		cbf = pCbf;
 		proc = pProc;
 		pf = pPf;
 		rsf = pRbf;
-		rsf.setLog(getLog());
-		rsf.setRemoteRepos(remoteRepos);
-		rsf.setRepoSession(repoSession);
-		rsf.setRepoSystem(repoSystem);
 	}
 
-	public void resolve() throws MojoExecutionException, MojoFailureException {
-		// final Res
+	/**
+	 * @param pCustomXsltFieldName
+	 * @param pCustomXslt
+	 * @param pCoordFieldName
+	 * @param pCoords
+	 * @return
+	 * @throws MojoExecutionException
+	 * @throws MojoFailureException
+	 */
+	private File resolveXsltOrNull(final String pCustomXsltFieldName,
+			final File pCustomXslt, final String pCoordFieldName,
+			final String pCoords) throws MojoExecutionException,
+			MojoFailureException {
+		if (pCustomXslt != null && pCoords != null) {
+			throw new MojoExecutionException(messages.getMessage(
+					MOJO_ERROR_AMBIGUOUS_XSLT_CONFIGURATION,
+					pCustomXsltFieldName, pCoordFieldName));
+		}
+
+		File xslt = pCustomXslt;
+		if (pCoords != null) {
+			xslt = rsf.newResolver(pCoords).resolveXslt();
+		}
+
+		return xslt;
 	}
 
 	/*
@@ -323,16 +352,36 @@ public class CliMojo extends AbstractMojo {
 	 */
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		// TODO: Find better solution; is it possible to inject @Parameter on
+		// non-mojo objects?
+		rsf.setLog(getLog());
+		rsf.setRemoteRepos(remoteRepos);
+		rsf.setRepoSession(repoSession);
+		rsf.setRepoSystem(repoSystem);
+		// END TODO
+
 		proc.execute(
 				getLog(),
-				cbf.newBuilder().setSettings(settings)
+				cbf.newBuilder()
+						.setSettings(settings)
 						.setProxy(pf.findProxy(proxyId, settings))
 						.setJenkinscliDirectory(jenkinscliDirectory.toPath())
 						.setCustomJenkinsCliJar(customJenkinsCliJar)
-						.setBaseUrl(baseUrl, cliJar).setCommand(command)
-						.setStdin(stdin).setStdinXslt(stdinXsltFile)
-						.setStdinXsltParams(stdinXsltParams).setStdout(stdout)
-						.setStdoutXslt(stdoutXsltFile)
+						.setBaseUrl(baseUrl, cliJar)
+						.setCommand(command)
+						.setStdin(stdin)
+						.setStdinXslt(
+								resolveXsltOrNull(STDIN_XSLT_FILE_FIELD_NAME,
+										stdinXsltFile,
+										STDIN_XSLT_COORDS_FIELD_NAME,
+										stdinXsltCoords))
+						.setStdinXsltParams(stdinXsltParams)
+						.setStdout(stdout)
+						.setStdoutXslt(
+								resolveXsltOrNull(STDOUT_XSLT_FILE_FIELD_NAME,
+										stdoutXsltFile,
+										STDOUT_XSLT_COORDS_FIELD_NAME,
+										stdoutXsltCoords))
 						.setStdoutXsltParams(stdoutXsltParams)
 						.setAppend(append).setNoKeyAuth(noKeyAuth)
 						.setNoCertificateCheck(noCertificateCheck)
@@ -429,11 +478,18 @@ public class CliMojo extends AbstractMojo {
 	 * Sets the XSLT to transform the standard input, see {@link #stdinXsltFile}
 	 * .
 	 * 
-	 * @param pStdinXsltOrNull
+	 * @param pStdinXsltFileOrNull
 	 *            XSLT file or {@code null}
 	 */
-	public void setStdinXslt(final File pStdinXsltOrNull) {
-		stdinXsltFile = pStdinXsltOrNull;
+	public void setStdinXsltFile(final File pStdinXsltFileOrNull) {
+		stdinXsltFile = pStdinXsltFileOrNull;
+	}
+
+	/**
+	 * @param pStdinXsltCoordsOrNull
+	 */
+	public void setStdinXsltCoords(final String pStdinXsltCoordsOrNull) {
+		stdinXsltCoords = pStdinXsltCoordsOrNull;
 	}
 
 	/**
@@ -498,11 +554,18 @@ public class CliMojo extends AbstractMojo {
 	/**
 	 * Sets the XSLT to transform the standard out, see {@link #stdoutXsltFile}.
 	 * 
-	 * @param pStdoutXsltOrNull
+	 * @param pStdoutXsltFileOrNull
 	 *            XSLT file or {@code null}
 	 */
-	public void setStdoutXslt(final File pStdoutXsltOrNull) {
-		stdoutXsltFile = pStdoutXsltOrNull;
+	public void setStdoutXsltFile(final File pStdoutXsltFileOrNull) {
+		stdoutXsltFile = pStdoutXsltFileOrNull;
+	}
+
+	/**
+	 * @param pStdoutXsltCoordsOrNull
+	 */
+	public void setStdoutXsltCoords(final String pStdoutXsltCoordsOrNull) {
+		stdoutXsltCoords = pStdoutXsltCoordsOrNull;
 	}
 
 	/**

@@ -74,7 +74,7 @@ public class CreateJobITCase extends ITCase {
 	public void setup() throws Exception {
 		super.setup();
 		mojo.setStdin(RESOURCES.resolve("maven-job.xml").toFile());
-		mojo.setStdinXslt(RESOURCES.resolve("maven-job-template.xslt").toFile());
+		mojo.setStdinXsltFile(RESOURCES.resolve("maven-job-template.xslt").toFile());
 
 		final Map<String, String> params = new HashMap<>();
 		params.put(DESCRIPTION_KEY, DESCRIPTION_VALUE);
@@ -97,7 +97,7 @@ public class CreateJobITCase extends ITCase {
 		final Path stdout = TARGET.resolve(UUID.randomUUID().toString());
 		mojo.setStdout(stdout.toFile());
 		mojo.setStdin(null);
-		mojo.setStdinXslt(null);
+		mojo.setStdinXsltFile(null);
 		mojo.setStdoutXsltParams(null);
 		mojo.setCommand("get-job " + JOB_NAME);
 		mojo.execute();
