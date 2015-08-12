@@ -62,8 +62,10 @@ public class CliMojo extends AbstractMojo {
 	static final String PROPERTY_STDIN = JENKINS_PREFIX + "stdin";
 	static final String PROPERTY_STDOUT = JENKINS_PREFIX + "stdout";
 	static final String PROPERTY_APPEND = JENKINS_PREFIX + "append";
-	static final String PROPERTY_STDOUT_XSLT = JENKINS_PREFIX + "stdoutXslt";
-	static final String PROPERTY_STDIN_XSLT = JENKINS_PREFIX + "stdinXslt";
+	static final String PROPERTY_STDOUT_XSLT_FILE = JENKINS_PREFIX
+			+ "stdoutXsltFile";
+	static final String PROPERTY_STDIN_XSLT_FILE = JENKINS_PREFIX
+			+ "stdinXsltFile";
 	static final String PROPERTY_PROXY_ID = JENKINS_PREFIX + "proxyId";
 	static final String PROPERTY_TRUST_STORE = JENKINS_PREFIX + "trustStore";
 	static final String PROPERTY_TRUST_STORE_PASSWORD = JENKINS_PREFIX
@@ -167,19 +169,30 @@ public class CliMojo extends AbstractMojo {
 	 * Specifies the XSTL file to be applied on the file specified by
 	 * {@link #stdout} before it's actually written. This is useful for instance
 	 * to transform a template job configuration into an actual one. If
-	 * {@link #stdout} is not specified, this setting has no effect.
+	 * {@link #stdout} is not specified, this setting has no effect. Note: this
+	 * setting conflicts with {@link #stdoutXsltCoords}, so use only one of
+	 * them.
 	 */
-	@Parameter(property = PROPERTY_STDOUT_XSLT)
-	private File stdoutXslt;
+	@Parameter(property = PROPERTY_STDOUT_XSLT_FILE)
+	private File stdoutXsltFile;
 
 	/**
 	 * Specifies custom parameters which will be passed to the XSLT specified
-	 * through {@link #stdoutXslt}. If {@link #stdoutXslt} is not specified,
-	 * this settings has no effect.
+	 * through {@link #stdoutXsltFile}. If {@link #stdoutXsltFile} is not
+	 * specified, this settings has no effect.
 	 */
 	@Parameter
 	private Map<String, String> stdoutXsltParams;
 
+	/**
+	 * Specifies the Maven coordinates of the XSTL file to be applied on the
+	 * file specified by {@link #stdout} before it's actually written. This is
+	 * useful for instance to transform a template job configuration into an
+	 * actual one. The plugin will fail if the XSLT can not be resolved in any
+	 * Maven repository. If {@link #stdout} is not specified, this setting has
+	 * no effect. Note: this setting conflicts with {@link #stdoutXsltFile}, so
+	 * use only one of them.
+	 */
 	@Parameter
 	private String stdoutXsltCoords;
 
@@ -188,15 +201,28 @@ public class CliMojo extends AbstractMojo {
 	 * {@link #stdin} before it's actually passed to the CLI command. This is
 	 * useful for instance to transform a template job configuration into an
 	 * actual one. If {@link #stdin} is not specified, this setting has no
-	 * effect.
+	 * effect. Note: this setting conflicts with {@link #stdinXsltCoords}, so
+	 * use only one of them.
 	 */
-	@Parameter(property = PROPERTY_STDIN_XSLT)
-	private File stdinXslt;
+	@Parameter(property = PROPERTY_STDIN_XSLT_FILE)
+	private File stdinXsltFile;
+
+	/**
+	 * Specifies the Maven coordinates of the XSTL file to be applied on the
+	 * file specified by {@link #stdin} before it's actually passed to the CLI
+	 * command. This is useful for instance to transform a template job
+	 * configuration into an actual one. The plugin will fail if the XSLT can
+	 * not be resolved in any Maven repository. If {@link #stdin} is not
+	 * specified, this setting has no effect. Note: this setting conflicts with
+	 * {@link #stdinXsltFile}, so use only one of them.
+	 */
+	@Parameter
+	private String stdinXsltCoords;
 
 	/**
 	 * Specifies custom parameters which will be passed to the XSLT specified
-	 * through {@link #stdinXslt}. If {@link #stdinXslt} is not specified, this
-	 * settings has no effect.
+	 * through {@link #stdinXsltFile}. If {@link #stdinXsltFile} is not
+	 * specified, this settings has no effect.
 	 */
 	@Parameter
 	private Map<String, String> stdinXsltParams;
@@ -304,9 +330,9 @@ public class CliMojo extends AbstractMojo {
 						.setJenkinscliDirectory(jenkinscliDirectory.toPath())
 						.setCustomJenkinsCliJar(customJenkinsCliJar)
 						.setBaseUrl(baseUrl, cliJar).setCommand(command)
-						.setStdin(stdin).setStdinXslt(stdinXslt)
+						.setStdin(stdin).setStdinXslt(stdinXsltFile)
 						.setStdinXsltParams(stdinXsltParams).setStdout(stdout)
-						.setStdoutXslt(stdoutXslt)
+						.setStdoutXslt(stdoutXsltFile)
 						.setStdoutXsltParams(stdoutXsltParams)
 						.setAppend(append).setNoKeyAuth(noKeyAuth)
 						.setNoCertificateCheck(noCertificateCheck)
@@ -400,13 +426,14 @@ public class CliMojo extends AbstractMojo {
 	}
 
 	/**
-	 * Sets the XSLT to transform the standard input, see {@link #stdinXslt}.
+	 * Sets the XSLT to transform the standard input, see {@link #stdinXsltFile}
+	 * .
 	 * 
 	 * @param pStdinXsltOrNull
 	 *            XSLT file or {@code null}
 	 */
 	public void setStdinXslt(final File pStdinXsltOrNull) {
-		stdinXslt = pStdinXsltOrNull;
+		stdinXsltFile = pStdinXsltOrNull;
 	}
 
 	/**
@@ -469,13 +496,13 @@ public class CliMojo extends AbstractMojo {
 	}
 
 	/**
-	 * Sets the XSLT to transform the standard out, see {@link #stdoutXslt}.
+	 * Sets the XSLT to transform the standard out, see {@link #stdoutXsltFile}.
 	 * 
 	 * @param pStdoutXsltOrNull
 	 *            XSLT file or {@code null}
 	 */
 	public void setStdoutXslt(final File pStdoutXsltOrNull) {
-		stdoutXslt = pStdoutXsltOrNull;
+		stdoutXsltFile = pStdoutXsltOrNull;
 	}
 
 	/**

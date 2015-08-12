@@ -121,7 +121,7 @@ public interface Config {
 
 	/**
 	 * Returns the XSLT file to be applied on the stdin; specified through mojo
-	 * parameter <em>stdinXslt</em>.
+	 * parameter <em>stdinXsltFile</em> or <em>stdinXsltCoords</em>.
 	 * 
 	 * @return XSLT file or {@code null}
 	 */
@@ -147,7 +147,7 @@ public interface Config {
 
 	/**
 	 * Returns the XSLT file to be applied on the stdout; specified through mojo
-	 * parameter <em>stdoutXslt</em>.
+	 * parameter <em>stdoutXsltFile</em> or <em>stdoutXsltCoords</em>.
 	 * 
 	 * @return XSLT file or {@code null}
 	 */
