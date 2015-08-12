@@ -3,6 +3,9 @@ The Jenkins Maven Plugin allows to use the Jenkins CLI (command line interface) 
 
 ## What's new
 
+### 1.1.0
+- Built-in XSLT transformation for stdin/stdout
+
 ### 1.0.2
 - Changed configuration property name from "jenkins.baseURL" to "jenkins.baseUrl"
 - Improved configuration validation
