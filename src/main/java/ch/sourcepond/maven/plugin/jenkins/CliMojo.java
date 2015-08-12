@@ -17,6 +17,7 @@ import static org.apache.maven.plugins.annotations.LifecyclePhase.VERIFY;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -24,14 +25,19 @@ import javax.inject.Inject;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Settings;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.RemoteRepository;
 
 import ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder;
 import ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilderFactory;
 import ch.sourcepond.maven.plugin.jenkins.process.ProcessFacade;
 import ch.sourcepond.maven.plugin.jenkins.proxy.ProxyFinder;
+import ch.sourcepond.maven.plugin.jenkins.resolver.ResolverFactory;
 
 /**
  * The only implementation of {@link AbstractMojo} of this plugin. The name of
@@ -174,6 +180,9 @@ public class CliMojo extends AbstractMojo {
 	@Parameter
 	private Map<String, String> stdoutXsltParams;
 
+	@Parameter
+	private String stdoutXsltCoords;
+
 	/**
 	 * Specifies the XSTL file to be applied on the file specified by
 	 * {@link #stdin} before it's actually passed to the CLI command. This is
@@ -227,9 +236,28 @@ public class CliMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${settings}", readonly = true, required = true)
 	private Settings settings;
 
+	/**
+	 * 
+	 */
+	@Component
+	private RepositorySystem repoSystem;
+
+	/**
+	 * 
+	 */
+	@Parameter(defaultValue = "${repositorySystemSession}", readonly = true)
+	private RepositorySystemSession repoSession;
+
+	/**
+	 * 
+	 */
+	@Parameter(defaultValue = "${project.remoteProjectRepositories}", readonly = true)
+	private List<RemoteRepository> remoteRepos;
+
 	private final ConfigBuilderFactory cbf;
 	private final ProcessFacade proc;
 	private final ProxyFinder pf;
+	private final ResolverFactory rsf;
 
 	/**
 	 * Creates a new instance of this class.
@@ -243,13 +271,23 @@ public class CliMojo extends AbstractMojo {
 	 * @param pPf
 	 *            Utility for determining the proxy-server to use (if any), must
 	 *            not be {@code null}
+	 * @param pResolver
 	 */
 	@Inject
 	public CliMojo(final ConfigBuilderFactory pCbf, final ProcessFacade pProc,
-			final ProxyFinder pPf) {
+			final ProxyFinder pPf, final ResolverFactory pRbf) {
 		cbf = pCbf;
 		proc = pProc;
 		pf = pPf;
+		rsf = pRbf;
+		rsf.setLog(getLog());
+		rsf.setRemoteRepos(remoteRepos);
+		rsf.setRepoSession(repoSession);
+		rsf.setRepoSystem(repoSystem);
+	}
+
+	public void resolve() throws MojoExecutionException, MojoFailureException {
+		// final Res
 	}
 
 	/*

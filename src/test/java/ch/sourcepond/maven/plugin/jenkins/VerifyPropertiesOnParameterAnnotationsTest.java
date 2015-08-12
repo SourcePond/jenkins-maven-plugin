@@ -54,7 +54,8 @@ import org.junit.Test;
  */
 public class VerifyPropertiesOnParameterAnnotationsTest {
 	private static final List<String> EXCLUDED_FIELDS = asList("settings",
-			"stdinXsltParams", "stdoutXsltParams");
+			"repoSystem", "repoSession", "remoteRepos", "stdinXsltCoords",
+			"stdinXsltParams", "stdoutXsltCoords", "stdoutXsltParams");
 	private static final List<Field> INSTANCE_FIELDS;
 	private static final CtClass CLI_MOJO_CT_CLASS;
 

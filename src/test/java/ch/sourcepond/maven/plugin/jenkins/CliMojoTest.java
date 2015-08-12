@@ -34,6 +34,7 @@ import ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder;
 import ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilderFactory;
 import ch.sourcepond.maven.plugin.jenkins.process.ProcessFacade;
 import ch.sourcepond.maven.plugin.jenkins.proxy.ProxyFinder;
+import ch.sourcepond.maven.plugin.jenkins.resolver.ResolverFactory;
 
 /**
  *
@@ -61,7 +62,8 @@ public class CliMojoTest {
 	private final File trustStore = new File("trustStore");
 	private final File customJenkinsCliJar = new File("customJenkinsCliJar");
 	private final Config config = mock(Config.class);
-	private final CliMojo impl = new CliMojo(cbf, procFacade, finder);
+	private final ResolverFactory rsf = mock(ResolverFactory.class);
+	private final CliMojo impl = new CliMojo(cbf, procFacade, finder, rsf);
 	private URL baseUrl;
 
 	/**
