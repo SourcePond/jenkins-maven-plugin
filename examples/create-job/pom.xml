@@ -15,7 +15,7 @@
 	<ciManagement>
 		<url>http://[YOUR JENKINS HOST]:8080/[YOUR JENKINS PATH]</url>
 	</ciManagement>
-	
+
 	<properties>
 		<resources.directory>${basedir}/src/main/resources</resources.directory>
 		<xslt>${resources.directory}/job.xslt</xslt>
@@ -45,15 +45,23 @@
 							<goal>cli</goal>
 						</goals>
 						<configuration>
-							<!-- Create a Jenkins job and specify the artifactId of this project as name -->
+							<!-- Create a Jenkins job and specify the artifactId of this project 
+								as name -->
 							<command>create-job ${project.artifactId}</command>
-							
+
 							<!-- Let stdin read from the job configuration template file -->
 							<stdin>${configTemplate}</stdin>
-							
-							<!-- Specify the XSLT file to be used to transform the data read from stdin -->
+
+							<!-- Specify the XSLT file to be used to transform the data read from 
+								stdin -->
 							<stdinXsltFile>${xslt}</stdinXsltFile>
-							
+
+							<!-- If your XSLT is available from a Maven repository it's better 
+								to use its coordinates to let the plugin download the XSLT file for you instead 
+								of specifying a custom file with "stdinXsltFile". Note: you cannot specify 
+								both ("stdinXsltFile" and "stdinXsltCoords") -->
+							<!-- <stdinXsltCoords>xslt.groupid:xslt.artifactid:1.0.0</stdinXsltCoords>  -->
+
 							<!-- Specify the parameters which are used by the XSLT -->
 							<stdinXsltParams>
 								<description>${project.description}</description>

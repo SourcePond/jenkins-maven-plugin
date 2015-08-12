@@ -192,12 +192,14 @@ public class CliMojo extends AbstractMojo {
 
 	/**
 	 * Specifies the Maven coordinates of the XSTL file to be applied on the
-	 * file specified by {@link #stdout} before it's actually written. This is
-	 * useful for instance to transform a template job configuration into an
-	 * actual one. The plugin will fail if the XSLT can not be resolved in any
-	 * Maven repository. If {@link #stdout} is not specified, this setting has
-	 * no effect. Note: this setting conflicts with {@link #stdoutXsltFile}, so
-	 * use only one of them.
+	 * file specified by {@link #stdout} before it's actually written. The
+	 * coordinate must have following form:
+	 * {@code <groupId>:<artifactId>[:<extension>[:<classifier>]]:<version>} .
+	 * This is useful for instance to transform a template job configuration
+	 * into an actual one. The plugin will fail if the XSLT can not be resolved
+	 * in any Maven repository. If {@link #stdout} is not specified, this
+	 * setting has no effect. Note: this setting conflicts with
+	 * {@link #stdoutXsltFile}, so use only one of them.
 	 */
 	@Parameter
 	private String stdoutXsltCoords;
@@ -216,11 +218,13 @@ public class CliMojo extends AbstractMojo {
 	/**
 	 * Specifies the Maven coordinates of the XSTL file to be applied on the
 	 * file specified by {@link #stdin} before it's actually passed to the CLI
-	 * command. This is useful for instance to transform a template job
-	 * configuration into an actual one. The plugin will fail if the XSLT can
-	 * not be resolved in any Maven repository. If {@link #stdin} is not
-	 * specified, this setting has no effect. Note: this setting conflicts with
-	 * {@link #stdinXsltFile}, so use only one of them.
+	 * command. The coordinate must have following form:
+	 * {@code <groupId>:<artifactId>[:<extension>[:<classifier>]]:<version>} .
+	 * This is useful for instance to transform a template job configuration
+	 * into an actual one. The plugin will fail if the XSLT can not be resolved
+	 * in any Maven repository. If {@link #stdin} is not specified, this setting
+	 * has no effect. Note: this setting conflicts with {@link #stdinXsltFile},
+	 * so use only one of them.
 	 */
 	@Parameter
 	private String stdinXsltCoords;
