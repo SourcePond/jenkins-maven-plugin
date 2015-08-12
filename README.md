@@ -3,6 +3,11 @@ The Jenkins Maven Plugin allows to use the Jenkins CLI (command line interface) 
 
 ## What's new
 
+### 1.2.0
+- Added possibility to specify a stdin/stdout XSLT through its Maven coordinates (see "stdinXsltCoords" and "stdoutXsltCoords")
+- Renamed configuration property name from "stdinXslt" to "stdinXsltFile"
+- Renamed configuration property name from "stdoutXslt" to "stdoutXsltFile"
+
 ### 1.1.0
 - Built-in XSLT transformation for stdin/stdout
 
@@ -25,7 +30,7 @@ The plugin is available in [Maven Central Repository](http://search.maven.org/#a
 <plugin>
 	<groupId>ch.sourcepond.maven.plugins</groupId>
 	<artifactId>jenkins-maven-plugin</artifactId>
-	<version>1.0.2</version>
+	<version>1.2.0</version>
 </plugin>
 ```
 
@@ -40,9 +45,11 @@ The table below gives an overview about the parameters which can be specified.
 | **command** *(required)* | Specifies the Jenkins command including all its options and arguments to be executed through the CLI. |
 | **customJenkinsCliJar** | Specifies a custom jenkins-cli.jar to be used by this plugin. If set, downloading jenkins-cli.jar from the Jenkins instance specified with *baseUrl* will completely be bypassed. |
 | **stdin** | Specifies the file from where the standard input should read from. If set, the command receives the file data through stdin (for instance useful for "create job"). If not set, stdin does not provide any data. |
+| **stdinXsltCoords** | Specifies the Maven coordinates of the XSTL file to be applied on the file specified by *stdin* before it's actually passed to the CLI command. This is useful for instance to transform a template job configuration into an actual one. The plugin will fail if the XSLT can not be resolved in any Maven repository. If {@link #stdin} is not specified, this setting has no effect. Note: this setting conflicts with *stdinXsltFile*, so use only one of them. |
 | **stdinXsltFile** | Specifies the XSTL file to be applied on the file specified by *stdin* before it's actually passed to the CLI command. This is useful for instance to transform a template job configuration into an actual one. If *stdin* is not specified, this setting has no effect. |
 | **stdinXsltParams** | Specifies custom parameters which will be passed to the XSLT specified through *stdinXslt*. This configuration item is a map, see examples for how to use it. If *stdinXslt* is not specified, this settings has no effect. |
 | **stdout** | Specifies the file where the standard output of the CLI should be written to. If set, the command sends the data received through stdout to the file specified (useful for example if the output of a command like "list-jobs" should be further processed). If not set, stdout is only written to the log. Note: if *append* is set to false (default) the target file will be replaced. |
+| **stdoutXsltCoords** | Specifies the Maven coordinates of the XSTL file to be applied on the file specified by *stdout* before it's actually written. This is useful for instance to transform a template job configuration into an actual one. The plugin will fail if the XSLT can not be resolved in any Maven repository. If *stdout* is not specified, this setting has no effect. Note: this setting conflicts with {@link #stdoutXsltFile}, so use only one of them. |
 | **stdoutXsltFile** | Specifies the XSTL file to be applied on the file specified by *stdout* before it's actually written. This is useful for instance to transform a template job configuration into an actual one. If *stdout* is not specified, this setting has no effect. |
 | **stdoutXsltParams** | Specifies custom parameters which will be passed to the XSLT specified through *stdoutXslt*. This configuration item is a map, see examples for how to use it. If *stdoutXslt* is not specified, this settings has no effect. |
 | **append** | Specifies whether the target file defined by *stdout* should be replaced if existing. If set to true and the target file exists, all data will be appended to the existing file. If *stdout* is not set, this property has no effect. Defaults to *false* (overwrite file). |
