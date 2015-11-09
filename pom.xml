@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<!-- Licensed to the Apache Software Foundation (ASF) under one or more 
 		contributor license agreements. See the NOTICE file distributed with this 
@@ -14,7 +15,7 @@
 	<parent>
 		<groupId>ch.sourcepond.maven.plugins</groupId>
 		<artifactId>maven-plugin</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>0.1.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>jenkins-maven-plugin</artifactId>
@@ -33,14 +34,7 @@
 
 	<properties>
 		<!-- Plugin versions -->
-		<maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
-		<maven-failsafe-plugin.version>2.18.1</maven-failsafe-plugin.version>
-		<sisu-maven-plugin.version>0.3.1</sisu-maven-plugin.version>
-		<jacoco-maven-plugin.version>0.7.5.201505241946</jacoco-maven-plugin.version>
 		<download-maven-plugin.version>1.2.1</download-maven-plugin.version>
-		<maven-source-plugin.version>2.4</maven-source-plugin.version>
-		<maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
-		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
 
 		<!-- Additional dependencies for integration testing -->
 		<jetty-server.version>8.1.17.v20150415</jetty-server.version>
@@ -122,7 +116,38 @@
 	</dependencies>
 
 	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.googlecode.maven-download-plugin</groupId>
+					<artifactId>download-maven-plugin</artifactId>
+					<version>${download-maven-plugin.version}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		<plugins>
+
+			<!-- TODO: Remove this and correct all JavaDoc issues -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<additionalparam>-Xdoclint:none</additionalparam>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>com.googlecode.maven-download-plugin</groupId>
+				<artifactId>download-maven-plugin</artifactId>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-plugin-plugin</artifactId>
@@ -178,33 +203,6 @@
 									<overwrite>true</overwrite>
 									<outputDirectory>${project.build.directory}</outputDirectory>
 								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-failsafe-plugin</artifactId>
-						<dependencies>
-							<dependency>
-								<groupId>org.apache.maven.surefire</groupId>
-								<!-- Use the older JUnit 4 provider -->
-								<artifactId>surefire-junit47</artifactId>
-								<version>${maven-surefire-plugin.version}</version>
-							</dependency>
-						</dependencies>
-						<configuration>
-							<excludes>
-								<exclude>**/*Test.java</exclude>
-							</excludes>
-							<includes>
-								<include>**/*ITCase.java</include>
-							</includes>
-						</configuration>
-						<executions>
-							<execution>
-								<goals>
-									<goal>integration-test</goal>
-								</goals>
 							</execution>
 						</executions>
 					</plugin>
