@@ -22,8 +22,8 @@ Jenkins Maven Plugin,ch.sourcepond.maven.plugin.jenkins.resolver,ResolverFactory
 Jenkins Maven Plugin,ch.sourcepond.maven.plugin.jenkins.process.xslt,TransformerFactoryProvider,0,5,0,0,0,2,0,2,0,2
 Jenkins Maven Plugin,ch.sourcepond.maven.plugin.jenkins.process.xslt,XsltTransformerImpl,0,76,0,8,0,23,0,8,0,4
 Jenkins Maven Plugin,ch.sourcepond.maven.plugin.jenkins.process.xslt,StreamFactoryImpl,0,43,0,0,0,8,0,8,0,8
-Jenkins Maven Plugin,ch.sourcepond.maven.plugin.jenkins.process.xslt,TransformerInputStream,0,70,0,4,0,20,0,5,0,3
 Jenkins Maven Plugin,ch.sourcepond.maven.plugin.jenkins.process.xslt,TransformerOutputStream,0,44,0,0,0,12,0,2,0,2
+Jenkins Maven Plugin,ch.sourcepond.maven.plugin.jenkins.process.xslt,TransformerInputStream,0,70,0,4,0,20,0,5,0,3
 Jenkins Maven Plugin,ch.sourcepond.maven.plugin.jenkins.message,MessageImpl,0,19,0,0,0,7,0,2,0,2
 Jenkins Maven Plugin,ch.sourcepond.maven.plugin.jenkins,CliMojo,0,245,0,6,0,86,0,31,0,28
 Jenkins Maven Plugin,ch.sourcepond.maven.plugin.jenkins.process.cmd,ProxyParam,0,30,0,2,0,6,0,4,0,3
