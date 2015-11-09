@@ -1,0 +1,617 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>CliMojo.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jenkins Maven Plugin</a> &gt; <a href="index.source.html" class="el_package">ch.sourcepond.maven.plugin.jenkins</a> &gt; <span class="el_source">CliMojo.java</span></div><h1>CliMojo.java</h1><pre class="source lang-java linenums">/*Copyright (C) 2015 Roland Hauser, &lt;sourcepond@gmail.com&gt;
+
+Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
+package ch.sourcepond.maven.plugin.jenkins;
+
+import static org.apache.maven.plugins.annotations.LifecyclePhase.VERIFY;
+
+import java.io.File;
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.settings.Settings;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.RemoteRepository;
+
+import ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder;
+import ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilderFactory;
+import ch.sourcepond.maven.plugin.jenkins.message.Messages;
+import ch.sourcepond.maven.plugin.jenkins.process.ProcessFacade;
+import ch.sourcepond.maven.plugin.jenkins.proxy.ProxyFinder;
+import ch.sourcepond.maven.plugin.jenkins.resolver.ResolverFactory;
+
+/**
+ * The only implementation of {@link AbstractMojo} of this plugin. The name of
+ * the mojo is &lt;em&gt;cli&lt;/em&gt; and its &lt;a href=
+ * &quot;https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference&quot;
+ * &gt;default-phase&lt;/a&gt; is &lt;em&gt;verify&lt;/em&gt;.
+ */
+@Mojo(name = &quot;cli&quot;, defaultPhase = VERIFY)
+public class CliMojo extends AbstractMojo {
+	static final String STDOUT_XSLT_COORDS_FIELD_NAME = &quot;stdoutXsltCoords&quot;;
+	static final String STDOUT_XSLT_FILE_FIELD_NAME = &quot;stdoutXsltFile&quot;;
+	static final String STDIN_XSLT_COORDS_FIELD_NAME = &quot;stdinXsltCoords&quot;;
+	static final String STDIN_XSLT_FILE_FIELD_NAME = &quot;stdinXsltFile&quot;;
+	private static final String JENKINS_PREFIX = &quot;jenkins.&quot;;
+	static final String MOJO_ERROR_AMBIGUOUS_XSLT_CONFIGURATION = &quot;mojo.error.ambiguousXsltConfiguration&quot;;
+	static final String PROPERTY_CLI_DIRECTORY = JENKINS_PREFIX
+			+ &quot;cliDirectory&quot;;
+	static final String PROPERTY_CUSTOM_CLI_JAR = JENKINS_PREFIX
+			+ &quot;customCliJar&quot;;
+	static final String PROPERTY_BASE_URL = JENKINS_PREFIX + &quot;baseUrl&quot;;
+	static final String PROPERTY_CLI_JAR = JENKINS_PREFIX + &quot;cliJar&quot;;
+	static final String PROPERTY_NO_KEY_AUTH = JENKINS_PREFIX + &quot;noKeyAuth&quot;;
+	static final String PROPERTY_PRIVATE_KEY = JENKINS_PREFIX + &quot;privateKey&quot;;
+	static final String PROPERTY_NO_CERTIFICATE_CHECK = JENKINS_PREFIX
+			+ &quot;noCertificateCheck&quot;;
+	static final String PROPERTY_COMMAND = JENKINS_PREFIX + &quot;command&quot;;
+	static final String PROPERTY_STDIN = JENKINS_PREFIX + &quot;stdin&quot;;
+	static final String PROPERTY_STDOUT = JENKINS_PREFIX + &quot;stdout&quot;;
+	static final String PROPERTY_APPEND = JENKINS_PREFIX + &quot;append&quot;;
+	static final String PROPERTY_STDOUT_XSLT_FILE = JENKINS_PREFIX
+			+ STDOUT_XSLT_FILE_FIELD_NAME;
+	static final String PROPERTY_STDIN_XSLT_FILE = JENKINS_PREFIX
+			+ STDIN_XSLT_FILE_FIELD_NAME;
+	static final String PROPERTY_PROXY_ID = JENKINS_PREFIX + &quot;proxyId&quot;;
+	static final String PROPERTY_TRUST_STORE = JENKINS_PREFIX + &quot;trustStore&quot;;
+	static final String PROPERTY_TRUST_STORE_PASSWORD = JENKINS_PREFIX
+			+ &quot;trustStorePassword&quot;;
+
+	/**
+	 * Specifies where the downloaded jenkins-cli.jar should be stored.
+	 */
+	@Parameter(property = PROPERTY_CLI_DIRECTORY, defaultValue = &quot;${user.home}/.m2/jenkinscli&quot;, required = true)
+	private File jenkinscliDirectory;
+
+	/**
+	 * Specifies a custom jenkins-cli.jar to be used by this plugin. If set,
+	 * downloading jenkins-cli.jar from the Jenkins instance specified with
+	 * &lt;em&gt;baseUrl&lt;/em&gt; will completely be bypassed.
+	 */
+	@Parameter(property = PROPERTY_CUSTOM_CLI_JAR)
+	private File customJenkinsCliJar;
+
+	/**
+	 * Specifies the URL where the Jenkins instance (which shall be used by this
+	 * plugin) is available.
+	 */
+	@Parameter(property = PROPERTY_BASE_URL, defaultValue = &quot;${project.ciManagement.url}&quot;, required = true)
+	private URL baseUrl;
+
+	/**
+	 * Specifies the path relative to {@link #baseUrl} where the CLI-jar
+	 * (necessary to run this plugin) can be downloaded.
+	 */
+	@Parameter(property = PROPERTY_CLI_JAR, defaultValue = &quot;jnlpJars/jenkins-cli.jar&quot;, required = true)
+	private String cliJar;
+
+	/**
+	 * Specifies, whether the CLI should skip loading the SSH authentication
+	 * private key ({@code true}). This parameter will be passed as &quot;-noKeyAuth&quot;
+	 * option to the CLI. Default is {@code false} (load private key). Note: if
+	 * set to {@code true} this setting conflicts with {@link #privateKey} if
+	 * {@link #privateKey} is specified.
+	 */
+	@Parameter(property = PROPERTY_NO_KEY_AUTH)
+	private boolean noKeyAuth;
+
+	/**
+	 * Specifies the SSH authentication private key to be used when connecting
+	 * to Jenkins. This parameter will be passed as &quot;-i&quot; option to the CLI. If
+	 * not specified, the CLI will look for ~/.ssh/identity, ~/.ssh/id_dsa,
+	 * ~/.ssh/id_rsa and those to authenticate itself against the server. Note:
+	 * this setting conflicts with {@link #noKeyAuth} if {@link #noKeyAuth} is
+	 * set {@code true}.
+	 */
+	@Parameter(property = PROPERTY_PRIVATE_KEY)
+	private File privateKey;
+
+	/**
+	 * Specifies, whether certificate check should completely be disabled when
+	 * the CLI connects to an SSL secured Jenkins instance. This parameter will
+	 * be passed as &quot;-noCertificateCheck&quot; option to the CLI. Default is
+	 * {@code false}. This setting will bypass {@link #trustStore} and
+	 * {@link #trustStorePassword}. Note: avoid enabling this switch because
+	 * it's not secure (the CLI will trust everyone)!
+	 */
+	@Parameter(property = PROPERTY_NO_CERTIFICATE_CHECK)
+	private boolean noCertificateCheck;
+
+	/**
+	 * Specifies the Jenkins command including all its options and arguments to
+	 * be executed through the CLI.
+	 */
+	@Parameter(property = PROPERTY_COMMAND, required = true)
+	private String command;
+
+	/**
+	 * Specifies the file from where the standard input should read from. If
+	 * set, the command receives the file data through stdin (for instance
+	 * useful for &quot;create job&quot;). If not set, stdin does not provide any data.
+	 */
+	@Parameter(property = PROPERTY_STDIN)
+	private File stdin;
+
+	/**
+	 * Specifies the file where the standard output of the CLI should be
+	 * written. If set, the command sends the data received through stdout to
+	 * the file specified (useful for example if the output of a command like
+	 * &quot;list-jobs&quot; should be further processed). If not set, stdout is only
+	 * written to the log. Note: if &lt;em&gt;stdout&lt;/em&gt; is set to {@code false}
+	 * (default) the target file will be replaced.
+	 */
+	@Parameter(property = PROPERTY_STDOUT)
+	private File stdout;
+
+	/**
+	 * Specifies whether the target file defined by {@link #stdout} should be
+	 * replaced if existing (default). If set to {@code true} and the target
+	 * file exists, all data will be appended to the existing file.
+	 */
+	@Parameter(property = PROPERTY_APPEND)
+	private boolean append;
+
+	/**
+	 * Specifies the XSTL file to be applied on the file specified by
+	 * {@link #stdout} before it's actually written. This is useful for instance
+	 * to transform a template job configuration into an actual one. If
+	 * {@link #stdout} is not specified, this setting has no effect. Note: this
+	 * setting conflicts with {@link #stdoutXsltCoords}, so use only one of
+	 * them.
+	 */
+	@Parameter(property = PROPERTY_STDOUT_XSLT_FILE)
+	private File stdoutXsltFile;
+
+	/**
+	 * Specifies custom parameters which will be passed to the XSLT specified
+	 * through {@link #stdoutXsltFile}. If {@link #stdoutXsltFile} is not
+	 * specified, this settings has no effect.
+	 */
+	@Parameter
+	private Map&lt;String, String&gt; stdoutXsltParams;
+
+	/**
+	 * Specifies the Maven coordinates of the XSTL file to be applied on the
+	 * file specified by {@link #stdout} before it's actually written. The
+	 * coordinate must have following form:
+	 * {@code &lt;groupId&gt;:&lt;artifactId&gt;[:&lt;extension&gt;[:&lt;classifier&gt;]]:&lt;version&gt;} .
+	 * This is useful for instance to transform a template job configuration
+	 * into an actual one. The plugin will fail if the XSLT can not be resolved
+	 * in any Maven repository. If {@link #stdout} is not specified, this
+	 * setting has no effect. Note: this setting conflicts with
+	 * {@link #stdoutXsltFile}, so use only one of them.
+	 */
+	@Parameter
+	private String stdoutXsltCoords;
+
+	/**
+	 * Specifies the XSTL file to be applied on the file specified by
+	 * {@link #stdin} before it's actually passed to the CLI command. This is
+	 * useful for instance to transform a template job configuration into an
+	 * actual one. If {@link #stdin} is not specified, this setting has no
+	 * effect. Note: this setting conflicts with {@link #stdinXsltCoords}, so
+	 * use only one of them.
+	 */
+	@Parameter(property = PROPERTY_STDIN_XSLT_FILE)
+	private File stdinXsltFile;
+
+	/**
+	 * Specifies the Maven coordinates of the XSTL file to be applied on the
+	 * file specified by {@link #stdin} before it's actually passed to the CLI
+	 * command. The coordinate must have following form:
+	 * {@code &lt;groupId&gt;:&lt;artifactId&gt;[:&lt;extension&gt;[:&lt;classifier&gt;]]:&lt;version&gt;} .
+	 * This is useful for instance to transform a template job configuration
+	 * into an actual one. The plugin will fail if the XSLT can not be resolved
+	 * in any Maven repository. If {@link #stdin} is not specified, this setting
+	 * has no effect. Note: this setting conflicts with {@link #stdinXsltFile},
+	 * so use only one of them.
+	 */
+	@Parameter
+	private String stdinXsltCoords;
+
+	/**
+	 * Specifies custom parameters which will be passed to the XSLT specified
+	 * through {@link #stdinXsltFile}. If {@link #stdinXsltFile} is not
+	 * specified, this settings has no effect.
+	 */
+	@Parameter
+	private Map&lt;String, String&gt; stdinXsltParams;
+
+	/**
+	 * Specifies the settings-id of the &lt;a
+	 * href=&quot;https://maven.apache.org/guides/mini/guide-proxies.html&quot;
+	 * &gt;proxy-server&lt;/a&gt; which the CLI should use to connect to the Jenkins
+	 * instance. This parameter will be passed as &quot;-p&quot; option to the CLI. If
+	 * set, the plugin will search for the appropriate proxy-server in the Maven
+	 * settings (usually {@code ~/.m2/settings.xml}).
+	 */
+	@Parameter(property = PROPERTY_PROXY_ID)
+	private String proxyId;
+
+	/**
+	 * Specifies the trust-store to be used by the CLI if connecting to an SSL
+	 * secured Jenkins instance. This parameter will be passed as
+	 * &quot;-Djavax.net.ssl.trustStore&quot; option to the Java interpreter which starts
+	 * the CLI.
+	 */
+	@Parameter(property = PROPERTY_TRUST_STORE)
+	private File trustStore;
+
+	/**
+	 * Specifies the password for the trust-store to be used by the CLI (see
+	 * {@link #trustStore}). This parameter will be passed as
+	 * &quot;-Djavax.net.ssl.trustStorePassword&quot; option to the Java interpreter which
+	 * starts the CLI.
+	 */
+	@Parameter(property = PROPERTY_TRUST_STORE_PASSWORD)
+	private String trustStorePassword;
+
+	/**
+	 * Settings injected by Maven.
+	 */
+	@Parameter(defaultValue = &quot;${settings}&quot;, readonly = true, required = true)
+	private Settings settings;
+
+	/**
+	 * 
+	 */
+	@Component
+	private RepositorySystem repoSystem;
+
+	/**
+	 * 
+	 */
+	@Parameter(defaultValue = &quot;${repositorySystemSession}&quot;, readonly = true)
+	private RepositorySystemSession repoSession;
+
+	/**
+	 * 
+	 */
+	@Parameter(defaultValue = &quot;${project.remoteProjectRepositories}&quot;, readonly = true)
+	private List&lt;RemoteRepository&gt; remoteRepos;
+
+	private final Messages messages;
+	private final ConfigBuilderFactory cbf;
+	private final ProcessFacade proc;
+	private final ProxyFinder pf;
+	private final ResolverFactory rsf;
+
+	/**
+	 * Creates a new instance of this class.
+	 * 
+	 * @param pMessages
+	 * @param pCbf
+	 *            Factory for creating a {@link ConfigBuilder} instance, must
+	 *            not be {@code null}
+	 * @param pProc
+	 *            Facade for starting an external process, must not be
+	 *            {@code null}
+	 * @param pPf
+	 *            Utility for determining the proxy-server to use (if any), must
+	 *            not be {@code null}
+	 * @param pResolver
+	 */
+	@Inject
+	public CliMojo(final Messages pMessages, final ConfigBuilderFactory pCbf,
+			final ProcessFacade pProc, final ProxyFinder pPf,
+<span class="fc" id="L317">			final ResolverFactory pRbf) {</span>
+<span class="fc" id="L318">		messages = pMessages;</span>
+<span class="fc" id="L319">		cbf = pCbf;</span>
+<span class="fc" id="L320">		proc = pProc;</span>
+<span class="fc" id="L321">		pf = pPf;</span>
+<span class="fc" id="L322">		rsf = pRbf;</span>
+<span class="fc" id="L323">	}</span>
+
+	/**
+	 * @param pCustomXsltFieldName
+	 * @param pCustomXslt
+	 * @param pCoordFieldName
+	 * @param pCoords
+	 * @return
+	 * @throws MojoExecutionException
+	 * @throws MojoFailureException
+	 */
+	private File resolveXsltOrNull(final String pCustomXsltFieldName,
+			final File pCustomXslt, final String pCoordFieldName,
+			final String pCoords) throws MojoExecutionException,
+			MojoFailureException {
+<span class="fc bfc" id="L338" title="All 4 branches covered.">		if (pCustomXslt != null &amp;&amp; pCoords != null) {</span>
+<span class="fc" id="L339">			throw new MojoExecutionException(messages.getMessage(</span>
+					MOJO_ERROR_AMBIGUOUS_XSLT_CONFIGURATION,
+					pCustomXsltFieldName, pCoordFieldName));
+		}
+
+<span class="fc" id="L344">		File xslt = pCustomXslt;</span>
+<span class="fc bfc" id="L345" title="All 2 branches covered.">		if (pCoords != null) {</span>
+<span class="fc" id="L346">			xslt = rsf.newResolver(getLog(), repoSystem, repoSession,</span>
+<span class="fc" id="L347">					remoteRepos).resolveXslt(pCoords);</span>
+		}
+
+<span class="fc" id="L350">		return xslt;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.apache.maven.plugin.Mojo#execute()
+	 */
+	@Override
+	public void execute() throws MojoExecutionException, MojoFailureException {
+<span class="fc" id="L360">		proc.execute(</span>
+<span class="fc" id="L361">				getLog(),</span>
+<span class="fc" id="L362">				cbf.newBuilder()</span>
+<span class="fc" id="L363">						.setSettings(settings)</span>
+<span class="fc" id="L364">						.setProxy(pf.findProxy(proxyId, settings))</span>
+<span class="fc" id="L365">						.setJenkinscliDirectory(jenkinscliDirectory.toPath())</span>
+<span class="fc" id="L366">						.setCustomJenkinsCliJar(customJenkinsCliJar)</span>
+<span class="fc" id="L367">						.setBaseUrl(baseUrl, cliJar)</span>
+<span class="fc" id="L368">						.setCommand(command)</span>
+<span class="fc" id="L369">						.setStdin(stdin)</span>
+<span class="fc" id="L370">						.setStdinXslt(</span>
+<span class="fc" id="L371">								resolveXsltOrNull(STDIN_XSLT_FILE_FIELD_NAME,</span>
+										stdinXsltFile,
+										STDIN_XSLT_COORDS_FIELD_NAME,
+										stdinXsltCoords))
+<span class="fc" id="L375">						.setStdinXsltParams(stdinXsltParams)</span>
+<span class="fc" id="L376">						.setStdout(stdout)</span>
+<span class="fc" id="L377">						.setStdoutXslt(</span>
+<span class="fc" id="L378">								resolveXsltOrNull(STDOUT_XSLT_FILE_FIELD_NAME,</span>
+										stdoutXsltFile,
+										STDOUT_XSLT_COORDS_FIELD_NAME,
+										stdoutXsltCoords))
+<span class="fc" id="L382">						.setStdoutXsltParams(stdoutXsltParams)</span>
+<span class="fc" id="L383">						.setAppend(append).setNoKeyAuth(noKeyAuth)</span>
+<span class="fc" id="L384">						.setNoCertificateCheck(noCertificateCheck)</span>
+<span class="fc" id="L385">						.setPrivateKey(privateKey).setTrustStore(trustStore)</span>
+<span class="fc" id="L386">						.setTrustStorePassword(trustStorePassword)</span>
+<span class="fc" id="L387">						.build(getLog()));</span>
+<span class="fc" id="L388">	}</span>
+
+	/**
+	 * Sets the download directory for jenkins-cli.jar, see
+	 * {@link #jenkinscliDirectory}.
+	 * 
+	 * @param pJenkinscliDirectory
+	 *            Download directory, must not be {@code null}.
+	 */
+	public void setJenkinscliDirectory(final File pJenkinscliDirectory) {
+<span class="fc" id="L398">		jenkinscliDirectory = pJenkinscliDirectory;</span>
+<span class="fc" id="L399">	}</span>
+
+	/**
+	 * Sets the base URL specified, see {@link #baseUrl}.
+	 * 
+	 * @param pBaseUrl
+	 *            Base URL, must no be {@code null}
+	 */
+	public void setBaseUrl(final URL pBaseUrl) {
+<span class="fc" id="L408">		baseUrl = pBaseUrl;</span>
+<span class="fc" id="L409">	}</span>
+
+	/**
+	 * Sets the relative CLI-jar path, see {@link #cliJar}.
+	 * 
+	 * @param pCliJar
+	 *            Relative path, must not be {@code null}
+	 */
+	public void setCliJar(final String pCliJar) {
+<span class="fc" id="L418">		cliJar = pCliJar;</span>
+<span class="fc" id="L419">	}</span>
+
+	/**
+	 * See {@link #noKeyAuth}
+	 * 
+	 * @param pNoKeyAuth
+	 *            {@code true} if loading of SSH authentication private key
+	 *            skipped, {@code false} otherwise.
+	 */
+	public void setNoKeyAuth(final boolean pNoKeyAuth) {
+<span class="fc" id="L429">		noKeyAuth = pNoKeyAuth;</span>
+<span class="fc" id="L430">	}</span>
+
+	/**
+	 * See {@link #noCertificateCheck}
+	 * 
+	 * @param pNoCertificateCheck
+	 *            {@code true} if certificate check should be skipped,
+	 *            {@code false} otherwise.
+	 */
+	public void setNoCertificateCheck(final boolean pNoCertificateCheck) {
+<span class="fc" id="L440">		noCertificateCheck = pNoCertificateCheck;</span>
+<span class="fc" id="L441">	}</span>
+
+	/**
+	 * Sets the SSH authentication private key, see {@link #privateKey}.
+	 * 
+	 * @param pPrivateKeyOrNull
+	 *            Private key or {@code null}.
+	 */
+	public void setPrivateKey(final File pPrivateKeyOrNull) {
+<span class="fc" id="L450">		privateKey = pPrivateKeyOrNull;</span>
+<span class="fc" id="L451">	}</span>
+
+	/**
+	 * Sets the command to be executed through the CLI, see {@link #command}.
+	 * 
+	 * @param pCommand
+	 *            Command, must not be {@code null}
+	 */
+	public void setCommand(final String pCommand) {
+<span class="fc" id="L460">		command = pCommand;</span>
+<span class="fc" id="L461">	}</span>
+
+	/**
+	 * Sets the standard input where the CLI command should read from, see
+	 * {@link #stdin}.
+	 * 
+	 * @param pStdinOrNull
+	 *            Standard input or {@code null}
+	 */
+	public void setStdin(final File pStdinOrNull) {
+<span class="fc" id="L471">		stdin = pStdinOrNull;</span>
+<span class="fc" id="L472">	}</span>
+
+	/**
+	 * Sets the XSLT to transform the standard input, see {@link #stdinXsltFile}
+	 * .
+	 * 
+	 * @param pStdinXsltFileOrNull
+	 *            XSLT file or {@code null}
+	 */
+	public void setStdinXsltFile(final File pStdinXsltFileOrNull) {
+<span class="fc" id="L482">		stdinXsltFile = pStdinXsltFileOrNull;</span>
+<span class="fc" id="L483">	}</span>
+
+	/**
+	 * @param pStdinXsltCoordsOrNull
+	 */
+	public void setStdinXsltCoords(final String pStdinXsltCoordsOrNull) {
+<span class="fc" id="L489">		stdinXsltCoords = pStdinXsltCoordsOrNull;</span>
+<span class="fc" id="L490">	}</span>
+
+	/**
+	 * @param pSettings
+	 */
+	// TODO: This method is only used by tests; find a better solution and
+	// remove this method.
+	public void setSettings(final Settings pSettings) {
+<span class="fc" id="L498">		settings = pSettings;</span>
+<span class="fc" id="L499">	}</span>
+
+	/**
+	 * Sets the id of the proxy server to be used by the CLI, see
+	 * {@link #proxyId}.
+	 * 
+	 * @param pProxyIdOrNull
+	 *            Proxy-id or {@code null}
+	 */
+	public void setProxyId(final String pProxyIdOrNull) {
+<span class="fc" id="L509">		proxyId = pProxyIdOrNull;</span>
+<span class="fc" id="L510">	}</span>
+
+	/**
+	 * Sets the trust-store to be used by the CLI, see {@link #trustStore}.
+	 * 
+	 * @param pTrustStoreOrNull
+	 *            Trust-store or {@code null}
+	 */
+	public void setTrustStore(final File pTrustStoreOrNull) {
+<span class="fc" id="L519">		trustStore = pTrustStoreOrNull;</span>
+<span class="fc" id="L520">	}</span>
+
+	/**
+	 * Sets the password of the trust-store used by the CLI, see
+	 * {@link #trustStorePassword}.
+	 * 
+	 * @param pPassword
+	 *            Password
+	 */
+	public void setTrustStorePassword(final String pPassword) {
+<span class="fc" id="L530">		trustStorePassword = pPassword;</span>
+<span class="fc" id="L531">	}</span>
+
+	/**
+	 * Returns the Maven settings injected via ${settings}
+	 * 
+	 * @return Maven settings, never {@code null}
+	 */
+	// TODO: Getter is only used by integration-test. Find a better solution and
+	// remove this method
+	public Settings getSettings() {
+<span class="fc" id="L541">		return settings;</span>
+	}
+
+	/**
+	 * @param pStdout
+	 */
+	public void setStdout(final File pStdout) {
+<span class="fc" id="L548">		stdout = pStdout;</span>
+<span class="fc" id="L549">	}</span>
+
+	/**
+	 * Sets the XSLT to transform the standard out, see {@link #stdoutXsltFile}.
+	 * 
+	 * @param pStdoutXsltFileOrNull
+	 *            XSLT file or {@code null}
+	 */
+	public void setStdoutXsltFile(final File pStdoutXsltFileOrNull) {
+<span class="fc" id="L558">		stdoutXsltFile = pStdoutXsltFileOrNull;</span>
+<span class="fc" id="L559">	}</span>
+
+	/**
+	 * @param pStdoutXsltCoordsOrNull
+	 */
+	public void setStdoutXsltCoords(final String pStdoutXsltCoordsOrNull) {
+<span class="fc" id="L565">		stdoutXsltCoords = pStdoutXsltCoordsOrNull;</span>
+<span class="fc" id="L566">	}</span>
+
+	/**
+	 * @param pAppend
+	 */
+	public void setAppend(final boolean pAppend) {
+<span class="fc" id="L572">		append = pAppend;</span>
+<span class="fc" id="L573">	}</span>
+
+	/**
+	 * @param pCustomJenkinsCliJar
+	 */
+	public void setCustomJenkinsCliJar(final File pCustomJenkinsCliJar) {
+<span class="fc" id="L579">		customJenkinsCliJar = pCustomJenkinsCliJar;</span>
+<span class="fc" id="L580">	}</span>
+
+	/**
+	 * @param pStdinXsltParams
+	 */
+	public void setStdinXsltParams(final Map&lt;String, String&gt; pStdinXsltParams) {
+<span class="fc" id="L586">		stdinXsltParams = pStdinXsltParams;</span>
+<span class="fc" id="L587">	}</span>
+
+	/**
+	 * @param pStdinParams
+	 */
+	public void setStdoutXsltParams(final Map&lt;String, String&gt; pStdoutXsltParams) {
+<span class="fc" id="L593">		stdoutXsltParams = pStdoutXsltParams;</span>
+<span class="fc" id="L594">	}</span>
+
+	/**
+	 * @param pRepoSystem
+	 */
+	public void setRepoSystem(final RepositorySystem pRepoSystem) {
+<span class="fc" id="L600">		repoSystem = pRepoSystem;</span>
+<span class="fc" id="L601">	}</span>
+
+	/**
+	 * @param pRepoSession
+	 */
+	public void setRepoSession(final RepositorySystemSession pRepoSession) {
+<span class="fc" id="L607">		repoSession = pRepoSession;</span>
+<span class="fc" id="L608">	}</span>
+
+	/**
+	 * @param pRemoteRepos
+	 */
+	public void setRemoteRepos(final List&lt;RemoteRepository&gt; pRemoteRepos) {
+<span class="fc" id="L614">		remoteRepos = pRemoteRepos;</span>
+<span class="fc" id="L615">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

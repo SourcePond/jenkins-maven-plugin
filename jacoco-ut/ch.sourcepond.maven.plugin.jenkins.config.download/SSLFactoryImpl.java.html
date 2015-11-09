@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SSLFactoryImpl.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jenkins Maven Plugin</a> &gt; <a href="index.source.html" class="el_package">ch.sourcepond.maven.plugin.jenkins.config.download</a> &gt; <span class="el_source">SSLFactoryImpl.java</span></div><h1>SSLFactoryImpl.java</h1><pre class="source lang-java linenums">/*Copyright (C) 2015 Roland Hauser, &lt;sourcepond@gmail.com&gt;
+
+Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
+package ch.sourcepond.maven.plugin.jenkins.config.download;
+
+import static org.apache.http.conn.ssl.SSLConnectionSocketFactory.getDefaultHostnameVerifier;
+import static org.apache.http.impl.client.HttpClients.createDefault;
+import static org.apache.http.impl.client.HttpClients.custom;
+
+import java.io.File;
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.ssl.SSLContexts;
+import org.apache.http.ssl.TrustStrategy;
+
+/**
+ * @author rolandhauser
+ *
+ */
+@Named
+@Singleton
+final class SSLFactoryImpl implements SSLFactory {
+	private final TrustStrategy trustAllStrategy;
+
+	/**
+	 * @param pTrustAllStrategy
+	 */
+	@Inject
+<span class="fc" id="L52">	SSLFactoryImpl(final TrustStrategy pTrustAllStrategy) {</span>
+<span class="fc" id="L53">		trustAllStrategy = pTrustAllStrategy;</span>
+<span class="fc" id="L54">	}</span>
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.download.SSLFactory#newFactory(javax
+	 * .net.ssl.SSLContext, javax.net.ssl.HostnameVerifier)
+	 */
+	@Override
+	public SSLConnectionSocketFactory newFactory(final SSLContext pContext,
+			final HostnameVerifier pVerifier) {
+<span class="fc" id="L66">		return new SSLConnectionSocketFactory(pContext, pVerifier);</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.download.SSLFactory#newTrustAllContext
+	 * ()
+	 */
+	@Override
+	public SSLContext newTrustAllContext() throws KeyManagementException,
+			NoSuchAlgorithmException, KeyStoreException {
+<span class="fc" id="L79">		return SSLContexts.custom().loadTrustMaterial(null, trustAllStrategy)</span>
+<span class="fc" id="L80">				.build();</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.download.SSLFactory#newContext(java
+	 * .io.File, java.lang.String)
+	 */
+	@Override
+	public SSLContext newContext(final File pTrustStore, final String pPassword)
+			throws KeyManagementException, NoSuchAlgorithmException,
+			KeyStoreException, CertificateException, IOException {
+		return SSLContexts
+<span class="fc" id="L95">				.custom()</span>
+<span class="fc" id="L96">				.loadTrustMaterial(pTrustStore, pPassword.toCharArray(),</span>
+<span class="fc" id="L97">						new TrustSelfSignedStrategy()).build();</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.download.SSLFactory#newClient(org.
+	 * apache.http.conn.ssl.SSLConnectionSocketFactory)
+	 */
+	@Override
+	public CloseableHttpClient newClient(
+			final SSLConnectionSocketFactory pSslCsfOrNull) {
+		final CloseableHttpClient client;
+<span class="fc bfc" id="L111" title="All 2 branches covered.">		if (pSslCsfOrNull != null) {</span>
+<span class="fc" id="L112">			client = custom().setSSLSocketFactory(pSslCsfOrNull).build();</span>
+		} else {
+<span class="fc" id="L114">			client = createDefault();</span>
+		}
+<span class="fc" id="L116">		return client;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see ch.sourcepond.maven.plugin.jenkins.download.SSLFactory#
+	 * newDefaultHostnameVerifier()
+	 */
+	@Override
+	public HostnameVerifier newDefaultHostnameVerifier() {
+<span class="fc" id="L127">		return getDefaultHostnameVerifier();</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

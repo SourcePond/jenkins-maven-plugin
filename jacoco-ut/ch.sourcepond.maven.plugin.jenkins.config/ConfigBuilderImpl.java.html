@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ConfigBuilderImpl.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jenkins Maven Plugin</a> &gt; <a href="index.source.html" class="el_package">ch.sourcepond.maven.plugin.jenkins.config</a> &gt; <span class="el_source">ConfigBuilderImpl.java</span></div><h1>ConfigBuilderImpl.java</h1><pre class="source lang-java linenums">/*Copyright (C) 2015 Roland Hauser, &lt;sourcepond@gmail.com&gt;
+
+Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
+package ch.sourcepond.maven.plugin.jenkins.config;
+
+import static java.nio.file.Files.createDirectories;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.util.Map;
+
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.settings.Proxy;
+import org.apache.maven.settings.Settings;
+
+import ch.sourcepond.maven.plugin.jenkins.config.download.Downloader;
+import ch.sourcepond.maven.plugin.jenkins.message.Messages;
+
+/**
+ * Default implementation of the {@link ConfigBuilder} interface.
+ *
+ */
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">final class ConfigBuilderImpl implements ConfigBuilder {</span>
+	static final String HTTPS = &quot;https&quot;;
+	private final ConfigImpl config;
+	private final Downloader downloader;
+
+	/**
+	 * Creates a new instance of this class.
+	 * 
+	 * @param pMessages
+	 *            Facade to get messages, must not be {@code null}
+	 * @param pDownloader
+	 *            Facade to download the CLI jar, must not be {@code null}
+	 */
+<span class="fc" id="L52">	ConfigBuilderImpl(final Messages pMessages, final Downloader pDownloader) {</span>
+<span class="fc" id="L53">		config = new ConfigImpl(pMessages);</span>
+<span class="fc" id="L54">		downloader = pDownloader;</span>
+<span class="fc" id="L55">	}</span>
+
+	/**
+	 * Returns the base config instance which will cloned when {@link #build()}
+	 * is called. This method is for internal usage only!
+	 * 
+	 * @return {@link ConfigImpl} instance, never {@code null}
+	 */
+	ConfigImpl getBaseConfig() {
+<span class="fc" id="L64">		return config;</span>
+	}
+
+	/**
+	 * @param pDownloadedCliJarPath
+	 */
+	private void setDownloadedCliJar(final String pDownloadedCliJarPath) {
+<span class="fc" id="L71">		config.setDownloadedCliJar(pDownloadedCliJarPath);</span>
+<span class="fc" id="L72">	}</span>
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setWorkDirectory
+	 * (java.io.File)
+	 */
+	@Override
+	public ConfigBuilder setJenkinscliDirectory(final Path pWorkDirectory)
+			throws MojoExecutionException {
+<span class="fc" id="L84">		config.setJenkinscliDirectory(pWorkDirectory);</span>
+		try {
+<span class="fc" id="L86">			createDirectories(pWorkDirectory);</span>
+<span class="fc" id="L87">		} catch (final IOException e) {</span>
+<span class="fc" id="L88">			throw new MojoExecutionException(e.getMessage(), e);</span>
+<span class="fc" id="L89">		}</span>
+<span class="fc" id="L90">		return this;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setBaseUrl(java
+	 * .net.URL)
+	 */
+	@Override
+	public ConfigBuilder setBaseUrl(final URL pBaseUrl, final String pCliUri)
+			throws MojoExecutionException {
+		try {
+<span class="fc" id="L104">			config.setBaseUri(pBaseUrl.toURI());</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">			final String cliPath = pCliUri.startsWith(&quot;/&quot;) ? pCliUri : &quot;/&quot;</span>
+					+ pCliUri;
+<span class="fc" id="L107">			config.setCliJarUri(new URL(pBaseUrl.toString() + cliPath).toURI());</span>
+<span class="fc" id="L108">		} catch (final URISyntaxException | MalformedURLException e) {</span>
+<span class="fc" id="L109">			throw new MojoExecutionException(e.getMessage(), e);</span>
+<span class="fc" id="L110">		}</span>
+<span class="fc" id="L111">		return this;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setNoKeyAuth(
+	 * boolean)
+	 */
+	@Override
+	public ConfigBuilder setNoKeyAuth(final boolean pNoKeyAuth) {
+<span class="fc" id="L123">		config.setNoKeyAuth(pNoKeyAuth);</span>
+<span class="fc" id="L124">		return this;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setNoCertificateCheck
+	 * (boolean)
+	 */
+	@Override
+	public ConfigBuilder setNoCertificateCheck(final boolean pNoCertificateCheck) {
+<span class="fc" id="L136">		config.setNoCertificateCheck(pNoCertificateCheck);</span>
+<span class="fc" id="L137">		return this;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setPrivateKey
+	 * (java.io.File)
+	 */
+	@Override
+	public ConfigBuilder setPrivateKey(final File pPrivateKeyOrNull) {
+<span class="fc bfc" id="L149" title="All 2 branches covered.">		if (pPrivateKeyOrNull != null) {</span>
+<span class="fc" id="L150">			config.setPrivateKey(pPrivateKeyOrNull.getAbsolutePath());</span>
+		}
+<span class="fc" id="L152">		return this;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setCommand(java
+	 * .lang.String)
+	 */
+	@Override
+	public ConfigBuilder setCommand(final String pCommand) {
+<span class="fc" id="L164">		config.setCommand(pCommand);</span>
+<span class="fc" id="L165">		return this;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#build()
+	 */
+	@Override
+	public Config build(final Log pLog) throws MojoExecutionException {
+<span class="pc bpc" id="L175" title="1 of 4 branches missed.">		assert getBaseConfig().getBaseUri() != null : &quot;baseUri is null&quot;;</span>
+<span class="pc bpc" id="L176" title="1 of 4 branches missed.">		assert getBaseConfig().getCliJarUri() != null : &quot;cliJarUri is null&quot;;</span>
+<span class="pc bpc" id="L177" title="1 of 4 branches missed.">		assert !isBlank(getBaseConfig().getCommand()) : &quot;command is null&quot;;</span>
+<span class="pc bpc" id="L178" title="1 of 4 branches missed.">		assert getBaseConfig().getSettings() != null : &quot;settings is null&quot;;</span>
+<span class="pc bpc" id="L179" title="1 of 4 branches missed.">		assert getBaseConfig().getJenkinscliDirectory() != null : &quot;jenkinscliDirectory is null&quot;;</span>
+
+<span class="fc" id="L181">		getBaseConfig().validate(pLog);</span>
+
+		// If a local, custom jenkins-cli.jar has been defined, bypass any
+		// dowload...
+<span class="fc bfc" id="L185" title="All 2 branches covered.">		if (getBaseConfig().getCustomJenkinsCliJarOrNull() != null) {</span>
+<span class="fc" id="L186">			setDownloadedCliJar(getBaseConfig().getCustomJenkinsCliJarOrNull()</span>
+<span class="fc" id="L187">					.getAbsolutePath());</span>
+		} else { // ...otherwise dowload jenkins-cli.jar from target Jenkins
+					// instance.
+<span class="fc" id="L190">			setDownloadedCliJar(downloader</span>
+<span class="fc" id="L191">					.downloadCliJar(pLog, getBaseConfig()));</span>
+		}
+
+<span class="fc" id="L194">		return (Config) config.clone();</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setStdin(java
+	 * .io.File)
+	 */
+	@Override
+	public ConfigBuilder setStdin(final File pStdin) {
+<span class="fc bfc" id="L206" title="All 2 branches covered.">		if (pStdin != null) {</span>
+<span class="fc" id="L207">			config.setStdin(pStdin.toPath());</span>
+		}
+<span class="fc" id="L209">		return this;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setStdout(java
+	 * .io.File)
+	 */
+	@Override
+	public ConfigBuilder setStdout(final File pStdout) {
+<span class="pc bpc" id="L221" title="1 of 2 branches missed.">		if (pStdout != null) {</span>
+<span class="fc" id="L222">			config.setStdout(pStdout.toPath());</span>
+		}
+<span class="fc" id="L224">		return this;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setAppend(boolean
+	 * )
+	 */
+	@Override
+	public ConfigBuilder setAppend(final boolean pAppend) {
+<span class="fc" id="L236">		config.setAppending(pAppend);</span>
+<span class="fc" id="L237">		return this;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setProxy(org.
+	 * apache.maven.settings.Proxy)
+	 */
+	@Override
+	public ConfigBuilder setProxy(final Proxy pProxy) {
+<span class="fc" id="L249">		config.setProxy(pProxy);</span>
+<span class="fc" id="L250">		return this;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setSettings(org
+	 * .apache.maven.settings.Settings)
+	 */
+	@Override
+	public ConfigBuilder setSettings(final Settings pSettings) {
+<span class="fc" id="L262">		config.setSettings(pSettings);</span>
+<span class="fc" id="L263">		return this;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setTrustStore
+	 * (java.io.File)
+	 */
+	@Override
+	public ConfigBuilder setTrustStore(final File pTrustStore) {
+<span class="fc" id="L275">		config.setTrustStore(pTrustStore);</span>
+<span class="fc" id="L276">		return this;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setTrustStorePassword
+	 * (java.lang.String)
+	 */
+	@Override
+	public ConfigBuilder setTrustStorePassword(final String pPassword) {
+<span class="fc" id="L288">		config.setTrustStorePassword(pPassword);</span>
+<span class="fc" id="L289">		return this;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#
+	 * setCustomJenkinsCliJar(java.io.File)
+	 */
+	@Override
+	public ConfigBuilder setCustomJenkinsCliJar(final File pCustomJenkinsCliJar) {
+<span class="fc" id="L300">		config.setCustomJenkinsCliJarOrNull(pCustomJenkinsCliJar);</span>
+<span class="fc" id="L301">		return this;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setStdinXslt(
+	 * java.io.File)
+	 */
+	@Override
+	public ConfigBuilder setStdinXslt(final File pStdinXslt) {
+<span class="fc" id="L313">		config.setStdinXslt(pStdinXslt);</span>
+<span class="fc" id="L314">		return this;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setStdoutXslt
+	 * (java.io.File)
+	 */
+	@Override
+	public ConfigBuilder setStdoutXslt(final File pStdoutXslt) {
+<span class="fc" id="L326">		config.setStdoutXslt(pStdoutXslt);</span>
+<span class="fc" id="L327">		return this;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setStdinParams
+	 * (java.util.Map)
+	 */
+	@Override
+	public ConfigBuilder setStdinXsltParams(final Map&lt;String, String&gt; pStdinParams) {
+<span class="fc" id="L339">		config.setStdinXsltParams(pStdinParams);</span>
+<span class="fc" id="L340">		return this;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.config.ConfigBuilder#setStdoutParams
+	 * (java.util.Map)
+	 */
+	@Override
+	public ConfigBuilder setStdoutXsltParams(final Map&lt;String, String&gt; pStdoutParams) {
+<span class="fc" id="L352">		config.setStdoutXsltParams(pStdoutParams);</span>
+<span class="fc" id="L353">		return this;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

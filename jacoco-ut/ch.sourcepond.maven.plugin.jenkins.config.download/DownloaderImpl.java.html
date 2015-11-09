@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DownloaderImpl.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jenkins Maven Plugin</a> &gt; <a href="index.source.html" class="el_package">ch.sourcepond.maven.plugin.jenkins.config.download</a> &gt; <span class="el_source">DownloaderImpl.java</span></div><h1>DownloaderImpl.java</h1><pre class="source lang-java linenums">/*Copyright (C) 2015 Roland Hauser, &lt;sourcepond@gmail.com&gt;
+
+Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
+package ch.sourcepond.maven.plugin.jenkins.config.download;
+
+import static java.nio.file.Files.copy;
+import static java.nio.file.Files.createDirectories;
+import static java.nio.file.Files.isDirectory;
+import static java.nio.file.Files.isRegularFile;
+import static org.apache.commons.lang3.Validate.isTrue;
+import static org.apache.http.HttpStatus.SC_OK;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
+
+import ch.sourcepond.maven.plugin.jenkins.config.Config;
+import ch.sourcepond.maven.plugin.jenkins.message.Messages;
+
+/**
+ * Default implementation of the {@link Downloader} interface.
+ */
+@Named
+@Singleton
+final class DownloaderImpl implements Downloader {
+	static final String DOWNLOADER_ERROR_NO_VERSION_HEADER = &quot;downloader.error.noVersionHeader&quot;;
+	static final String DOWNLOADER_ERROR_WRONG_STATUS_CODE = &quot;downloader.error.wrongStatusCode&quot;;
+	static final String DOWNLOADER_ERROR_ENTITY_IS_NULL = &quot;downloader.error.entityIsNull&quot;;
+	static final String DOWNLOADER_INFO_VERSION_FOUND = &quot;downloader.info.versionFound&quot;;
+	static final String DOWNLOADER_INFO_USED_CLI_JAR = &quot;downloader.info.usedCliJar&quot;;
+	static final String VERSION_HEADER_NAME = &quot;X-Jenkins&quot;;
+	static final String JAR_NAME = &quot;jenkins-cli.jar&quot;;
+	private final Messages messages;
+	private final HttpClientFacade clientFacade;
+
+	/**
+	 * @param pClient
+	 * @param pFs
+	 */
+	@Inject
+	DownloaderImpl(final Messages pMessages,
+<span class="fc" id="L70">			final HttpClientFacade pClientFacade) {</span>
+<span class="fc" id="L71">		messages = pMessages;</span>
+<span class="fc" id="L72">		clientFacade = pClientFacade;</span>
+<span class="fc" id="L73">	}</span>
+
+	/**
+	 * @param pLog
+	 * @param pConfig
+	 * @return
+	 * @throws IOException
+	 * @throws ClientProtocolException
+	 * @throws MojoExecutionException
+	 */
+	private String determineJenkinsVersion(final Log pLog,
+			final CloseableHttpClient pClient, final Config pConfig)
+			throws ClientProtocolException, IOException, MojoExecutionException {
+<span class="fc" id="L86">		final HttpUriRequest versionRequest = clientFacade.newGet(pConfig</span>
+<span class="fc" id="L87">				.getBaseUri());</span>
+<span class="fc" id="L88">		try (final CloseableHttpResponse response = pClient</span>
+<span class="fc" id="L89">				.execute(versionRequest)) {</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">			if (response.containsHeader(VERSION_HEADER_NAME)) {</span>
+<span class="fc" id="L91">				final Header[] header = response</span>
+<span class="fc" id="L92">						.getHeaders(VERSION_HEADER_NAME);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">				isTrue(header.length == 1,</span>
+						&quot;Jenkins API changed; received multiple version headers. Please report this as bug (https://github.com/SourcePond/jenkins-maven-plugin/issues)&quot;);
+<span class="fc" id="L95">				final String version = header[0].getValue();</span>
+
+<span class="fc bfc" id="L97" title="All 2 branches covered.">				if (pLog.isInfoEnabled()) {</span>
+<span class="fc" id="L98">					pLog.info(messages.getMessage(</span>
+							DOWNLOADER_INFO_VERSION_FOUND, version));
+				}
+
+<span class="fc" id="L102">				return version;</span>
+			} else {
+<span class="fc" id="L104">				throw new MojoExecutionException(messages.getMessage(</span>
+						DOWNLOADER_ERROR_NO_VERSION_HEADER,
+<span class="fc" id="L106">						pConfig.getBaseUri(), VERSION_HEADER_NAME));</span>
+			}
+<span class="pc bpc" id="L108" title="4 of 8 branches missed.">		}</span>
+	}
+
+	/**
+	 * @param pJenkinscliDirectory
+	 * @param pJenkinsVersion
+	 * @return
+	 * @throws IOException
+	 */
+	private Path getDownloadedCliJar(final Path pJenkinscliDirectory,
+			final String pJenkinsVersion) throws IOException {
+<span class="fc" id="L119">		final Path downloadDirectory = pJenkinscliDirectory</span>
+<span class="fc" id="L120">				.resolve(pJenkinsVersion);</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">		if (!isDirectory(downloadDirectory)) {</span>
+<span class="fc" id="L122">			createDirectories(downloadDirectory);</span>
+		}
+<span class="fc" id="L124">		return downloadDirectory.resolve(JAR_NAME);</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * ch.sourcepond.maven.plugin.jenkins.download.Downloader#downloadCliJar
+	 * (ch.sourcepond.maven.plugin.jenkins.config.Config)
+	 */
+	@Override
+	public String downloadCliJar(final Log pLog, final Config pValidatedConfig)
+			throws MojoExecutionException {
+<span class="fc" id="L137">		try (final CloseableHttpClient client = clientFacade</span>
+<span class="fc" id="L138">				.newClient(pValidatedConfig)) {</span>
+<span class="fc" id="L139">			final String jenkinsVersion = determineJenkinsVersion(pLog, client,</span>
+					pValidatedConfig);
+
+<span class="fc" id="L142">			final Path downloadedCliJar = getDownloadedCliJar(</span>
+<span class="fc" id="L143">					pValidatedConfig.getJenkinscliDirectory(), jenkinsVersion);</span>
+
+<span class="fc bfc" id="L145" title="All 2 branches covered.">			if (!isRegularFile(downloadedCliJar)) {</span>
+<span class="fc" id="L146">				final HttpUriRequest request = clientFacade</span>
+<span class="fc" id="L147">						.newGet(pValidatedConfig.getCliJarUri());</span>
+				try {
+
+<span class="fc" id="L150">					try (final CloseableHttpResponse response = client</span>
+<span class="fc" id="L151">							.execute(request)) {</span>
+<span class="fc" id="L152">						final StatusLine statusLine = response.getStatusLine();</span>
+
+<span class="fc bfc" id="L154" title="All 2 branches covered.">						if (statusLine.getStatusCode() != SC_OK) {</span>
+<span class="fc" id="L155">							throw new MojoExecutionException(</span>
+<span class="fc" id="L156">									messages.getMessage(</span>
+											DOWNLOADER_ERROR_WRONG_STATUS_CODE,
+											statusLine,
+<span class="fc" id="L159">											pValidatedConfig.getCliJarUri()));</span>
+						}
+
+<span class="fc" id="L162">						final HttpEntity entity = response.getEntity();</span>
+
+<span class="fc bfc" id="L164" title="All 2 branches covered.">						if (entity != null) {</span>
+<span class="pc" id="L165">							try (final InputStream in = entity.getContent()) {</span>
+<span class="fc" id="L166">								copy(in, downloadedCliJar);</span>
+<span class="pc bpc" id="L167" title="6 of 8 branches missed.">							}</span>
+						} else {
+<span class="fc" id="L169">							throw new MojoExecutionException(</span>
+<span class="fc" id="L170">									messages.getMessage(</span>
+											DOWNLOADER_ERROR_ENTITY_IS_NULL,
+<span class="fc" id="L172">											pValidatedConfig.getCliJarUri()));</span>
+						}
+<span class="pc bpc" id="L174" title="4 of 8 branches missed.">					}</span>
+				} finally {
+<span class="fc" id="L176">					request.abort();</span>
+<span class="fc" id="L177">				}</span>
+			}
+
+<span class="fc" id="L180">			final String absoluteDownloadedCliPath = downloadedCliJar</span>
+<span class="fc" id="L181">					.toAbsolutePath().toString();</span>
+
+<span class="fc bfc" id="L183" title="All 2 branches covered.">			if (pLog.isInfoEnabled()) {</span>
+<span class="fc" id="L184">				pLog.info(messages.getMessage(DOWNLOADER_INFO_USED_CLI_JAR,</span>
+						absoluteDownloadedCliPath));
+			}
+
+<span class="fc" id="L188">			return absoluteDownloadedCliPath;</span>
+<span class="pc bpc" id="L189" title="4 of 8 branches missed.">		} catch (final IOException | KeyManagementException</span>
+				| NoSuchAlgorithmException | KeyStoreException
+				| CertificateException e) {
+<span class="fc" id="L192">			throw new MojoExecutionException(e.getMessage(), e);</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

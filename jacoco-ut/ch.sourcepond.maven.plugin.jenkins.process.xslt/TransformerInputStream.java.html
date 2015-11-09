@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>TransformerInputStream.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jenkins Maven Plugin</a> &gt; <a href="index.source.html" class="el_package">ch.sourcepond.maven.plugin.jenkins.process.xslt</a> &gt; <span class="el_source">TransformerInputStream.java</span></div><h1>TransformerInputStream.java</h1><pre class="source lang-java linenums">/*Copyright (C) 2015 Roland Hauser, &lt;sourcepond@gmail.com&gt;
+
+Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
+package ch.sourcepond.maven.plugin.jenkins.process.xslt;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+
+import org.apache.commons.io.output.ByteArrayOutputStream;
+
+/**
+ *
+ */
+final class TransformerInputStream extends InputStream {
+	static final int EOF = -1;
+	private final InputStream stdin;
+	private final Transformer transformer;
+	private final StreamFactory streamFactory;
+	private int index;
+	private byte[] data;
+
+	/**
+	 * @param pStdin
+	 */
+	TransformerInputStream(final InputStream pStdin,
+<span class="fc" id="L39">			final Transformer pTransformer, final StreamFactory pStreamFactory) {</span>
+<span class="fc" id="L40">		stdin = pStdin;</span>
+<span class="fc" id="L41">		transformer = pTransformer;</span>
+<span class="fc" id="L42">		streamFactory = pStreamFactory;</span>
+<span class="fc" id="L43">	}</span>
+
+	@Override
+	public synchronized int read() throws IOException {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		if (data == null) {</span>
+			try {
+<span class="fc" id="L49">				final ByteArrayOutputStream out = streamFactory</span>
+<span class="fc" id="L50">						.newByteArrayOutputStream();</span>
+<span class="fc" id="L51">				transformer.transform(streamFactory.newSource(stdin),</span>
+<span class="fc" id="L52">						streamFactory.newResult(out));</span>
+<span class="fc" id="L53">				data = out.toByteArray();</span>
+<span class="fc" id="L54">			} catch (final TransformerException e) {</span>
+<span class="fc" id="L55">				throw new IOException(e.getMessage(), e);</span>
+<span class="fc" id="L56">			}</span>
+		}
+
+		final int rc;
+<span class="fc bfc" id="L60" title="All 2 branches covered.">		if (data.length &gt; index) {</span>
+<span class="fc" id="L61">			rc = data[index++];</span>
+		} else {
+<span class="fc" id="L63">			rc = EOF;</span>
+		}
+
+<span class="fc" id="L66">		return rc;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.io.InputStream#close()
+	 */
+	@Override
+	public void close() throws IOException {
+<span class="fc" id="L76">		stdin.close();</span>
+<span class="fc" id="L77">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>
